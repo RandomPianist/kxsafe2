@@ -7,7 +7,7 @@
     <body>
         <header class = "d-flex justify-content-between align-items-center p-2 bg-white w-100 position-fixed">
 			<div id = "header-esquerdo" class = "d-flex">
-				<button id = "menu-abrir" class = "btn btn-custom mr-2">
+				<button id = "menu-abrir" class = "btn btn-custom mr-2 btn-menu">
 				    <i class = "fas fa-bars menu-icon"></i>
 				</button>
 				<div class = "input-group" id = "pesquisa-header">
@@ -53,7 +53,7 @@
 			</div>
 		</header>
         <aside class = "bg-white position-fixed">
-			<button id = "menu-fechar" class = "btn btn-custom">
+			<button id = "menu-fechar" class = "btn btn-custom btn-menu">
 			    <i class = "fas fa-arrow-left menu-icon"></i>
 			</button>
 			<div class = "p-3">

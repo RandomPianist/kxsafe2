@@ -107,9 +107,13 @@ main.active {
 }
 
 footer a:hover,
-.botao-target:hover,
-.breadcrumb-item a:hover {
+.botao-target:hover {
 	background-color: var(--hover-principal)
+}
+
+.my-icon:hover,
+.breadcrumb-item a:hover {
+	color: var(--hover-principal)
 }
 
 .botao-adicionar {
