@@ -11,7 +11,7 @@
         </ol>
     </nav>
     <h2 class = "titulo">Adicionar empresa</h2>
-	<form class = "formulario p-5">
+	<form class = "formulario p-5 custom-scrollbar">
 		<div class = "row">
 			<div class = "col-md-6 mb-3">
 				<label for = "razao_social" class = "form-label">Razão social:</label>

@@ -131,9 +131,10 @@ class EmpresasController extends ControllerKX {
                         )
                         ->leftjoin("segmentos", "segmentos.id", "empresas.id_segmento")
                         ->leftjoin("grupos", "grupos.id", "empresas.id_grupo")
-                        ->where("id", $id)
+                        ->where("empresas.id", $id)
                         ->first();
-        $empresa->enderecos = DB::table("cep")
+        if ($empresa !== null) {
+            $empresa->enderecos = DB::table("cep")
                                     ->select(
                                         "cod AS cep",
                                         "logradouro_tipo_abv",
@@ -146,7 +147,9 @@ class EmpresasController extends ControllerKX {
                                         "referencia"
                                     )
                                     ->join("enderecos", "enderecos.id_cep", "cep.id")
+                                    ->where("id_empresa", $empresa->id)
                                     ->get();
+        }
         return view("empresas_crud", compact("titulo", "breadcumb", "empresa"));
     }
 
