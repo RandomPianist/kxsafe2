@@ -1,0 +1,38 @@
+:root {
+    --fundo: #f0ededd8;
+    --header-tabela: #d4d3d3f3;
+    --fonte: #333;
+    --botao-principal: #106cfc;
+    --hover-principal: #105cd4;
+    --cards:#FFF;
+    --icone-secundario:#6c757d;
+    --categoria-principal: #f0ededd8;
+    --itens-sidebar: #f0eded98;
+}
+
+* {
+    font-family: 'Poppins', sans-serif
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--fundo);
+    color: var(--fonte);
+    min-height: calc(100vh - 57px);
+	font-size: 0.9rem
+}
+
+button:focus {
+    outline: solid 1px var(--botao-principal) !important;
+    box-shadow: none !important
+}
+
+.user-photo {
+    background: #f1f1f1;
+    border-radius: 50%;
+    height: 100px;
+    width: 100px;
+    transition: 0.3s;
+    object-fit: cover
+}
