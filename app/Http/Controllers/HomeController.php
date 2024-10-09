@@ -9,7 +9,6 @@ use App\Models\Empresas;
 
 class HomeController extends Controller {
     public function index() {
-        return redirect("/usuarios");
         return redirect("/empresas/selecionar");
     }
 

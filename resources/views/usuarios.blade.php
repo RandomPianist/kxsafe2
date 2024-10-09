@@ -3,9 +3,9 @@
 @section("content")
     <nav aria-label = "breadcrumb">
         <ol class = "breadcrumb">
-            @foreach ($breadcumb as $titulo => $url)
+            @foreach ($breadcumb as $nome => $url)
                 <li class = "breadcrumb-item">
-                    <a href = "{{ $url }}">{{ $titulo }}</a>
+                    <a href = "{{ $url }}">{{ $nome }}</a>
                 </li>
             @endforeach
         </ol>
@@ -40,7 +40,7 @@
                 </thead>
             </table>
         </div>
-        <div class = "table-body-scroll">
+        <div class = "table-body-scroll custom-scrollbar">
             <table id = "table-dados" class = "table"></table>
         </div>
     </div>
@@ -58,7 +58,7 @@
                 data.forEach((usuario) => {
                     resultado += "<tr>" +
                         "<td width = '13%' class = 'text-center'>" +
-                            "<img class = 'user-photo-sm' src = '" + usuario.foto + "'" + ' onerror = "this.onerror=null;' + "this.classList.add('d-none');$(this).next().removeClass('d-none')" + '" />' +
+                            "<img class = 'user-photo-sm' src = '" + usuario.foto + "'" + ' onerror = "this.onerror=null;' + "this.classList.add('d-none');this.nextSiblingElement.classList.remove('d-none')" + '" />' +
                             "<i class = 'fas fa-user d-none'></i>" +
                         "</td>" +
                         "<td width = '37%'>" + usuario.name + "</td>" +

@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use DB;
 use Auth;
 use Illuminate\Http\Request;
+use App\Models\Empresas;
 use App\Models\Locais;
 
 class LocaisController extends ControllerKX {
-    private function busca($param) {
+    private function busca($param = "1") {
         return DB::table("locais")
                     ->select(
                         "id",
@@ -29,7 +30,7 @@ class LocaisController extends ControllerKX {
             "Home" => config("app.root_url"),
             "Locais" => "#"
         );
-        $ultima_atualizacao = $this->log_consultar("locais");
+        $ultima_atualizacao = $this->log_consultar("locais"); // ControllerKX.php
         return view("locais", compact("ultima_atualizacao", "breadcumb"));
     }
     
@@ -39,7 +40,7 @@ class LocaisController extends ControllerKX {
             $busca = $this->busca("descr LIKE '".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("descr LIKE '%".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("(descr LIKE '%".implode("%' AND descr LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
-        } else $busca = $this->busca("1");
+        } else $busca = $this->busca();
         return json_encode($busca);
     }
 
@@ -98,13 +99,13 @@ class LocaisController extends ControllerKX {
         $linha = Locais::firstOrNew(["id" => $request->id]);
         $linha->descr = $request->descr;
         $linha->save();
-        $this->log_inserir($request->id ? "E" : "C", "locais", $linha->id);
+        $this->log_inserir($request->id ? "E" : "C", "locais", $linha->id); // ControllerKX.php
     }
 
     public function excluir(Request $request) {
         $linha = Locais::find($request->id);
         $linha->lixeira = 1;
         $linha->save();
-        $this->log_inserir("D", "locais", $linha->id);
+        $this->log_inserir("D", "locais", $linha->id); // ControllerKX.php
     }
 }

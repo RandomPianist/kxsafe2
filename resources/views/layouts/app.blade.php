@@ -57,7 +57,7 @@
 			    <i class = "fas fa-arrow-left menu-icon"></i>
 			</button>
 			<div class = "p-3">
-				<h4>KX-Safe</h4>
+				<img src="{{ asset('img/logo.png') }}" alt="Logo" class="w-75">
 				<ul class = "nav flex-column"></ul>
 			</div>
 		</aside>

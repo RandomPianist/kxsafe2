@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Auth;
 use Illuminate\Http\Request;
 use App\Models\Log;
 
@@ -64,5 +65,20 @@ class ControllerKX extends Controller {
 
             WHERE ".$where;
         DB::statement($sql);
+    }
+
+    protected function grupos_buscar($param = "1") {
+        return DB::table("grupos")
+                    ->select(
+                        "id",
+                        "descr"
+                    )
+                    ->whereRaw($param)
+                    ->whereRaw("id_empresa = ".Auth::user()->id_empresa." OR id_empresa IN (
+                        SELECT id
+                        FROM empresas
+                        WHERE id_matriz = ".Auth::user()->id_empresa."
+                    )")
+                    ->where("lixeira", 0);
     }
 }

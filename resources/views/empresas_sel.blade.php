@@ -19,7 +19,7 @@
                 <div class = "col-md-8">
                     <div class = "text-center mb-4 shadow-sm p-3" style = "background-color:var(--cards);border-radius:15px">
                         <div class = "mb-3" style = "width:100px;height:100px;border:2px solid var(--fonte);border-radius:50%;display:inline-grid">
-                            <img class = "user-photo" src = "{{ $resultado->usuario->foto }}" onerror = "this.onerror=null;this.classList.add('d-none');$(this).next().removeClass('d-none')" />
+                            <img class = "user-photo" src = "{{ $resultado->usuario->foto }}" onerror = "this.onerror=null;this.classList.add('d-none');this.nextSiblingElement.classList.remove('d-none')" />
                             <i class = "fas fa-user" style = "font-size:60px"></i>
                         </div>
                         <h3>Bem-vindo(a), {{ $resultado->usuario->name }}</h3>
@@ -44,7 +44,6 @@
                 </div>
             </div>
         </div>
-        @include("components.js")
         <script type = "text/javascript" language = "JavaScript">
             window.onload = function() {
                 document.querySelectorAll(".enter-company").forEach((botao) => {
@@ -53,10 +52,13 @@
                         $.post(URL + "/empresas/selecionar", {
                             _token : $("meta[name='csrf-token']").attr("content"),
                             id_empresa : _id
-                        }, function() {});
+                        }, function(url) {
+                            location.href = URL + "/" + url;
+                        });
                     }
                 });
             }
         </script>
+        @include("components.js")
     </body>
 </html>

@@ -33,6 +33,6 @@ class CepController extends ControllerKX {
         $linha->estado = $request->estado;
         $linha->uf = $request->uf;
         $linha->save();
-        $this->log_inserir("C", "cep", $linha->id);
+        $this->log_inserir("C", "cep", $linha->id); // ControllerKX.php
     }
 }

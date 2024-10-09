@@ -78,6 +78,18 @@ window.onload = function () {
         });
     });
 
+    $(".dinheiro-editavel").each(function() {
+        $($(this)[0]).focus(function() {
+            if ($(this).val() == "") $(this).val("R$ 0,00");
+        });
+        $($(this)[0]).keyup(function() {
+            let texto_final = $(this).val();
+            if (texto_final == "") $(this).val("R$ 0,00");
+            $(this).val(dinheiro(texto_final));
+        });
+        $(this).addClass("text-right");
+    });
+
     document.getElementById("menu-abrir").onclick = function() {
         setTravarCliqueMenu();
         ativar(["main", "aside", "#pesquisa-header", "#header-esquerdo"], true);
@@ -99,8 +111,11 @@ window.onload = function () {
     ultimo.ariaCurrent = "page";
     ultimo.innerHTML = ultimo.querySelector("a").innerHTML;
 
-    document.getElementById("filtro").onkeyup = function(e) {
-        if (e.keyCode == 13) listar();
+    let filtro = document.getElementById("filtro");
+    if (filtro !== null) {
+        document.getElementById("filtro").onkeyup = function(e) {
+            if (e.keyCode == 13) listar();
+        }
     }
 
     $.get(URL + "/menu", function(data) {
@@ -120,6 +135,29 @@ window.onload = function () {
             resultado += "</ul></li>";
         });
         document.querySelector(".nav").innerHTML = resultado;
+    });
+
+    Array.from(document.getElementsByClassName("matriz-header")).forEach((el) => {
+        el.onclick = function() {
+            let filiaisLista = this.nextElementSibling;
+            if (filiaisLista !== null) {
+                let toggleIcon = this.querySelector(".toggle-icon");
+                document.querySelectorAll(".empresa-matriz").forEach((matriz) => {
+                    if (matriz !== this.parentElement) {
+                        matriz.querySelector(".filiais-lista").style.display = "none";
+                        matriz.querySelector(".toggle-icon").textContent = "+";
+                    }
+                });
+                
+                if (filiaisLista.style.display === "none" || filiaisLista.style.display === "") {
+                    filiaisLista.style.display = "block";
+                    toggleIcon.textContent = "-";
+                } else {
+                    filiaisLista.style.display = "none";
+                    toggleIcon.textContent = "+";
+                }
+            }
+        }
     });
 
     carrega_autocomplete();
@@ -265,4 +303,63 @@ function setTravarCliqueMenu() {
     setTimeout(function() {
         travar_clique_menu = false;
     }, 100);
+}
+
+function dinheiro(texto_final) {
+    texto_final = texto_final.replace(/\D/g, "");
+    if (texto_final.length > 2) {
+        let valor_inteiro = parseInt(texto_final.substring(0, texto_final.length - 2)).toString();
+        let resultado_pontuado = "";
+        let cont = 0;
+        for (var i = valor_inteiro.length - 1; i >= 0; i--) {
+            if (cont % 3 == 0 && cont > 0) resultado_pontuado = "." + resultado_pontuado;
+            resultado_pontuado = valor_inteiro[i] + resultado_pontuado;
+            cont++;
+        }
+        texto_final = resultado_pontuado + "," + texto_final.substring(texto_final.length - 2).padStart(2, "0");
+    } else texto_final = "0," + texto_final.padStart(2, "0");
+    texto_final = "R$ " + texto_final;
+    return texto_final;
+}
+
+// mover as funções abaixo para arquivo específico depois
+function validar_cnpj(cnpj) {
+    cnpj = cnpj.replace(/[^\d]+/g,'');
+    if (cnpj == '' || cnpj.length != 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
+    let tamanho = cnpj.length - 2
+    let numeros = cnpj.substring(0, tamanho);
+    let digitos = cnpj.substring(tamanho);
+    let soma = 0;
+    let pos = tamanho - 7;
+    for (let i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2) pos = 9;
+    }
+    let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    if (resultado != digitos.charAt(0)) return false;
+    tamanho = tamanho + 1;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+    for (let i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2) pos = 9;
+    }
+    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    if (resultado != digitos.charAt(1)) return false;
+    return true;
+}
+
+function formatar_cnpj(el) {
+    el.classList.remove("invalido");
+    let rawValue = el.value.replace(/\D/g, "");
+    if (rawValue.length === 15 && rawValue.startsWith("0")) {
+        let potentialCNPJ = rawValue.substring(1);
+        if (validar_cnpj(potentialCNPJ)) rawValue = potentialCNPJ;
+    }
+    el.value  = rawValue.replace(/^(\d{2})(\d)/, '$1.$2') // Adiciona ponto após o segundo dígito
+                        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3') // Adiciona ponto após o quinto dígito
+                        .replace(/\.(\d{3})(\d)/, '.$1/$2') // Adiciona barra após o oitavo dígito
+                        .replace(/(\d{4})(\d)/, '$1-$2') // Adiciona traço após o décimo segundo dígito
+                        .replace(/(-\d{2})\d+?$/, '$1'); // Impede a entrada de mais de 14 dígitos
 }

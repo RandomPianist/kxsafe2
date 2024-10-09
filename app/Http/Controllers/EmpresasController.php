@@ -9,7 +9,7 @@ use App\Models\Empresas;
 use App\Models\Enderecos;
 
 class EmpresasController extends ControllerKX {
-    private function busca($param, $tipo, $id_grupo) {
+    private function busca($matriz, $tipo, $id_grupo) {
         return DB::table("empresas")
                 ->select(
                     "id",
@@ -19,18 +19,17 @@ class EmpresasController extends ControllerKX {
                         CASE
                             WHEN ".Auth::user()->id_empresa." = id THEN 'S'
                             ELSE 'N'
-                        END AS proprio
+                        END AS pode_excluir
                     ")
                 )
                 ->where("lixeira", 0)
-                ->where("tipo", $tipo)
                 ->where(function($sql) use($id_grupo) {
-                    if ($id_grupo) $sql->where("id_grupo", $id_grupo);
+                    if (intval($id_grupo)) $sql->where("id_grupo", $id_grupo);
                 })
                 ->where(function($sql) {
                     $sql->whereRaw(Auth::user()->id_empresa." IN (id, id_criadora)");
                 })
-                ->where("id_matriz", $param, 0)
+                ->where("id_matriz", $matriz)
                 ->orderby("nome_fantasia")
                 ->get();
     }
@@ -54,14 +53,21 @@ class EmpresasController extends ControllerKX {
         return $titulo;
     }
 
-    private function ver($tipo) {
+    private function ver($tipo, $id_grupo) {
         $titulo = $this->legenda($tipo);
-        $ultima_atualizacao = $this->log_consultar("empresas", $tipo);
+        $ultima_atualizacao = $this->log_consultar("empresas", $tipo); // ControllerKX.php
         $breadcumb = array(
             "Home" => config("app.root_url"),
             $titulo => "#"
         );
-        return view("empresas", compact("ultima_atualizacao", "titulo", "breadcumb"));
+        $empresas = array();
+        $matrizes = $this->busca(0, $tipo, $id_grupo);
+        foreach ($matrizes as $matriz) {
+            $matriz->filiais = $this->busca($matriz->id, $tipo, $id_grupo);
+            array_push($empresas, $matriz);
+        }
+        $grupos = $this->grupos_buscar()->orderby("descr")->get();
+        return view("empresas", compact("ultima_atualizacao", "titulo", "breadcumb", "empresas", "grupos", "id_grupo"));
     }
 
     private function crud($tipo, $id) {
@@ -109,11 +115,11 @@ class EmpresasController extends ControllerKX {
                 ->where("id", Auth::user()->id)
                 ->value("id_empresa")
             )->tipo
-        ));
+        ))."/grupo/0";
     }
 
     public function selecionar(Request $request) {
-        return redirect("/".$this->selecionarMain($request->id_empresa));
+        return $this->selecionarMain($request->id_empresa);
     }
 
     public function minhas() {
@@ -138,20 +144,20 @@ class EmpresasController extends ControllerKX {
         return redirect("/".$this->selecionarMain($resultado->empresas[0]->id));
     }
 
-    public function franqueadoras() {
-        return $this->ver(1);
+    public function franqueadoras($id_grupo) {
+        return $this->ver(1, $id_grupo);
     }
 
-    public function franquias() {
-        return $this->ver(2);
+    public function franquias($id_grupo) {
+        return $this->ver(2, $id_grupo);
     }
 
-    public function clientes() {
-        return $this->ver(3);
+    public function clientes($id_grupo) {
+        return $this->ver(3, $id_grupo);
     }
 
-    public function fornecedores() {
-        return $this->ver(4);
+    public function fornecedores($id_grupo) {
+        return $this->ver(4, $id_grupo);
     }
 
     public function franqueadoras_crud($id) {
@@ -168,15 +174,6 @@ class EmpresasController extends ControllerKX {
 
     public function fornecedores_crud($id) {
         return $this->crud(4, $id);
-    }
-
-    public function listar(Request $request) {
-        $id_grupo = 0;
-        if (isset($request->id_grupo)) $id_grupo = $request->id_grupo;
-        $resultado = new \stdClass;
-        $resultado->inicial = $this->busca("=", $request->tipo, $id_grupo);
-        $resultado->final = $this->busca(">", $request->tipo, $id_grupo);
-        return json_encode($resultado);
     }
 
     public function consultar(Request $request) {
@@ -255,7 +252,7 @@ class EmpresasController extends ControllerKX {
                 FROM ceps
                 WHERE cod = '".$ceps[$i]."'
             )";
-            $this->log_inserir2("D", "enderecos", $where, "NULL");
+            $this->log_inserir2("D", "enderecos", $where, "NULL"); // ControllerKX.php
             DB::statement("DELETE FROM enderecos WHERE ".$where);
             $linha = new Enderecos;
             $linha->id_cep = DB::table("ceps")
@@ -265,15 +262,15 @@ class EmpresasController extends ControllerKX {
             $linha->referencia = $referencias[$i];
             $linha->complemento = $complementos[$i];
             $linha->save();
-            $this->log_inserir("C", "enderecos", $linha->id);
+            $this->log_inserir("C", "enderecos", $linha->id); // ControllerKX.php
         }
-        $this->log_inserir($request->id ? "E" : "C", "empresas", $linha->id);
+        $this->log_inserir($request->id ? "E" : "C", "empresas", $linha->id); // ControllerKX.php
     }
 
     public function excluir(Request $request) {
         $linha = Empresas::find($request->id);
         $linha->lixeira = 1;
         $linha->save();
-        $this->log_inserir("D", "empresas", $linha->id);
+        $this->log_inserir("D", "empresas", $linha->id); // ControllerKX.php
     }
 }

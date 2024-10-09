@@ -10,7 +10,7 @@ use App\Models\Empresas;
 use App\Models\EmpresasUsuarios;
 
 class UsuariosController extends ControllerKX {
-    private function busca($param) {
+    private function busca($param = "1") {
         $param2 = str_replace("name", "email", $param);
         return DB::table("users")
                     ->select(
@@ -44,7 +44,7 @@ class UsuariosController extends ControllerKX {
             "Home" => config("app.root_url"),
             "Usuários" => "#"
         );
-        $ultima_atualizacao = $this->log_consultar("users");
+        $ultima_atualizacao = $this->log_consultar("users"); // ControllerKX.php
         return view("usuarios", compact("ultima_atualizacao", "breadcumb"));
     }
 
@@ -72,7 +72,7 @@ class UsuariosController extends ControllerKX {
             $busca = $this->busca("name LIKE '".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("name LIKE '%".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("(name LIKE '%".implode("%' AND name LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
-        } else $busca = $this->busca("1");
+        } else $busca = $this->busca();
         return json_encode($busca);
     }
 
@@ -106,12 +106,12 @@ class UsuariosController extends ControllerKX {
                     ->orderby("id", "DESC")
                     ->value("id");
             if ($foto) DB::statement("UPDATE users SET ".str_replace(",", "", $foto)." WHERE id = ".$id);
-            $this->log_inserir("C", "users", $id);
+            $this->log_inserir("C", "users", $id); // ControllerKX.php
             $linha = new EmpresasUsuarios;
             $linha->id_usuario = DB::table("users")->orderby("id", "DESC")->value("id");
             $linha->id_empresa = Auth::user()->id_empresa;
             $linha->save();
-            $this->log_inserir("C", "empresas_usuarios", $linha->id);
+            $this->log_inserir("C", "empresas_usuarios", $linha->id); // ControllerKX.php
         } else {
             DB::statement("
                 UPDATE users SET
@@ -121,18 +121,18 @@ class UsuariosController extends ControllerKX {
                     password = '".$senha."'
                 WHERE id = ".$request->id
             );
-            $this->log_inserir("E", "users", $request->id);
+            $this->log_inserir("E", "users", $request->id); // ControllerKX.php
         }
         return redirect("/usuarios");
     }
 
     public function excluir(Request $request) {
         DB::statement("DELETE FROM users WHERE id = ".$request->id);
-        $this->log_inserir("D", "users", $request->id);
+        $this->log_inserir("D", "users", $request->id); // ControllerKX.php
         $lista = DB::table("empresas_usuarios")
                     ->where("id_usuario", $request->id)
                     ->pluck("id");
-        foreach ($lista as $empresa) $this->log_inserir("D", "empresas_usuarios", $empresa);
+        foreach ($lista as $empresa) $this->log_inserir("D", "empresas_usuarios", $empresa); // ControllerKX.php
         DB::statement("DELETE FROM empresas_usuarios WHERE id_usuario = ".$request->id);
     }
 
@@ -155,12 +155,12 @@ class UsuariosController extends ControllerKX {
         $linha->id_empresa = $request->id_empresa;
         $linha->id_usuario = $request->id_usuario;
         $linha->save();
-        $this->log_inserir("C", "empresas_usuario", $linha->id);
+        $this->log_inserir("C", "empresas_usuario", $linha->id); // ControllerKX.php
     }
 
     public function empresas_remover($id) {
         $linha = EmpresasUsuarios::find($id);
         $linha->delete();
-        $this->log_inserir("D", "empresas_usuario", $id);
+        $this->log_inserir("D", "empresas_usuario", $id); // ControllerKX.php
     }
 }

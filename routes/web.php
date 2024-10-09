@@ -32,8 +32,8 @@ Route::middleware("auth")->group(function () {
     $empresas = ["franqueadoras", "franquias", "clientes", "fornecedores"];
     foreach ($empresas as $empresa) {
         Route::group(["prefix" => $empresa], function() use($empresa) {
-            Route::get("/",          [EmpresasController::class, $empresa]);
-            Route::get("/crud/{id}", [EmpresasController::class, $empresa."_crud"]);
+            Route::get("/grupo/{id_grupo}", [EmpresasController::class, $empresa]);
+            Route::get("/crud/{id}",        [EmpresasController::class, $empresa."_crud"]);
         });
     }
 
@@ -59,14 +59,13 @@ Route::middleware("auth")->group(function () {
     });
 
     Route::group(["prefix" => "empresas"], function() {
-        Route::get ("/selecionar",   [EmpresasController::class, "minhas"]);
-        Route::get ("/listar",       [EmpresasController::class, "listar"]);
-        Route::get ("/consultar",    [EmpresasController::class, "consultar"]);
-        Route::get ("/crud/{id}",    [EmpresasController::class, "crud"]);
-        Route::get ("/aviso/{id}",   [EmpresasController::class, "aviso"]);
-        Route::post("/salvar",       [EmpresasController::class, "salvar"]);
-        Route::post("/excluir",      [EmpresasController::class, "excluir"]);
-        Route::post("/selecionar",   [EmpresasController::class, "selecionar"]);
+        Route::get ("/selecionar", [EmpresasController::class, "minhas"]);
+        Route::get ("/consultar",  [EmpresasController::class, "consultar"]);
+        Route::get ("/crud/{id}",  [EmpresasController::class, "crud"]);
+        Route::get ("/aviso/{id}", [EmpresasController::class, "aviso"]);
+        Route::post("/salvar",     [EmpresasController::class, "salvar"]);
+        Route::post("/excluir",    [EmpresasController::class, "excluir"]);
+        Route::post("/selecionar", [EmpresasController::class, "selecionar"]);
     });
 
     Route::group(["prefix" => "grupos"], function() {

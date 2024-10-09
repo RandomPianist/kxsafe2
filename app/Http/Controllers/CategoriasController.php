@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use DB;
 use Auth;
 use Illuminate\Http\Request;
+use App\Models\Empresas;
 use App\Models\Categorias;
 
 class CategoriasController extends ControllerKX {
-    private function busca($param) {
+    private function busca($param = "1") {
         return DB::table("categorias")
                     ->select(
                         "id",
@@ -25,11 +26,12 @@ class CategoriasController extends ControllerKX {
     }
 
     public function ver() {
+        if (!in_array(intval(Empresas::find(Auth::user()->id_empresa)->tipo), [1, 2])) return redirect("/");
         $breadcumb = array(
             "Home" => config("app.root_url"),
             "Categorias" => "#"
         );
-        $ultima_atualizacao = $this->log_consultar("categorias");
+        $ultima_atualizacao = $this->log_consultar("categorias"); // ControllerKX.php
         return view("categorias", compact("ultima_atualizacao", "breadcumb"));
     }
     
@@ -39,7 +41,7 @@ class CategoriasController extends ControllerKX {
             $busca = $this->busca("descr LIKE '".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("descr LIKE '%".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("(descr LIKE '%".implode("%' AND descr LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
-        } else $busca = $this->busca("1");
+        } else $busca = $this->busca();
         return json_encode($busca);
     }
 
@@ -80,13 +82,13 @@ class CategoriasController extends ControllerKX {
         $linha = Categorias::firstOrNew(["id" => $request->id]);
         $linha->descr = $request->descr;
         $linha->save();
-        $this->log_inserir($request->id ? "E" : "C", "categorias", $linha->id);
+        $this->log_inserir($request->id ? "E" : "C", "categorias", $linha->id);  // ControllerKX.php
     }
 
     public function excluir(Request $request) {
         $linha = Categorias::find($request->id);
         $linha->lixeira = 1;
         $linha->save();
-        $this->log_inserir("D", "categorias", $linha->id);
+        $this->log_inserir("D", "categorias", $linha->id);  // ControllerKX.php
     }
 }

@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use DB;
 use Auth;
 use Illuminate\Http\Request;
+use App\Models\Empresas;
 use App\Models\Setores;
 
 class SetoresController extends ControllerKX {
-    private function busca($param) {
+    private function busca($param = "1") {
         return DB::table("setores")
                     ->select(
                         "id",
@@ -29,7 +30,7 @@ class SetoresController extends ControllerKX {
             "Home" => config("app.root_url"),
             "Setores" => "#"
         );
-        $ultima_atualizacao = $this->log_consultar("setores");
+        $ultima_atualizacao = $this->log_consultar("setores"); // ControllerKX.php
         return view("setores", compact("ultima_atualizacao", "breadcumb"));
     }
     
@@ -39,7 +40,7 @@ class SetoresController extends ControllerKX {
             $busca = $this->busca("descr LIKE '".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("descr LIKE '%".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("(descr LIKE '%".implode("%' AND descr LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
-        } else $busca = $this->busca("1");
+        } else $busca = $this->busca();
         return json_encode($busca);
     }
 
@@ -80,13 +81,13 @@ class SetoresController extends ControllerKX {
         $linha = Setores::firstOrNew(["id" => $request->id]);
         $linha->descr = $request->descr;
         $linha->save();
-        $this->log_inserir($request->id ? "E" : "C", "setores", $linha->id);
+        $this->log_inserir($request->id ? "E" : "C", "setores", $linha->id); // ControllerKX.php
     }
 
     public function excluir(Request $request) {
         $linha = Setores::find($request->id);
         $linha->lixeira = 1;
         $linha->save();
-        $this->log_inserir("D", "setores", $linha->id);
+        $this->log_inserir("D", "setores", $linha->id); // ControllerKX.php
     }
 }

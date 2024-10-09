@@ -5,27 +5,16 @@ namespace App\Http\Controllers;
 use DB;
 use Auth;
 use Illuminate\Http\Request;
+use App\Models\Empresas;
 use App\Models\Grupos;
 
 class GruposController extends ControllerKX {
-    private function busca($param) {
-        return DB::table("grupos")
-                    ->select(
-                        "id",
-                        "descr"
-                    )
-                    ->whereRaw($param)
-                    ->whereRaw("id_empresa = ".Auth::user()->id_empresa." OR id_empresa IN (
-                        SELECT id
-                        FROM empresas
-                        WHERE id_matriz = ".Auth::user()->id_empresa."
-                    )")
-                    ->where("lixeira", 0)
-                    ->get();
+    private function busca($param = "1") {
+        return $this->grupos_buscar($param)->get(); // ControllerKX.php
     }
 
     public function ver() {
-        $ultima_atualizacao = $this->log_consultar("grupos");
+        $ultima_atualizacao = $this->log_consultar("grupos"); // ControllerKX.php
         return view("grupos", compact("ultima_atualizacao"));
     }
     
@@ -35,7 +24,7 @@ class GruposController extends ControllerKX {
             $busca = $this->busca("descr LIKE '".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("descr LIKE '%".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("(descr LIKE '%".implode("%' AND descr LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
-        } else $busca = $this->busca("1");
+        } else $busca = $this->busca();
         return json_encode($busca);
     }
 
@@ -72,13 +61,13 @@ class GruposController extends ControllerKX {
         $linha = Grupos::firstOrNew(["id" => $request->id]);
         $linha->descr = $request->descr;
         $linha->save();
-        $this->log_inserir($request->id ? "E" : "C", "grupos", $linha->id);
+        $this->log_inserir($request->id ? "E" : "C", "grupos", $linha->id); // ControllerKX.php
     }
 
     public function excluir(Request $request) {
         $linha = Grupos::find($request->id);
         $linha->lixeira = 1;
         $linha->save();
-        $this->log_inserir("D", "grupos", $linha->id);
+        $this->log_inserir("D", "grupos", $linha->id); // ControllerKX.php
     }
 }

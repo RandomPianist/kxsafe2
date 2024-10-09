@@ -43,13 +43,13 @@
 
     <body class = "d-flex vh-100">
         <div class = "d-flex flex-column justify-content-center align-items-center bg-primary text-white col-4">
-            <img src = "{{ asset('img/logo.png') }}" alt = "Logo" class = "mb-4 w-50">
+            <img src = "{{ asset('img/logo-sm.png') }}" alt = "Logo" class = "mb-5 w-25">
             <h2 class = "text-center mx-2 mb-4" style = "font-size:20pt">Seja bem-vindo(a)</h2>
             <div class = "d-flex justify-content-center flex-wrap">
                 <a href = "#" class = "btn">
                     <i class = "fab fa-facebook-f"></i>
                 </a>
-                <a href = "https://br.linkedin.com/company/exfak" target = "_blank" class = "btn mx-2">
+                <a href = "#" class = "btn mx-2">
                     <i class = "fab fa-linkedin-in"></i>
                 </a>
                 <a href = "#" class = "btn">
