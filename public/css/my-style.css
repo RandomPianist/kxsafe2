@@ -9,9 +9,9 @@ aside {
 	left: -310px;
 	width: 310px;
 	height: 100vh;
-	background-color: white;
+	background-color: var(--cards);
 	transition: left 0.3s;
-	overflow-y:auto
+	overflow-y: auto
 }
 
 aside.active {
@@ -29,7 +29,7 @@ aside.active {
 
 .nav a {
 	border-radius: 10px;
-	color: #333;
+	color: var(--fonte);
 	transition: background-color 0.3s
 }
 
@@ -68,35 +68,48 @@ main,
     border-radius: 10px 0 0 10px
 }
 
+#header-esquerdo {
+	width: 337px
+}
+
+#header-esquerdo.active {
+	width: 637px
+}
+
 main {
-	margin-top: 56px;
-	height: calc(100vh - 93px);
+	margin-top: 35px;
+	height: calc(100vh - 70px)
 }
 
 main.active {
-	margin-left: 310px;
+	margin-left: 310px
 }
 
 .input-group .form-control:focus {
 	box-shadow: none;
-	border-color: lightgray;
+	border-color: var(--borda-input)
+}
+
+.botao-target {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--botao-principal);
+	color: var(--cards);
+	transition: background-color 0.3s
 }
 
 .botao-pesquisa {
 	border: none;
 	border-radius: 12px;
 	width: 45px;
-	height: 32px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: var(--botao-principal);
-	color: white;
-	transition: background-color 0.3s;
+	height: 32px
 }
 
-.botao-pesquisa:hover {
-	background-color: var(--hover-principal);
+footer a:hover,
+.botao-target:hover,
+.breadcrumb-item a:hover {
+	background-color: var(--hover-principal)
 }
 
 .botao-adicionar {
@@ -108,41 +121,23 @@ main.active {
 	border: none;
 	border-radius: 50%;
 	width: 50px;
-	height: 50px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: var(--botao-principal);
-	color: white;
-	transition: background-color 0.3s;
-}
-
-.botao-adicionar:hover {
-	background-color: var(--hover-principal);
+	height: 50px
 }
 
 .btn-custom {
 	font-size: 11pt;
-	color: #106cfc;
-}
-
-.btn-custom:hover {
-	color: #105cd4;
+	color: var(--botao-principal)
 }
 
 footer {
 	font-size: 9pt;
-	background-color:white
+	background-color: var(--cards)
 }
 
 footer a {
 	padding: .5rem;
 	text-decoration: none;
-	color: #106cfc;
-}
-
-footer a:hover {
-	color: #105cd4;
+	color: var(--botao-principal)
 }
 
 .titulo {
@@ -159,11 +154,7 @@ footer a:hover {
 
 .breadcrumb-item a {
 	text-decoration: none;
-	color: var(--botao-principal);
-}
-
-.breadcrumb-item a:hover {
-	color: var(--hover-principal);
+	color: var(--botao-principal)
 }
 
 #table-dados {
@@ -199,7 +190,7 @@ footer a:hover {
 
 .custom-table tr[onclick]:hover,
 .custom-table td[onclick]:hover {
-	color: #4b9bd5;
+	color: var(--hover-principal);
 	cursor: pointer
 }
 
@@ -238,7 +229,7 @@ footer a:hover {
 	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0 0 3px rgba(32, 16, 16, 0.3);
 	border-radius: 10px;
-	background-color: #f5f5f5;
+	background-color: var(--barra-rolagem-tabela)
 }
 
 .table-body-scroll:hover {
@@ -248,7 +239,7 @@ footer a:hover {
 .table-body-scroll::-webkit-scrollbar {
 	width: 6px;
 	height: 8px;
-	background-color: #f5f5f5;
+	background-color: var(--barra-rolagem-tabela);
 	margin-right: -3px
 }
 
@@ -263,7 +254,7 @@ footer a:hover {
 
 @-moz-document url-prefix() {
 	.table-body-scroll {
-		scrollbar-color: #f5f5f5 rgba(32, 16, 16, 0.3);
+		scrollbar-color: var(--barra-rolagem-tabela) rgba(32, 16, 16, 0.3);
 		scrollbar-width: thin
 	}
 
@@ -291,8 +282,43 @@ footer a:hover {
 	font-size: 0.8rem
 }
 
+.input-group .caixa-pesquisa {
+	border-top-right-radius: 10px !important;
+	border-bottom-right-radius: 10px !important
+}
+
 #menu-fechar {
 	position: absolute;
 	top: 10px;
-	right:10px
+	right: 10px
+}
+
+.autocomplete {
+    padding-right: 35px
+}
+
+.autocomplete-result {
+    background: white;
+    border: solid #ced4da 1px;
+    border-radius: 0.25rem;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    position: absolute;
+    max-height: 180px;
+    overflow-y: auto;
+    z-index: 3
+}
+
+.autocomplete-result:empty {
+    display: none
+}
+
+.autocomplete-line {
+    padding: 5px;
+    cursor: pointer
+}
+
+.autocomplete-line:hover,
+.autocomplete-line.hovered {
+    background: rgba(0, 0, 0, 0.15)
 }

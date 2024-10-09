@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Auth;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
 
@@ -13,6 +14,8 @@ class HomeController extends Controller {
     }
 
     public function autocomplete(Request $request) {        
+        $tipo = Empresas::find(Auth::user()->id_empresa)->tipo;
+
         $where = " AND ".$request->column." LIKE '".$request->search."%'";
         
         if ($request->filter_col) {
@@ -24,15 +27,72 @@ class HomeController extends Controller {
             )";
         }
 
-        if ($request->table == "empresas" && Empresas::find(Auth::user()->id_empresa)->tipo > 1) $where .= " AND ".Auth::user()->id_empresa." IN (id, id_criadora)";
+        if ($request->table == "empresas" && $tipo > 1) $where .= " AND ".Auth::user()->id_empresa." IN (id, id_criadora)";
+
+        $tabela = $request->table;
+        if ($tabela == "menu") {
+            $tabela = "(
+                SELECT
+                    IFNULL(submenu_url, url) AS id,
+                    CONCAT(modulos.descr, ' > ', menua.descr, IFNULL(CONCAT(' > ', submenu_descr), '')) AS descr,
+                    0 AS lixeira
+                    
+                FROM modulos
+
+                JOIN (
+                    SELECT
+                        id,
+                        id_modulo,
+                        descr,
+                        url,
+                        NULL AS submenu_descr,
+                        NULL AS submenu_url,
+                        ordem
+                    
+                    FROM menu
+                    
+                    WHERE id_pai = 0
+                    
+                    UNION ALL (
+                        SELECT
+                            menu.id,
+                            menu.id_modulo,
+                            menu.descr,
+                            menu.url,
+                            submenu.descr,
+                            submenu.url,
+                            0
+                        
+                        FROM menu
+                        
+                        LEFT JOIN menu AS submenu
+                            ON submenu.id_pai = menu.id
+
+                        JOIN menu_perfis AS mp
+                            ON mp.id_menu = submenu.id
+                        
+                        WHERE menu.id_pai = 0
+                          AND mp.tipo = ".$tipo."
+                    )
+                ) AS menua ON menua.id_modulo = modulos.id
+
+                JOIN menu_perfis AS mp
+                    ON mp.id_menu = menua.id
+
+                WHERE (url IS NOT NULL OR submenu_url IS NOT NULL)
+                  AND mp.tipo = ".$tipo."
+                    
+                ORDER BY modulos.ordem, menua.ordem
+            ) AS tab";
+        }
 
         $query = "SELECT ";
         if ($request->column == "referencia") $query .= "MIN(id) AS ";
         $query .= "id, ".$request->column;
-        $query .= " FROM ".$request->table;
+        $query .= " FROM ".$tabela;
         $query .= " WHERE lixeira = 0".$where;
         if ($request->column == "referencia") $query .= " GROUP BY referencia";
-        $query .= " ORDER BY ".$request->column;
+        if ($tabela != "menu") $query .= " ORDER BY ".$request->column;
         $query .= " LIMIT 30";
         
         return json_encode(DB::select(DB::raw($query)));
@@ -47,7 +107,7 @@ class HomeController extends Controller {
                         )
                         ->orderby("ordem")
                         ->get();
-        foreach ($resultado as $modulo) {
+        foreach ($consulta as $modulo) {
             $modulo->itens = DB::table("menu")
                                 ->select(
                                     "descr",
@@ -56,7 +116,7 @@ class HomeController extends Controller {
                                 ->join("menu_perfis AS mp", "menu.id", "mp.id_menu")
                                 ->where("id_pai", 0)
                                 ->where("id_modulo", $modulo->id)
-                                ->where("menu_perfis.tipo", Empresas::find(Auth::user()->id_empresa)->tipo)
+                                ->where("mp.tipo", Empresas::find(Auth::user()->id_empresa)->tipo)
                                 ->orderby("ordem")
                                 ->get();
             if (sizeof($modulo->itens)) array_push($resultado, $modulo);

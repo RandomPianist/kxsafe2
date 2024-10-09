@@ -6,7 +6,7 @@
     </head>
     <body>
         <header class = "d-flex justify-content-between align-items-center p-2 bg-white w-100 position-fixed">
-			<div class = "d-flex">
+			<div id = "header-esquerdo" class = "d-flex">
 				<button id = "menu-abrir" class = "btn btn-custom mr-2">
 				    <i class = "fas fa-bars menu-icon"></i>
 				</button>
@@ -16,7 +16,18 @@
 							<i class = "fa-solid fa-magnifying-glass"></i>
 						</span>
 					</div>
-					<input type = "text" class = "caixa-pesquisa form-control" placeholder = "Navegar para...">
+					<input id = "goto-hidden" type = "hidden" onchange = "location.href='/'+URL+'/'+this.value" />
+					<input id = "goto"
+						class = "caixa-pesquisa form-control autocomplete"
+						data-input = "#goto-hidden"
+						data-table = "menu"
+						data-column = "descr"
+						data-filter_col = ""
+						data-filter = ""
+						type = "text"
+						autocomplete = "off"
+						placeholder = "Navegar para..."
+					/>
 				</div>
 			</div>
 			<div class = "d-flex">
@@ -32,7 +43,7 @@
 							<a class = "dropdown-item" href = "#">Editar</a>
 						</li>
 						<li>
-							<a class = "dropdown-item" href = "javascript:this.nextSiblingElement.submit()">Sair</a>
+							<a class = "dropdown-item" href = "javascript:sair()">Sair</a>
                             <form id = "logout-form" class = "d-none" action = "{{ route('logout') }}" method = "POST">
                                 @csrf
                             </form>

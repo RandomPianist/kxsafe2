@@ -14,7 +14,7 @@
         <h2 class = "titulo">Usuários</h2>
         <div class = "d-flex">
             <input type = "text" class = "caixa-pesquisa form-control" placeholder = "Pesquisar..." aria-label = "Pesquisar" id = "filtro">
-            <button class = "botao-pesquisa ml-1" type = "button" onclick = "listar()">
+            <button class = "botao-target botao-pesquisa ml-1" type = "button" onclick = "listar()">
                 <i class = "fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
@@ -44,6 +44,9 @@
             <table id = "table-dados" class = "table"></table>
         </div>
     </div>
+    <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário">
+        <i class = "fa-solid fa-plus"></i>
+    </button>
 
     <script type = "text/javascript" language = "JavaScript">
         function listar() {
