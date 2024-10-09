@@ -10,6 +10,45 @@ use App\Models\Enderecos;
 
 class EmpresasController extends ControllerKX {
     private function busca($matriz, $tipo, $id_grupo) {
+        switch(intval(Empresas::find(Auth::user()->id_empresa)->tipo)) {
+            case 1:
+                switch($tipo) {
+                    case 1:
+                        // Franqueadoras vendo franqueadoras
+                        // Tudo, matrizes e filiais
+                        break;
+                    case 2:
+                        // Franqueadoras vendo franquias
+                        // Franquias que eu criei, matrizes e filiais
+                        break;
+                    case 4:
+                        // Franqueadoras vendo fornecedores
+                        // Tudo, matrizes e filiais
+                        break;
+                }
+                break;
+            case 2:
+                switch($tipo) {
+                    case 2:
+                        // Franquias vendo franquias
+                        // Apenas a si mesma, se for matriz, vê as próprias filiais
+                        break;
+                    case 3:
+                        // Franquias vendo clientes
+                        // Clientes que eu criei, matrizes e filiais
+                        break;
+                }
+                break;
+            case 3:
+                switch($tipo) {
+                    case 3:
+                        // Clientes vendo clientes
+                        // Apenas a si mesmo, se for matriz, vê as próprias filiais
+                        break;
+                }
+                break;
+        }
+        return false;
         return DB::table("empresas")
                 ->select(
                     "id",
@@ -19,7 +58,7 @@ class EmpresasController extends ControllerKX {
                         CASE
                             WHEN ".Auth::user()->id_empresa." = id THEN 'S'
                             ELSE 'N'
-                        END AS pode_excluir
+                        END AS pode_alterar
                     ")
                 )
                 ->where("lixeira", 0)
@@ -54,6 +93,7 @@ class EmpresasController extends ControllerKX {
     }
 
     private function ver($tipo, $id_grupo) {
+        if ($this->busca(0, $tipo, 0) === false) return redirect("/");
         $titulo = $this->legenda($tipo);
         $ultima_atualizacao = $this->log_consultar("empresas", $tipo); // ControllerKX.php
         $breadcumb = array(

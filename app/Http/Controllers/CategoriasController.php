@@ -26,7 +26,7 @@ class CategoriasController extends ControllerKX {
     }
 
     public function ver() {
-        if (!in_array(intval(Empresas::find(Auth::user()->id_empresa)->tipo), [1, 2])) return redirect("/");
+        if (!in_array(intval(Empresas::find(Auth::user()->id_empresa)->tipo), [1])) return redirect("/");
         $breadcumb = array(
             "Home" => config("app.root_url"),
             "Categorias" => "#"

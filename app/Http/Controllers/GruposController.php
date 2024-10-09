@@ -14,6 +14,7 @@ class GruposController extends ControllerKX {
     }
 
     public function ver() {
+        if (!in_array(intval(Empresas::find(Auth::user()->id_empresa)->tipo), [1, 2])) return redirect("/");
         $ultima_atualizacao = $this->log_consultar("grupos"); // ControllerKX.php
         return view("grupos", compact("ultima_atualizacao"));
     }

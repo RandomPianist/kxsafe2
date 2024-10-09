@@ -36,11 +36,9 @@
                         </span>
                     </div>
                     <div class = "d-flex justify-content-between">
-                        @if ($empresa->pode_alterar == 'S')
-                            <i class = "my-icon far fa-edit m-2" title = "Editar"></i>
-                            <i class = "my-icon far fa-trash-alt m-2" title = "Excluir"></i>
-                            <i class = "my-icon far fa-add m-2" title = "Adicionar"></i>
-                        @endif
+                        <i class = "my-icon far fa-edit m-2" title = "Editar"></i>
+                        <i class = "my-icon far fa-trash-alt m-2" title = "Excluir"></i>
+                        <i class = "my-icon far fa-add m-2" title = "Adicionar"></i>
                     </div>
                 </div>
                 @if (sizeof($empresa->filiais))

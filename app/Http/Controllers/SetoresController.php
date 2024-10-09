@@ -26,6 +26,7 @@ class SetoresController extends ControllerKX {
     }
 
     public function ver() {
+        if (!in_array(intval(Empresas::find(Auth::user()->id_empresa)->tipo), [3])) return redirect("/");
         $breadcumb = array(
             "Home" => config("app.root_url"),
             "Setores" => "#"
