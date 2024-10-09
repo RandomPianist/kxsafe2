@@ -71,8 +71,6 @@ window.onload = function () {
         });
     });
 
-    ordenar(0);
-
     document.getElementById("menu-abrir").onclick = function() {
 		document.querySelector("main").classList.toggle("active");
 		document.querySelector("aside").classList.toggle("active");
@@ -91,8 +89,15 @@ window.onload = function () {
 		document.getElementById("pesquisa-header").classList.remove("active");
     };
 
+    const lista = document.getElementsByClassName("breadcrumb-item");
+    let ultimo = lista[lista.length - 1];
+    ultimo.classList.add("active");
+    ultimo.ariaCurrent = "page";
+    ultimo.innerHTML = ultimo.querySelector("a").innerHTML;
+
     $.get(URL + "/menu", function(data) {
         data = $.parseJSON(data);
+        console.log(data);
         let resultado = "";
         data.forEach((modulo) => {
             resultado += "<li>" +
@@ -109,4 +114,6 @@ window.onload = function () {
         });
         document.querySelector(".nav").innerHTML = resultado;
     });
+
+    listar();
 }

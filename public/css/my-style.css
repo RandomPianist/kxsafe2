@@ -1,5 +1,21 @@
+header {
+	z-index: 1;
+	top: 0
+}
+
+aside {
+	z-index: 2;
+	top: 0;
+	left: -310px;
+	width: 310px;
+	height: 100vh;
+	background-color: white;
+	transition: left 0.3s;
+	overflow-y:auto
+}
+
 aside.active {
-	left: 0 !important;
+	left: 0;
 	border-right: 1px solid var(--header-tabela)
 }
 
@@ -116,10 +132,11 @@ main.active {
 
 footer {
 	font-size: 9pt;
-	background-color: white;
+	background-color:white
 }
 
 footer a {
+	padding: .5rem;
 	text-decoration: none;
 	color: #106cfc;
 }
@@ -128,9 +145,10 @@ footer a:hover {
 	color: #105cd4;
 }
 
-.titulo-tabela {
+.titulo {
 	color: var(--botao-principal);
 	margin-bottom: 5px;
+	font-size: 1.6rem
 }
 
 .breadcrumb {
@@ -148,35 +166,49 @@ footer a:hover {
 	color: var(--hover-principal);
 }
 
+#table-dados {
+	background-color: var(--cards);
+	margin-bottom: 0px
+}
+
+#table-dados td {
+	color: var(--fonte);
+	font-size: 11pt
+}
+
+#table-dados .fas {
+	font-size: 20px
+}
+
 .custom-table {
 	height: calc(100% - 120px);
-	margin-top: 1.5rem;
+	margin-top: 1.5rem
 }
 
 .custom-table th {
-	background-color: var(--header-tabela);
+	background-color: var(--header-tabela)
 }
 
 .custom-table .table td {
-	color: var(--fonte);
+	color: var(--fonte)
 }
 
 .custom-table td {
-	vertical-align: middle;
+	vertical-align: middle
 }
 
 .custom-table tr[onclick]:hover,
 .custom-table td[onclick]:hover {
 	color: #4b9bd5;
-	cursor: pointer;
+	cursor: pointer
 }
 
 .table-header-scroll table tr:last-child th:first-child {
-	border-top-left-radius: 10px;
+	border-top-left-radius: 10px
 }
 
 .table-header-scroll table tr:last-child th:last-child {
-	border-top-right-radius: 10px;
+	border-top-right-radius: 10px
 }
 
 .table-body-scroll {
@@ -202,64 +234,45 @@ footer a:hover {
 	border-bottom: 0.5px
 }
 
-.table-dados {
-	background-color: var(--cards);
-	margin-bottom: 0px
-}
-
-.table-dados td {
-	color: var(--fonte);
-	font-size: 11pt;
-	padding: 40px
-}
-
-.custom-scrollbar::-webkit-scrollbar-track,
-.custom-scrollbar-2::-webkit-scrollbar-track {
+.table-body-scroll::-webkit-scrollbar-track {
 	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0 0 3px rgba(32, 16, 16, 0.3);
 	border-radius: 10px;
 	background-color: #f5f5f5;
 }
 
-.custom-scrollbar:hover {
+.table-body-scroll:hover {
 	overflow-y: auto !important
 }
 
-.custom-scrollbar::-webkit-scrollbar {
+.table-body-scroll::-webkit-scrollbar {
 	width: 6px;
 	height: 8px;
 	background-color: #f5f5f5;
 	margin-right: -3px
 }
 
-.custom-scrollbar-2::-webkit-scrollbar {
-	width: 5px;
-	height: 8px;
-	background-color: #f5f5f5
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb,
-.custom-scrollbar-2::-webkit-scrollbar-thumb {
+.table-body-scroll::-webkit-scrollbar-thumb {
 	border-radius: 10px;
 	background-color: rgba(0, 0, 0, 0.2)
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover,
-.custom-scrollbar-2::-webkit-scrollbar-thumb:hover {
+.table-body-scroll::-webkit-scrollbar-thumb:hover {
 	background-color: rgba(0, 0, 0, 0.3)
 }
 
 @-moz-document url-prefix() {
-	.custom-scrollbar {
+	.table-body-scroll {
 		scrollbar-color: #f5f5f5 rgba(32, 16, 16, 0.3);
 		scrollbar-width: thin
 	}
 
-	.custom-scrollbar:hover {
+	.table-body-scroll:hover {
 		margin-right: -8px
 	}
 }
 
+.my-icon,
 .sortable-columns th:not(.nao-ordena) * {
 	cursor: pointer
 }
@@ -273,6 +286,13 @@ footer a:hover {
 	border-left: none
 }
 
-.titulo-tabela {
-	font-size: 1.6rem
+.caixa-pesquisa {
+	border-radius: 10px;
+	font-size: 0.8rem
+}
+
+#menu-fechar {
+	position: absolute;
+	top: 10px;
+	right:10px
 }

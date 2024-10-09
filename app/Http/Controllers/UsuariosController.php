@@ -19,12 +19,12 @@ class UsuariosController extends ControllerKX {
                         "users.email",
                         "users.foto"
                     )
-                    ->join("empresas_usuarios AS eu", "eu.id_usuario", "users.id_aux")
+                    ->leftjoin("empresas_usuarios AS eu", "eu.id_usuario", "users.id_aux")
                     ->whereRaw("((".$param.") OR (".$param2."))")
                     ->where(function($sql) {
+                        $id_empresa = Auth::user()->id_empresa;
                         $tipo = Empresas::find($id_empresa)->tipo;
                         if ($tipo > 1) {
-                            $id_empresa = Auth::user()->id_empresa;
                             $sql->whereIn("eu.id_empresa", DB::table("empresas")->where($tipo == 2 ? "id_criadora" : "id_matriz", $id_empresa)->pluck("id")->toArray())
                                 ->orWhere("eu.id_empresa", $id_empresa);
                         }
@@ -40,8 +40,30 @@ class UsuariosController extends ControllerKX {
     }
 
     public function ver() {
+        $breadcumb = array(
+            "Home" => config("app.root_url"),
+            "Usuários" => "#"
+        );
         $ultima_atualizacao = $this->log_consultar("users");
-        return view("usuarios", compact("ultima_atualizacao"));
+        return view("usuarios", compact("ultima_atualizacao", "breadcumb"));
+    }
+
+    public function crud($id) {
+        $breadcumb = array(
+            "Home" => config("app.root_url"),
+            "Usuários" => config("app.root_url")."/usuarios",
+            (intval($id) ? "Editar" : "Novo") => "#"
+        );
+        $usuario = DB::table("users")
+                        ->select(
+                            "id",
+                            "name",
+                            "email",
+                            "foto"
+                        )
+                        ->where("id", $id)
+                        ->first();
+        return view("usuarios_crud", compact("breadcumb", "usuario"));
     }
 
     public function listar(Request $request) {

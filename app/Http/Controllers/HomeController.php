@@ -8,6 +8,7 @@ use App\Models\Empresas;
 
 class HomeController extends Controller {
     public function index() {
+        return redirect("/usuarios");
         return redirect("/empresas/selecionar");
     }
 
@@ -56,6 +57,7 @@ class HomeController extends Controller {
                                 ->where("id_pai", 0)
                                 ->where("id_modulo", $modulo->id)
                                 ->where("menu_perfis.tipo", Empresas::find(Auth::user()->id_empresa)->tipo)
+                                ->orderby("ordem")
                                 ->get();
             if (sizeof($modulo->itens)) array_push($resultado, $modulo);
         }

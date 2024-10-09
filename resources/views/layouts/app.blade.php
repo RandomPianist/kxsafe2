@@ -5,7 +5,7 @@
         <link href = "{{ asset('css/my-style.css') }}" rel = "stylesheet" />
     </head>
     <body>
-        <header class = "d-flex justify-content-between align-items-center p-2 bg-white w-100 position-fixed" style = "z-index:1;top:0">
+        <header class = "d-flex justify-content-between align-items-center p-2 bg-white w-100 position-fixed">
 			<div class = "d-flex">
 				<button id = "menu-abrir" class = "btn btn-custom mr-2">
 				    <i class = "fas fa-bars menu-icon"></i>
@@ -16,7 +16,7 @@
 							<i class = "fa-solid fa-magnifying-glass"></i>
 						</span>
 					</div>
-					<input type = "text" class = "form-control" style = "border-radius:10px;font-size:0.8rem" placeholder = "Navegar para...">
+					<input type = "text" class = "caixa-pesquisa form-control" placeholder = "Navegar para...">
 				</div>
 			</div>
 			<div class = "d-flex">
@@ -41,8 +41,8 @@
 				</div>
 			</div>
 		</header>
-        <aside class = "bg-white position-fixed" style = "z-index:2;top:0;left:-310px;width:310px;height:100vh;background-color:white;transition:left 0.3s;overflow-y:auto">
-			<button id = "menu-fechar" class = "btn btn-custom" style = "position:absolute;top:10px;right:10px">
+        <aside class = "bg-white position-fixed">
+			<button id = "menu-fechar" class = "btn btn-custom">
 			    <i class = "fas fa-arrow-left menu-icon"></i>
 			</button>
 			<div class = "p-3">
@@ -51,9 +51,16 @@
 			</div>
 		</aside>
 
-        @yield("content")
+		<main class = "content p-5">
+	        @yield("content")
+		</main>
 
-        @include("components.js")
+		<footer class = "w-100 d-flex justify-content-center align-items-center">
+			<a href = "#">Sobre</a>
+			<a href = "#">Suporte</a>
+		</footer>
+
+		@include("components.js")
         <script type = "text/javascript" language = "JavaScript" src = "{{ asset('js/my-functions.js') }}"></script>
     </body>
 </html>
