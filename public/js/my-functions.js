@@ -161,7 +161,11 @@ window.onload = function () {
     });
 
     carrega_autocomplete();
-    listar();
+    let carrega_lista = true;
+    ["crud", "franqueadoras", "franquias", "clientes", "fornecedores"].forEach((pagina) => {
+        if (location.href.indexOf(pagina) > -1) carrega_lista = false;
+    });    
+    if (carrega_lista) listar();
     carregado = true;
 }
 
@@ -320,6 +324,12 @@ function dinheiro(texto_final) {
     } else texto_final = "0," + texto_final.padStart(2, "0");
     texto_final = "R$ " + texto_final;
     return texto_final;
+}
+
+function contar_char(el, max) {
+    el.classList.remove("invalido");
+    el.value = el.value.substring(0, max);
+    el.nextElementSibling.innerHTML = el.value.length + "/" + max;
 }
 
 // mover as funções abaixo para arquivo específico depois

@@ -336,3 +336,23 @@ footer a {
 .autocomplete-line.hovered {
     background: rgba(0, 0, 0, 0.15)
 }
+
+.formulario {
+    background-color: var(--cards);
+    border-radius: .75rem;
+    margin-top: 1rem;
+    height: calc(100% - 120px);
+    overflow-y: auto
+}
+
+.formulario h5 {
+    font-size: 16pt
+}
+
+.formulario i {
+    font-size: 13pt
+}
+
+.margem-compensa-label {
+    margin-top: 30px
+}

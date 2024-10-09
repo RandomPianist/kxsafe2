@@ -9,68 +9,73 @@ use App\Models\Empresas;
 use App\Models\Enderecos;
 
 class EmpresasController extends ControllerKX {
+    private function obter_filiais($matriz) {
+        return DB::table("empresas")
+                    ->where("id_matriz", $matriz)
+                    ->where("lixeira", 0)
+                    ->pluck("id");
+    }
+
+    private function busca_main($consulta, $matriz, $tipo, $id_grupo) {
+        return $consulta->where("id_matriz", $matriz)
+                        ->where("tipo", $tipo)
+                        ->where("lixeira", 0)
+                        ->where(function($sql) use($id_grupo) {
+                            if (intval($id_grupo)) $sql->where("id_grupo", $id_grupo);
+                        });
+    }
+
     private function busca($matriz, $tipo, $id_grupo) {
-        switch(intval(Empresas::find(Auth::user()->id_empresa)->tipo)) {
-            case 1:
-                switch($tipo) {
-                    case 1:
-                        // Franqueadoras vendo franqueadoras
-                        // Tudo, matrizes e filiais
-                        break;
-                    case 2:
-                        // Franqueadoras vendo franquias
-                        // Franquias que eu criei, matrizes e filiais
-                        break;
-                    case 4:
-                        // Franqueadoras vendo fornecedores
-                        // Tudo, matrizes e filiais
-                        break;
+        $minha_empresa = Auth::user()->id_empresa;
+        $meu_tipo = intval(Empresas::find($minha_empresa)->tipo);
+        $filiais = $this->obter_filiais($minha_empresa);
+        $consulta = DB::table("empresas")
+                        ->select(
+                            "id",
+                            "nome_fantasia",
+                            "id_matriz"
+                        );
+        if (($meu_tipo == 1 && $tipo == 2) || ($meu_tipo == 2 && $tipo == 3)) {
+            // Franqueadoras vendo franquias ou franquias vendo clientes
+            // A franquia/o cliente deve ter sido criado(a) por mim ou uma das minhas filiais
+            $eu_ou_filiais = [$minha_empresa];
+            foreach ($filiais as $filial) array_push($eu_ou_filiais, $filial);
+            $ids = $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
+                        ->whereIn("id_criadora", $eu_ou_filiais)
+                        ->pluck("id")
+                        ->toArray();
+            // Verei todas as filiais desses clientes/franquias
+            // mesmo que não tenham sido criados(as) por mim
+            $empresas = $ids;
+            foreach ($empresas as $empresa) {
+                $filiais = $this->obter_filiais($empresa);
+                foreach ($filiais as $filial) {
+                    if (!in_array($filial, $ids)) array_push($ids, $filial);
                 }
-                break;
-            case 2:
-                switch($tipo) {
-                    case 2:
-                        // Franquias vendo franquias
-                        // Apenas a si mesma, se for matriz, vê as próprias filiais
-                        break;
-                    case 3:
-                        // Franquias vendo clientes
-                        // Clientes que eu criei, matrizes e filiais
-                        break;
-                }
-                break;
-            case 3:
-                switch($tipo) {
-                    case 3:
-                        // Clientes vendo clientes
-                        // Apenas a si mesmo, se for matriz, vê as próprias filiais
-                        break;
-                }
-                break;
+            }
+            return $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
+                        ->whereIn("id", $ids)
+                        ->orderby("nome_fantasia")
+                        ->get();
+        } else if (($meu_tipo == 2 || $meu_tipo == 3) && $meu_tipo == $tipo) {
+            // Franquias vendo franquias ou clientes vendo clientes
+            // Apenas a si mesmo(a); se for matriz, vê as próprias filiais
+            return $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
+                        ->where(function($sql) use($minha_empresa, $filiais) {
+                            $sql->where(function($query) use($minha_empresa, $filiais) {
+                                $query->whereIn("id_matriz", $filiais->toArray());
+                            })->orWhere("id", $minha_empresa);
+                        })
+                        ->orderby("nome_fantasia")
+                        ->get();
+        } else if ($meu_tipo == 1 && ($tipo == 1 || $tipo == 4)) {
+            // Franqueadoras vendo franqueadoras ou fornecedores
+            // Tudo, matrizes e filiais
+            return $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
+                        ->orderby("nome_fantasia")
+                        ->get();
         }
         return false;
-        return DB::table("empresas")
-                ->select(
-                    "id",
-                    "nome_fantasia",
-                    "id_matriz",
-                    DB::raw("
-                        CASE
-                            WHEN ".Auth::user()->id_empresa." = id THEN 'S'
-                            ELSE 'N'
-                        END AS pode_alterar
-                    ")
-                )
-                ->where("lixeira", 0)
-                ->where(function($sql) use($id_grupo) {
-                    if (intval($id_grupo)) $sql->where("id_grupo", $id_grupo);
-                })
-                ->where(function($sql) {
-                    $sql->whereRaw(Auth::user()->id_empresa." IN (id, id_criadora)");
-                })
-                ->where("id_matriz", $matriz)
-                ->orderby("nome_fantasia")
-                ->get();
     }
 
     private function legenda($tipo) {
@@ -111,6 +116,7 @@ class EmpresasController extends ControllerKX {
     }
 
     private function crud($tipo, $id) {
+        if ($this->busca(0, $tipo, 0) === false) return redirect("/");
         $titulo = $this->legenda($tipo);
         $breadcumb = array(
             "Home" => config("app.root_url"),
