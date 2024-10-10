@@ -31,8 +31,8 @@
                 <div class = "col-md-8">
                     <div class = "text-center mb-4 shadow-sm p-3" style = "background-color:var(--cards);border-radius:15px">
                         <div class = "mb-3" style = "width:100px;height:100px;border:2px solid var(--fonte);border-radius:50%;display:inline-grid">
-                            <img class = "user-photo" src = "{{ $resultado->usuario->foto }}" onerror = "this.onerror=null;this.classList.add('d-none');this.nextSiblingElement.classList.remove('d-none')" />
-                            <i class = "fas fa-user" style = "font-size:60px"></i>
+                            <img class = "user-photo" src = "{{ $resultado->usuario->foto }}" onerror = "this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')" />
+                            <i class = "fas fa-user d-none" style = "font-size:60px"></i>
                         </div>
                         <h3>Bem-vindo(a), {{ $resultado->usuario->name }}</h3>
                         <p>Selecione a empresa que deseja gerenciar:</p>

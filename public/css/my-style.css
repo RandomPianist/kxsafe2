@@ -190,10 +190,6 @@ footer a {
 	background-color: var(--header-tabela)
 }
 
-.custom-table .table td {
-	color: var(--fonte)
-}
-
 .custom-table td {
 	vertical-align: middle
 }
@@ -341,7 +337,7 @@ footer a {
     background-color: var(--cards);
     border-radius: .75rem;
     margin-top: 1rem;
-    height: calc(100% - 120px);
+    height: calc(100% - 95px);
     overflow-y: auto
 }
 

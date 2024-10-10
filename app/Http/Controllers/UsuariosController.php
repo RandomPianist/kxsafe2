@@ -11,7 +11,6 @@ use App\Models\EmpresasUsuarios;
 
 class UsuariosController extends ControllerKX {
     private function busca($param = "1") {
-        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
         $param2 = str_replace("name", "email", $param);
         return DB::table("users")
                     ->select(
@@ -20,22 +19,15 @@ class UsuariosController extends ControllerKX {
                         "users.email",
                         "users.foto"
                     )
-                    ->leftjoin("empresas_usuarios AS eu", "eu.id_usuario", "users.id_aux")
+                    ->join("empresas_usuarios AS eu", "eu.id_usuario", "users.id_aux")
                     ->whereRaw("((".$param.") OR (".$param2."))")
-                    ->where(function($sql) use($minha_empresa) {
-                        $tipo = Empresas::find($minha_empresa)->tipo;
-                        if ($tipo > 1) {
-                            $sql->whereIn("eu.id_empresa", DB::table("empresas")->where($tipo == 2 ? "id_criadora" : "id_matriz", $minha_empresa)->pluck("id")->toArray())
-                                ->orWhere("eu.id_empresa", $minha_empresa);
-                        }
-                    })
+                    ->whereIn("eu.id_empresa", $this->empresas_acessiveis()) // ControllerKX.php
                     ->groupby(
                         "id",
                         "name",
                         "email",
                         "foto"
                     )
-                    ->orderby("name")
                     ->get();
     }
 

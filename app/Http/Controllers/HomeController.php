@@ -45,14 +45,16 @@ class HomeController extends ControllerKX {
     public function autocomplete(Request $request) { 
         $tabela = $request->table;       
         $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
-        $tipo = Empresas::find($minha_empresa)->tipo;
+        $meu_tipo = Empresas::find($minha_empresa)->tipo;
 
         $where = " AND ".$request->column." LIKE '";
         if ($tabela == "menu") $where .= "%";
         $where .= $request->search."%'";
         
         if ($request->filter_col) {
-            $where .= $request->column != "referencia" ? " AND ".$request->filter_col." = '".$request->filter."'" : " AND referencia NOT IN (
+            $filtro = $request->filter;
+            if ($tabela != "empresas") $filtro = "'".$filtro."'";
+            $where .= $request->column != "referencia" ? " AND ".$request->filter_col." = ".$filtro : " AND referencia NOT IN (
                 SELECT produto_ou_referencia_valor
                 FROM atribuicoes
                 WHERE pessoa_ou_setor_valor = ".$request->filter."
@@ -102,7 +104,7 @@ class HomeController extends ControllerKX {
                             ON mp.id_menu = submenu.id
                         
                         WHERE menu.id_pai = 0
-                          AND mp.tipo = ".$tipo."
+                          AND mp.tipo = ".$meu_tipo."
                     )
                 ) AS menua ON menua.id_modulo = modulos.id
 
@@ -110,11 +112,11 @@ class HomeController extends ControllerKX {
                     ON mp.id_menu = menua.id
 
                 WHERE (url IS NOT NULL OR submenu_url IS NOT NULL)
-                  AND mp.tipo = ".$tipo."
+                  AND mp.tipo = ".$meu_tipo."
                     
                 ORDER BY modulos.ordem, menua.ordem
             ) AS tab";
-        } else if ($tabela == "empresas" && $tipo > 1) $where .= " AND ".$minha_empresa." IN (id, id_criadora)";
+        } else if ($tabela == "empresas") $where .= " AND id IN (".implode(",", $this->empresas_acessiveis()).")"; // ControllerKX.php
 
         $query = "SELECT ";
         if ($request->column == "referencia") $query .= "MIN(id) AS ";

@@ -6,6 +6,7 @@ use DB;
 use Auth;
 use Illuminate\Http\Request;
 use App\Models\Log;
+use App\Models\Empresas;
 
 class ControllerKX extends Controller {
     public function retorna_empresa_logada() {
@@ -90,5 +91,52 @@ class ControllerKX extends Controller {
                         WHERE id_matriz = ".$minha_empresa."
                     )")
                     ->where("lixeira", 0);
+    }
+
+    protected function empresas_acessiveis() {
+        $minha_empresa = $this->retorna_empresa_logada();
+        $meu_tipo = intval(Empresas::find($minha_empresa)->tipo);
+        $ids = array();
+        $query = "
+            SELECT empresas.id
+            FROM empresas
+        ";
+        $query .= $meu_tipo < 3 ? "
+            JOIN (
+                SELECT id
+
+                FROM empresas
+                
+                WHERE ".($meu_tipo == 1 ?
+                    "tipo = 1 OR tipo = 4" 
+                :
+                    "id = ".$minha_empresa." OR id_matriz = ".$minha_empresa
+                )."
+                
+                UNION ALL (
+                    SELECT empresas.id
+
+                    FROM empresas
+
+                    JOIN (
+                        SELECT empresas.id
+
+                        FROM empresas
+
+                        JOIN (
+                            SELECT id
+                            FROM empresas
+                            WHERE id = ".$minha_empresa."
+                               OR id_matriz = ".$minha_empresa."
+                        ) AS aux3 ON aux3.id = id_criadora
+                    ) AS aux2 ON aux2.id = empresas.id OR aux2.id = empresas.id_matriz
+                )
+            ) AS aux ON aux.id = empresas.id
+
+            WHERE lixeira = 0
+
+            GROUP BY empresas.id
+        " : " WHERE (id = ".$minha_empresa." OR id_matriz = ".$minha_empresa.") AND lixeira = 0";
+        return DB::table(DB::raw("(".$query.") AS tab"))->pluck("id")->toArray();
     }
 }

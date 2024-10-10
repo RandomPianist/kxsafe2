@@ -9,70 +9,39 @@ use App\Models\Empresas;
 use App\Models\Enderecos;
 
 class EmpresasController extends ControllerKX {
+    private function permanecer($tipo) {
+        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
+        $meu_tipo = intval(Empresas::find($minha_empresa)->tipo);
+        return (($meu_tipo == 1 && $tipo == 2) || ($meu_tipo == 2 && $tipo == 3)) || 
+                (($meu_tipo == 2 || $meu_tipo == 3) && $meu_tipo == $tipo) || 
+                ($meu_tipo == 1 && ($tipo == 1 || $tipo == 4));
+    }
+
     private function busca_main($consulta, $matriz, $tipo, $id_grupo) {
         return $consulta->where("id_matriz", $matriz)
                         ->where("lixeira", 0)
+                        ->where("tipo", $tipo)
                         ->where(function($sql) use($id_grupo, $tipo) {
                             if (intval($id_grupo)) $sql->where("id_grupo", $id_grupo);
-                            if (intval($tipo)) $sql->where("tipo", $tipo);
                         });
     }
 
-    private function obter_filiais($matriz) {
-        return $this->busca_main(DB::table("empresas"), $matriz, 0, 0)->pluck("id");
-    }
-
     private function busca($matriz, $tipo, $id_grupo) {
-        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
-        $meu_tipo = intval(Empresas::find($minha_empresa)->tipo);
-        $filiais = $this->obter_filiais($minha_empresa);
-        $consulta = DB::table("empresas")
-                        ->select(
-                            "id",
-                            "nome_fantasia",
-                            "id_matriz"
-                        );
-        if (($meu_tipo == 1 && $tipo == 2) || ($meu_tipo == 2 && $tipo == 3)) {
-            // Franqueadoras vendo franquias ou franquias vendo clientes
-            // A franquia/o cliente deve ter sido criado(a) por mim ou uma das minhas filiais
-            $eu_ou_filiais = [$minha_empresa];
-            foreach ($filiais as $filial) array_push($eu_ou_filiais, $filial);
-            $ids = $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
-                        ->whereIn("id_criadora", $eu_ou_filiais)
-                        ->pluck("id")
-                        ->toArray();
-            // Verei todas as filiais desses clientes/franquias
-            // mesmo que não tenham sido criados(as) por mim
-            $empresas = $ids;
-            foreach ($empresas as $empresa) {
-                $filiais = $this->obter_filiais($empresa);
-                foreach ($filiais as $filial) {
-                    if (!in_array($filial, $ids)) array_push($ids, $filial);
-                }
-            }
-            return $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
-                        ->whereIn("id", $ids)
-                        ->orderby("nome_fantasia")
-                        ->get();
-        } else if (($meu_tipo == 2 || $meu_tipo == 3) && $meu_tipo == $tipo) {
-            // Franquias vendo franquias ou clientes vendo clientes
-            // Apenas a si mesmo(a); se for matriz, vê as próprias filiais
-            return $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
-                        ->where(function($sql) use($minha_empresa, $filiais) {
-                            $sql->where(function($query) use($minha_empresa, $filiais) {
-                                $query->whereIn("id", $filiais->toArray());
-                            })->orWhere("id", $minha_empresa);
-                        })
-                        ->orderby("nome_fantasia")
-                        ->get();
-        } else if ($meu_tipo == 1 && ($tipo == 1 || $tipo == 4)) {
-            // Franqueadoras vendo franqueadoras ou fornecedores
-            // Tudo, matrizes e filiais
-            return $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
-                        ->orderby("nome_fantasia")
-                        ->get();
-        }
-        return false;
+        return DB::table("empresas")
+                    ->select(
+                        "id",
+                        "nome_fantasia",
+                        "id_matriz"
+                    )
+                    ->where("id_matriz", $matriz)
+                    ->where("lixeira", 0)
+                    ->where("tipo", $tipo)
+                    ->whereIn("id", $this->empresas_acessiveis()) // ControllerKX.php
+                    ->where(function($sql) use($id_grupo, $tipo) {
+                        if (intval($id_grupo)) $sql->where("id_grupo", $id_grupo);
+                    })
+                    ->orderby("nome_fantasia")
+                    ->get();
     }
 
     private function legenda($tipo) {
@@ -95,7 +64,7 @@ class EmpresasController extends ControllerKX {
     }
 
     private function ver($tipo, $id_grupo) {
-        if ($this->busca(0, $tipo, 0) === false) return redirect("/");
+        if (!$this->permanecer($tipo)) return redirect("/");
         $tipo = intval($tipo);
         $meu_tipo = intval(Empresas::find($this->retorna_empresa_logada())->tipo); // ControllerKX.php
         $pode_criar = ($meu_tipo == 1 || ($meu_tipo == 2 && $tipo == 3));
@@ -132,7 +101,7 @@ class EmpresasController extends ControllerKX {
 
     private function crud($tipo, Request $request) {
         $id = $request->id;
-        if ($this->busca(0, $tipo, 0) === false) return redirect("/");
+        if (!$this->permanecer($tipo)) return redirect("/");
         $titulo = $this->legenda($tipo);
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",

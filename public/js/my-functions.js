@@ -70,7 +70,7 @@ window.onload = function () {
             table.find("td").filter(function() {
                 return $(this).index() === thIndex;
             }).sortElements(function(a, b) {
-                return $.text([a]) > $.text([b]) ? inverse ? -1 : 1 : inverse ? 1 : -1;
+                return $.text([a]).toLowerCase() > $.text([b]).toLowerCase() ? inverse ? -1 : 1 : inverse ? 1 : -1;
             }, function() {
                 return this.parentNode;
             });
@@ -368,6 +368,15 @@ function validar_cpf(__cpf) {
     if ((resto == 10) || (resto == 11)) resto = 0;
     if (resto != parseInt(__cpf.substring(10, 11))) return false;
     return true;
+}
+
+function goto_funcao(valor) {
+    location.href = URL + "/" + valor;
+}
+
+function erroImg(el) {
+    el.classList.add("d-none");
+    el.nextElementSibling.classList.remove("d-none");
 }
 
 // mover as funções abaixo para arquivo específico depois

@@ -26,7 +26,6 @@ body {
 }
 
 button:focus {
-    outline: solid 1px var(--botao-principal) !important;
     box-shadow: none !important
 }
 

@@ -58,7 +58,7 @@
                 data.forEach((usuario) => {
                     resultado += "<tr>" +
                         "<td width = '13%' class = 'text-center'>" +
-                            "<img class = 'user-photo-sm' src = '" + usuario.foto + "'" + ' onerror = "this.onerror=null;' + "this.classList.add('d-none');this.nextSiblingElement.classList.remove('d-none')" + '" />' +
+                            "<img class = 'user-photo-sm' src = '" + usuario.foto + "' onerror = 'erroImg(this)' />" +
                             "<i class = 'fas fa-user d-none'></i>" +
                         "</td>" +
                         "<td width = '37%'>" + usuario.name + "</td>" +
