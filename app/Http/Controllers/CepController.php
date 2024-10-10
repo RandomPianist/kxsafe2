@@ -24,9 +24,9 @@ class CepController extends ControllerKX {
         $linha->logradouro_tipo = $request->logradouro_tipo;
         $linha->logradouro_tipo_abv = $request->logradouro_tipo_abv;
         $linha->logradouro_descr = $request->logradouro_descr;
-        $linha->logradouro_intervalo_min = $request->logradouro_intervalo_min;
-        $linha->logradouro_intervalo_max = $request->logradouro_intervalo_max;
-        $linha->cod_ibge_uf = $request->cod_ibge_uf;
+        // $linha->logradouro_intervalo_min = $request->logradouro_intervalo_min;
+        // $linha->logradouro_intervalo_max = $request->logradouro_intervalo_max;
+        // $linha->cod_ibge_uf = $request->cod_ibge_uf;
         $linha->cod_ibge_cidade = $request->cod_ibge_cidade;
         $linha->cidade = $request->cidade;
         $linha->bairro = $request->bairro;

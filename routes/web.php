@@ -39,8 +39,8 @@ Route::middleware("auth")->group(function () {
     }
 
     Route::group(["prefix" => "cep"], function() {
-        Route::get ("/mostrar/{id}", [CepController::class, "mostrar"]);
-        Route::post("/salvar",       [CepController::class, "salvar"]);
+        Route::get ("/mostrar/{cep}", [CepController::class, "mostrar"]);
+        Route::post("/salvar",        [CepController::class, "salvar"]);
     });
 
     Route::group(["prefix" => "usuarios"], function() {

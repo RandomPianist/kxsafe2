@@ -152,7 +152,7 @@ class EmpresasController extends ControllerKX {
                                     ->where("id_empresa", $empresa->id)
                                     ->get();
         }
-        return view("empresas_crud", compact("titulo", "breadcumb", "empresa", "criando"));
+        return view("empresas_crud", compact("titulo", "breadcumb", "empresa", "criando", "tipo"));
     }
 
     private function url() {

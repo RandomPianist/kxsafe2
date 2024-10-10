@@ -75,27 +75,64 @@
 						value = "@if ($empresa !== null) {{ $empresa->grupo }} @elseif ($criando->grupo !== null) {{ $criando->grupo->descr }} @endif"
 						autocomplete = "off"
 					/>
-					<input id = "id_grupo" name = "id_grupo" type = "hidden" />
+					<input
+                        id = "id_grupo"
+                        name = "id_grupo"
+                        type = "hidden"
+                        value = "@if ($empresa !== null) {{ $empresa->id_grupo }} @elseif ($criando->grupo !== null) {{ $criando->grupo->id }} @endif"
+                    />
 					<a href = "{{ config('app.root_url') }}/grupos" title = "Cadastro de grupos" target = "_blank">
-						<i class="fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+						<i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
 					</a>
 				</div>
 			</div>
 			<div class = "col-md-4 mb-3">
 				<label for = "segmento" class = "form-label">Segmento:</label>
 				<div class="d-flex align-items-center">
-					<input type = "text" class = "form-control mr-3" id = "segmento" name = "segmento" value = "@if ($empresa !== null) {{ $empresa->segmento }} @endif" />
+                    <input id = "segmento"
+						class = "form-control autocomplete mr-3"
+						data-input = "#id_segmento"
+						data-table = "segmentos"
+						data-column = "descr"
+						data-filter_col = ""
+						data-filter = ""
+						type = "text"
+						value = "@if ($empresa !== null) {{ $empresa->segmento }} @endif"
+						autocomplete = "off"
+					/>
+					<input
+                        id = "id_segmento"
+                        name = "id_segmento"
+                        type = "hidden"
+                        value = "@if ($empresa !== null) {{ $empresa->id_segmento }} @endif"
+                    />
 					<a href = "{{ config('app.root_url') }}/segmentos" title = "Cadastro de segmentos" target = "_blank">
-						<i class="fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+						<i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
 					</a>
 				</div>
 			</div>
 			<div class = "col-md-4 mb-3">
 				<label for = "matriz" class = "form-label">Matriz:</label>
 				<div class="d-flex align-items-center">
-					<input type = "text" class = "form-control mr-3" id = "matriz" name = "matriz" value = "@if ($empresa !== null) {{ $empresa->matriz }} @elseif ($criando->matriz !== null) {{ $criando->matriz->descr }} @endif" />
-					<a href = "{{ config('app.root_url') }}/matrizes" title = "Cadastro de matrizes" target = "_blank">
-						<i class="fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+                    <input id = "matriz"
+                        class = "form-control autocomplete mr-3"
+                        data-input = "#id_matriz"
+                        data-table = "empresas"
+                        data-column = "descr"
+                        data-filter_col = "tipo,id_matriz"
+                        data-filter = "{{ $tipo }},0"
+                        type = "text"
+                        value = "@if ($empresa !== null) {{ $empresa->matriz }} @elseif ($criando->matriz !== null) {{ $criando->matriz->descr }} @endif"
+                        autocomplete = "off"
+                    />
+                    <input
+                        id = "id_matriz"
+                        name = "id_matriz"
+                        type = "hidden"
+                        value = "@if ($empresa !== null) {{ $empresa->id_matriz }} @elseif ($criando->matriz !== null) {{ $criando->matriz->id }} @endif"
+                    />
+					<a href = "{{ config('app.root_url') }}/{{ strtolower($titulo) }}/grupo/0" title = "Cadastro de {{ strtolower($titulo) }}" target = "_blank">
+						<i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
 					</a>
 				</div>
 			</div>
@@ -107,38 +144,37 @@
 			<div class = "col-md-4 mb-3">
 				<label for = "cep" class = "form-label">CEP:</label>
 				<div class="d-flex align-items-center">
-					<input type = "text" class = "form-control mr-3" id = "cep" />
+					<input type = "text" class = "form-control mr-3 campo-endereco2" id = "cep" oninput = "carregarCep()" />
 					<a href = "{{ config('app.root_url') }}/cep" title = "Cadastro de cep" target = "_blank">
-						<i class="fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+						<i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
 					</a>
 				</div>
-				
 			</div>
 			<div class = "col-md-5 mb-3">
 				<label for = "logradouro" class = "form-label">Logradouro:</label>
-				<input type = "text" class = "form-control" id = "logradouro" oninput = "contarChar(this, 32)" />
+				<input type = "text" class = "form-control campo-endereco campo-endereco2" id = "logradouro" oninput = "contarChar(this, 32)" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-3 mb-3">
 				<label for = "numero" class = "form-label">Número:</label>
-				<input type = "text" class = "form-control" id = "numero" oninput = "contarChar(this, 8)" />
+				<input type = "text" class = "form-control campo-endereco2" id = "numero" oninput = "contarChar(this, 8)" />
 				<small class = "text-muted"></small>
 			</div>
 		</div>
 		<div class = "row">
 			<div class = "col-md-4 mb-3">
 				<label for = "bairro" class = "form-label">Bairro:</label>
-				<input type = "text" class = "form-control" id = "bairro" oninput = "contarChar(this, 32)" />
+				<input type = "text" class = "form-control campo-endereco campo-endereco2" id = "bairro" oninput = "contarChar(this, 32)" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-5 mb-3">
 				<label for = "cidade" class = "form-label">Cidade:</label>
-				<input type = "text" class = "form-control" id = "cidade" oninput = "contarChar(this, 32)" />
+				<input type = "text" class = "form-control campo-endereco campo-endereco2" id = "cidade" oninput = "contarChar(this, 32)" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-3 mb-3">
 				<label for = "estado" class = "form-label">UF:</label>
-				<select id = "estado" class = "form-control">
+				<select id = "estado" class = "form-control campo-endereco campo-endereco2">
 					<option value = "E0">Selecione...</option>
 					<option value = "AC">Acre</option>
 					<option value = "AL">Alagoas</option>
@@ -174,21 +210,22 @@
 		<div class = "row">
 			<div class = "col-md-5 mb-3">
 				<label for = "complemento" class = "form-label">Complemento:</label>
-				<input type = "text" class = "form-control" id = "complemento" oninput = "contarChar(this, 32)" />
+				<input type = "text" class = "form-control campo-endereco2" id = "complemento" oninput = "contarChar(this, 32)" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-5 mb-3">
 				<label for = "referencia" class = "form-label">Referência:</label>
-				<input type = "text" class = "form-control" id = "referencia" oninput = "contarChar(this, 64)" />
+				<input type = "text" class = "form-control campo-endereco2" id = "referencia" oninput = "contarChar(this, 64)" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-2 mb-3">
-				<button type = "submit" class = "margem-compensa-label btn btn-secondary w-100">Salvar Endereço</button>
+				<button type = "button" class = "margem-compensa-label btn btn-secondary w-100" onclick = "salvarEndereco()">Salvar Endereço</button>
 			</div>
 		</div>
 		<div class = "row">
 			<div class = "col-md-12 mt-4">
 				<ul class = "lista-enderecos list-group">
+                    
 					<li class = "list-group-item">
 						<span>Avenida Rui Barbosa, 1090, Apto. 104 - Centro, Assis-SP</span>
 						<i class = "my-icon far fa-trash-alt" title = "Excluir"></i>
@@ -212,6 +249,11 @@
         }
     </style>
 	<script type = "text/javascript" language = "JavaScript">
+        let ceps = new Array();
+        let numeros = new Array();
+        let complementos = new Array();
+        let referencias = new Array();
+
 		function validarCNPJ(cnpj) {
 			cnpj = cnpj.replace(/[^\d]+/g,'');
 			if (cnpj == '' || cnpj.length != 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
@@ -252,5 +294,119 @@
 								.replace(/(\d{4})(\d)/, '$1-$2') // Adiciona traço após o décimo segundo dígito
 								.replace(/(-\d{2})\d+?$/, '$1'); // Impede a entrada de mais de 14 dígitos
 		}
+
+        function enableEndereco(ativar) {
+            $(".campo-endereco").each(function() {
+                $($(this)[0]).prop("readonly", !ativar);
+            });
+        }
+
+        function carregarCep() {
+            const main = function() {
+                const cep = document.getElementById("cep").value.replace(/\D/g, "");
+                if (cep.length == 8) {
+                    $.get(URL + "/cep/mostrar/" + cep, function(data) {
+                        data = $.parseJSON(data);
+                        if (parseInt(data.cod) == 200) {
+                            enableEndereco(false);
+                            document.getElementById("logradouro").value = data.cep.logradouro_tipo + " " + data.cep.logradouro_descr;
+                            document.getElementById("bairro").value = data.cep.bairro;
+                            document.getElementById("cidade").value = data.cep.cidade,
+                            document.getElementById("estado").value = data.cep.uf;
+                        } else {
+                            $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
+                                if (!("erro" in dados)) {
+                                    let logradouro = dados.logradouro.split(" ");
+                                    const _logradouro_tipo = logradouro[0];
+                                    const _logradouro_tipo_abv = logradouro[0] == "Avenida" ? "Av." : logradouro[0];
+                                    logradouro.splice(0, 1);
+                                    $.post(URL + "/cep/salvar", {
+                                        _token : $("meta[name='csrf-token']").attr("content"),
+                                        cod : cep,
+                                        logradouro_tipo : _logradouro_tipo,
+                                        logradouro_tipo_abv : _logradouro_tipo_abv,
+                                        logradouro_descr : dados.logradouro,
+                                        cod_ibge_cidade : dados.ibge,
+                                        cidade : dados.localidade,
+                                        bairro : dados.bairro,
+                                        estado : document.querySelector("option[value='" + dados.uf + "']").innerHTML,
+                                        uf : dados.uf
+                                    }, function() {
+                                        main();
+                                    })
+                                } else enableEndereco(true);
+                            });
+                        }
+                    });
+                } else enableEndereco(true);
+            }
+        }
+
+        function excluirEndereco(indice) {
+            ceps.splice(indice, 1);
+            numeros.splice(indice, 1);
+            complementos.splice(indice, 1);
+            referencias.splice(indice, 1);
+            mostrarEnderecos();
+        }
+
+        async function mostrarEnderecos() {
+            let resultado = "";
+            for (let i = 0; i < ceps.length; i++) {
+                let endereco = await $.get(URL + "/cep/mostrar/" + ceps[i]);
+                endereco = $.parseJSON(endereco);
+                endereco = endereco.cep;
+                let caminho = "";
+                if (endereco.logradouro_tipo) caminho += endereco.logradouro_tipo + " ";
+                caminho += endereco.logradouro_descr.trim() + ", " + numeros[i];
+                if (complementos[i].trim()) caminho += ", " + complementos[i].trim();
+                if (endereco.bairro) caminho += " - " + endereco.bairro;
+                caminho += ", " + endereco.cidade + " - " + endereco.cidade;
+                if (endereco.cod.length == 8) caminho += " " + endereco.cod;
+                if (referencias[i].trim()) caminho += " (" + referencias[i].trim() + ")";
+
+                resultado += "<li class = 'list-group-item'>" +
+					"<span>" + caminho + "</span>" +
+                    "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluirEndereco(" + i + ")'></i>" +
+				"</li>";
+            }
+            document.querySelector(".lista-enderecos").innerHTML = resultado;
+        }
+
+        function salvarEndereco() {
+            const cep = document.getElementById("cep").value.replace(/\D/g, "");
+
+            const main = function() {
+                ceps.push(cep);
+                numeros.push(document.getElementById("numero").value);
+                complementos.push(document.getElementById("complemento").value);
+                referencias.push(document.getElementById("referencia").value);
+                enableEndereco(true);
+                $(".campo-endereco2").each(function() {
+                    $($(this)[0]).val("");
+                });
+                mostrarEnderecos();
+            }
+
+            $.get(URL + "/cep/mostrar/" + cep, function(data) {
+                data = $.parseJSON(data);
+                if (parseInt(data.cod) != 200) {
+                    $.post(URL + "/cep/salvar", {
+                        _token : $("meta[name='csrf-token']").attr("content"),
+                        cod : cep,
+                        logradouro_tipo : "",
+                        logradouro_tipo_abv : "",
+                        logradouro_descr : document.getElementById("logradouro").value,
+                        cod_ibge_cidade : "",
+                        cidade : document.getElementById("cidade").value,
+                        bairro : document.getElementById("bairro").value,
+                        estado : document.querySelector("option[value='" + dados.uf + "']").innerHTML,
+                        uf : document.getElementById("uf").value
+                    }, function() {
+                        main();
+                    })
+                } else main();
+            });
+        }
 	</script>
 @endsection

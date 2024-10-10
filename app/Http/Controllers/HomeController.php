@@ -51,10 +51,16 @@ class HomeController extends ControllerKX {
         if ($tabela == "menu") $where .= "%";
         $where .= $request->search."%'";
         
-        if ($request->filter_col) {
-            $filtro = $request->filter;
-            if ($tabela != "empresas") $filtro = "'".$filtro."'";
-            $where .= $request->column != "referencia" ? " AND ".$request->filter_col." = ".$filtro : " AND referencia NOT IN (
+        if ($tabela == "empresas") {
+            $colunas = explode(",", $request->filter_col);
+            $valores = explode(",", $request->filter);
+            for ($i = 0; $i < sizeof($colunas); $i++) {
+                $valor = $valores[$i];
+                if (!in_array($colunas[$i], ["id_matriz", "id_grupo", "id_segmento", "id_criadora", "tipo", "tipo_contribuicao"])) $valor = "'".$valor."'";
+                $where .= " AND ".$colunas[$i]." = ".$valor;
+            }
+        } else if ($request->filter_col) {
+            $where .= $request->column != "referencia" ? " AND ".$request->filter_col." = '".$request->filter."'" : " AND referencia NOT IN (
                 SELECT produto_ou_referencia_valor
                 FROM atribuicoes
                 WHERE pessoa_ou_setor_valor = ".$request->filter."
