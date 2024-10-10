@@ -15,75 +15,104 @@
 		<div class = "row">
 			<div class = "col-md-6 mb-3">
 				<label for = "razao_social" class = "form-label">Razão social:</label>
-				<input type = "text" class = "form-control" id = "razao_social" name = "razao_social" oninput = "contarChar(this, 128)" />
+				<input type = "text" class = "form-control" id = "razao_social" name = "razao_social" oninput = "contarChar(this, 128)" value = "@if ($empresa !== null) {{ $empresa->razao_social }} @endif" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-6 mb-3">
 				<label for = "nome_fantasia" class = "form-label">Nome fantasia:</label>
-				<input type = "text" class = "form-control" id = "nome_fantasia" name = "nome_fantasia" oninput = "contarChar(this, 64)" />
+				<input type = "text" class = "form-control" id = "nome_fantasia" name = "nome_fantasia" oninput = "contarChar(this, 64)" value = "@if ($empresa !== null) {{ $empresa->nome_fantasia }} @endif" />
 				<small class = "text-muted"></small>
 			</div>
 		</div>
 		<div class = "row">
 			<div class = "col-md-4 mb-3">
 				<label for = "cnpj" class = "form-label">CNPJ:</label>
-				<input type = "text" class = "form-control" id = "cnpj" name = "cnpj" oninput = "formatarCNPJ(this)" />
+				<input type = "text" class = "form-control" id = "cnpj" name = "cnpj" oninput = "formatarCNPJ(this)" value = "@if ($empresa !== null) {{ $empresa->cnpj }} @endif" />
 			</div>
 			<div class = "col-md-4 mb-3">
 				<label for = "ie" class = "form-label">Inscrição estadual:</label>
-				<input type = "text" class = "form-control" id = "ie" name = "ie" oninput = "contarChar(this, 16)" />
+				<input type = "text" class = "form-control" id = "ie" name = "ie" oninput = "contarChar(this, 16)" value = "@if ($empresa !== null) {{ $empresa->ie }} @endif" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-4 mb-3">
 				<label for = "email" class = "form-label">Email:</label>
-				<input type = "text" class = "form-control" id = "email" name = "email" oninput = "contarChar(this, 32)" />
+				<input type = "text" class = "form-control" id = "email" name = "email" oninput = "contarChar(this, 32)" value = "@if ($empresa !== null) {{ $empresa->email }} @endif" />
 				<small class = "text-muted"></small>
 			</div>
 		</div>
 		<div class = "row">
 			<div class = "col-md-4 mb-3">
 				<label for = "telefone" class = "form-label">Telefone:</label>
-				<input type = "text" class = "form-control" id = "telefone" name = "telefone" oninput = "contarChar(this, 16)" />
+				<input type = "text" class = "form-control" id = "telefone" name = "telefone" oninput = "contarChar(this, 16)" value = "@if ($empresa !== null) {{ $empresa->telefone }} @endif" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-4 mb-3">
 				<label for = "tipo_contribuicao" class = "form-label">Contribuinte:</label>
 				<select id = "tipo_contribuicao" name = "tipo_contribuicao" class = "form-control">
 					<option value = "tipo-0">Selecione...</option>
-					<option value = "tipo-1">Sim</option>
-					<option value = "tipo-2">Não</option>
-					<option value = "tipo-3">Isento</option>
+					<option value = "tipo-1" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 1) selected @endif @endif>Sim</option>
+					<option value = "tipo-2" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 2) selected @endif @endif>Não</option>
+					<option value = "tipo-3" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 3) selected @endif @endif>Isento</option>
 				</select>
 			</div>
 			<div class = "col-md-4 mb-3">
 				<label for = "royalties" class = "form-label">Royalties:</label>
-				<input type = "text" class = "form-control dinheiro-editavel" id = "royalties" name = "royalties" />
+				<input type = "text" class = "form-control dinheiro-editavel" id = "royalties" name = "royalties" value = "@if ($empresa !== null) {{ str_replace('.', '', strval($empresa->royalties)) }} @endif" />
 			</div>
 		</div>
 		<div class = "row">
 			<div class = "col-md-4 mb-3">
 				<label for = "grupo" class = "form-label">Grupo:</label>
-				<input type = "text" class = "form-control" id = "grupo" name = "grupo" oninput = "contarChar(this, 64)" />
-				<small class = "text-muted"></small>
+				<div class="d-flex align-items-center">
+					<input id = "grupo"
+						class = "form-control autocomplete mr-3"
+						data-input = "#id_grupo"
+						data-table = "grupos"
+						data-column = "descr"
+						data-filter_col = ""
+						data-filter = ""
+						type = "text"
+						value = "@if ($empresa !== null) {{ $empresa->grupo }} @elseif ($criando->grupo !== null) {{ $criando->grupo->descr }} @endif"
+						autocomplete = "off"
+					/>
+					<input id = "id_grupo" name = "id_grupo" type = "hidden" />
+					<a href = "{{ config('app.root_url') }}/grupos" title = "Cadastro de grupos" target = "_blank">
+						<i class="fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+					</a>
+				</div>
 			</div>
 			<div class = "col-md-4 mb-3">
 				<label for = "segmento" class = "form-label">Segmento:</label>
-				<input type = "text" class = "form-control" id = "segmento" name = "segmento" oninput = "contarChar(this, 64)" />
-				<small class = "text-muted"></small>
+				<div class="d-flex align-items-center">
+					<input type = "text" class = "form-control mr-3" id = "segmento" name = "segmento" value = "@if ($empresa !== null) {{ $empresa->segmento }} @endif" />
+					<a href = "{{ config('app.root_url') }}/segmentos" title = "Cadastro de segmentos" target = "_blank">
+						<i class="fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+					</a>
+				</div>
 			</div>
 			<div class = "col-md-4 mb-3">
 				<label for = "matriz" class = "form-label">Matriz:</label>
-				<input type = "text" class = "form-control" id = "matriz" name = "matriz" oninput = "contarChar(this, 64)" />
-				<small class = "text-muted"></small>
+				<div class="d-flex align-items-center">
+					<input type = "text" class = "form-control mr-3" id = "matriz" name = "matriz" value = "@if ($empresa !== null) {{ $empresa->matriz }} @elseif ($criando->matriz !== null) {{ $criando->matriz->descr }} @endif" />
+					<a href = "{{ config('app.root_url') }}/matrizes" title = "Cadastro de matrizes" target = "_blank">
+						<i class="fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+					</a>
+				</div>
 			</div>
 		</div>
-        <div class = "row px-3 py-4 border-top">
+        <div class = "row px-3 mt-3 border-bottom">
 			<h5>Endereços</h5>
 		</div>
-		<div class = "row">
+		<div class = "row mt-4">
 			<div class = "col-md-4 mb-3">
 				<label for = "cep" class = "form-label">CEP:</label>
-				<input type = "text" class = "form-control" id = "cep" placeholder = "00000-000" />
+				<div class="d-flex align-items-center">
+					<input type = "text" class = "form-control mr-3" id = "cep" />
+					<a href = "{{ config('app.root_url') }}/cep" title = "Cadastro de cep" target = "_blank">
+						<i class="fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+					</a>
+				</div>
+				
 			</div>
 			<div class = "col-md-5 mb-3">
 				<label for = "logradouro" class = "form-label">Logradouro:</label>
