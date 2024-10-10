@@ -16,19 +16,6 @@
                 color: var(--hover-principal)
             }
 
-            #toggle-senha {
-                position: absolute;
-                right: 10px;
-                top: 50%;
-                transform: translateY(-50%);
-                cursor: pointer;
-                color: var(--icone-secundario)
-            }
-
-            #toggle-senha:hover {
-                color: var(--hover-principal)
-            } 
-
             .login-input,
             .icone-login {
                 font-size: 13pt
@@ -73,7 +60,7 @@
                         <div class = "mb-4 d-flex align-items-center position-relative w-100 justify-content-center">
                             <i class = "icone-login fa-solid fa-lock me-2"></i>
                             <input type = "password" class = "form-control login-input" placeholder = "Senha" name = "password" />
-                            <i class = "icone-login fas fa-eye ms-2" id = "toggle-senha"></i>
+                            <i class = "icone-login fas fa-eye ms-2 toggle-senha" onclick = "toggleSenha(this)"></i>
                         </div>
                     </div>
                     <div class = "d-flex flex-column justify-content-center align-items-center w-100">
@@ -86,14 +73,6 @@
             </div>
         </div>
         @include("components.js")
-        <script type = "text/javascript" language = "JavaScript">
-            document.querySelector("#toggle-senha").onclick = function() {
-                let password = this.previousElementSibling;
-                password.setAttribute("type", password.getAttribute("type") == "password" ? "text" : "password");
-                this.classList.toggle("fa-eye");
-                this.classList.toggle("fa-eye-slash");
-            };
-        </script>
         @if ($errors->any())
             <script type = "text/javascript" language = "JavaScript">
                 window.onload = function() {

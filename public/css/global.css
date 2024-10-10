@@ -44,3 +44,16 @@ button:focus {
     height: 30px;
     width: 30px
 }
+
+.toggle-senha {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--icone-secundario)
+}
+
+.toggle-senha:hover {
+    color: var(--hover-principal)
+} 

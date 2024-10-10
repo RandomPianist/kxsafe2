@@ -356,3 +356,13 @@ footer a {
 .margem-compensa-label {
     margin-top: 30px
 }
+
+small,
+.lista-enderecos li {
+	display: flex;
+	align-items: center
+}
+
+small {
+	justify-content: flex-end
+}

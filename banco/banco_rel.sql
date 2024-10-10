@@ -635,7 +635,7 @@ CREATE TABLE modulos (
 CREATE TABLE menu (
     id INT AUTO_INCREMENT PRIMARY KEY,
     descr VARCHAR(32),
-    url VARCHAR(32),
+    url VARCHAR(128),
     ordem INT,
     id_pai INT,
     id_modulo INT,

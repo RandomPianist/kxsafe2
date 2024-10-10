@@ -16,7 +16,7 @@
         </div>
         <div class = "d-flex">
             <div class = "px-1">
-                <select id = "grupo-select" class = "form-control" style = "font-size:0.85rem" onchange="location.href=URL+'/{{ strtolower($titulo) }}/grupo/'+this.value.replace('grupo-','')">
+                <select class = "form-control" style = "font-size:0.85rem" onchange = "location.href=URL+'/{{ strtolower($titulo) }}/grupo/'+this.value.replace('grupo-','')">
                     <option value = "grupo-0">Todos os grupos</option>
                     @foreach ($grupos as $grupo)
                         <option value = "grupo-{{ $grupo->id }}" @if ($grupo->id == $id_grupo) selected @endif >{{ $grupo->descr }}</option>
@@ -36,9 +36,9 @@
                         </span>
                     </div>
                     <div class = "d-flex justify-content-between">
-                        <i class = "my-icon far fa-edit m-2" title = "Editar"></i>
+                        <i class = "my-icon far fa-edit m-2" title = "Editar" onclick = "ir({{ $empresa->id }}, 0, {{ $id_grupo }})"></i>
                         <i class = "my-icon far fa-trash-alt m-2" title = "Excluir"></i>
-                        <i class = "my-icon far fa-add m-2" title = "Adicionar"></i>
+                        <i class = "my-icon far fa-add m-2" title = "Adicionar filial" onclick = "ir(0, {{ $empresa->id }}, {{ $id_grupo }})"></i>
                     </div>
                 </div>
                 @if (sizeof($empresa->filiais))
@@ -47,10 +47,8 @@
                             <div class = "d-flex justify-content-between align-items-center pt-3 pb-3 pl-3 pr-2">
                                 <span class = "nome-filial">{{ $filial->nome_fantasia }}</span>
                                 <div> 
-                                    @if ($filial->pode_alterar == 'S')
-                                        <i class = "my-icon far fa-edit m-2" title = "Editar"></i>
-                                        <i class = "my-icon far fa-trash-alt mr-3" title = "Excluir"></i>
-                                    @endif
+                                    <i class = "my-icon far fa-edit m-2" title = "Editar filial" onclick = "ir({{ $filial->id }}, 0, {{ $id_grupo }})"></i>
+                                    <i class = "my-icon far fa-trash-alt mr-3" title = "Excluir filial"></i>
                                 </div>
                             </div>
                         @endforeach
@@ -59,6 +57,11 @@
             </div>
         @endforeach
     </div>
+    @if ($pode_criar)
+        <button class = "botao-target botao-adicionar" type = "button" title = "{{ $novo }} (matriz)" onclick = "ir(0, 0, {{ $id_grupo }})">
+            <i class = "fa-solid fa-plus"></i>
+        </button>
+    @endif
 
     <style type = "text/css">
         .lista-empresas {
@@ -100,6 +103,8 @@
         }
     </style>
     <script type = "text/javascript" language = "JavaScript">
-        function listar() {}
+        function ir(id, id_matriz, id_grupo) {
+            location.href = URL + "/{{ strtolower($titulo) }}/crud?id=" + id + "&id_matriz=" + id_matriz + "&id_grupo=" + id_grupo;
+        }
     </script>
 @endsection

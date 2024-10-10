@@ -138,9 +138,16 @@ window.onload = function () {
     });
 
     Array.from(document.getElementsByClassName("matriz-header")).forEach((el) => {
-        el.onclick = function() {
-            let filiaisLista = this.nextElementSibling;
-            if (filiaisLista !== null) {
+        let filiaisLista = el.nextElementSibling;
+        if (filiaisLista === null) el.parentElement.querySelector(".toggle-icon").innerHTML = "&nbsp;";
+        el.onclick = function(e) {
+            let continua = filiaisLista !== null;
+            if (continua) {
+                this.querySelectorAll("i").forEach((icone) => {
+                    if (icone.contains(e.target)) continua = false;
+                });
+            }
+            if (continua) {
                 let toggleIcon = this.querySelector(".toggle-icon");
                 document.querySelectorAll(".empresa-matriz").forEach((matriz) => {
                     if (matriz !== this.parentElement) {
@@ -164,7 +171,7 @@ window.onload = function () {
     let carrega_lista = true;
     ["crud", "franqueadoras", "franquias", "clientes", "fornecedores"].forEach((pagina) => {
         if (location.href.indexOf(pagina) > -1) carrega_lista = false;
-    });    
+    });
     if (carrega_lista) listar();
     carregado = true;
 }
@@ -180,10 +187,6 @@ function ordenar(coluna) {
             setTravarCliqueMenu();
         }
     });
-}
-
-function sair() {
-    document.getElementById("logout-form").submit();
 }
 
 function autocomplete(_this) {
@@ -205,7 +208,7 @@ function autocomplete(_this) {
     if (!element.parent().find(".autocomplete-result").length) {
         let largura = document.getElementById($(element).attr("id")).offsetWidth;
         if (_table == "menu") largura += 32;
-        div_result = $("<div class = 'autocomplete-result' style = 'width:" + largura + "px;top:" + document.getElementById($(element).attr("id")).offsetHeight + "px'>");
+        div_result = $("<div class = 'autocomplete-result custom-scrollbar' style = 'width:" + largura + "px;top:" + document.getElementById($(element).attr("id")).offsetHeight + "px'>");
         element.after(div_result);
     } else {
         div_result = element.parent().find(".autocomplete-result");
@@ -226,6 +229,10 @@ function autocomplete(_this) {
             div_result.append("<div class = 'autocomplete-line' data-id = '" + item.id + "'>" + item[_column] + "</div>");
         });
         let retira_chars = function(texto) {
+            let html = texto;
+            let div = document.createElement("div");
+            div.innerHTML = html;
+            texto = div.textContent || div.innerText || "";
             let entityMap = {
                 '&amp;': '&',
                 '&lt;': '<',
@@ -332,6 +339,37 @@ function contar_char(el, max) {
     el.nextElementSibling.innerHTML = el.value.length + "/" + max;
 }
 
+function formatar_cpf(el) {
+    el.classList.remove("invalido");
+    let cpf = el.value;
+    let num = cpf.replace(/[^\d]/g, '');
+    let len = num.length;
+    if (len <= 6) cpf = num.replace(/(\d{3})(\d{1,3})/g, '$1.$2');
+    else if (len <= 9) cpf = num.replace(/(\d{3})(\d{3})(\d{1,3})/g, '$1.$2.$3');
+    else {
+        cpf = num.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/g, "$1.$2.$3-$4");
+        cpf = cpf.substring(0, 14);
+    }
+    el.value = cpf;
+}
+
+function validar_cpf(__cpf) {
+    __cpf = __cpf.replace(/\D/g, "");
+    if (__cpf == "00000000000") return false;
+    if (__cpf.length != 11) return false;
+    let soma = 0;
+    for (let i = 1; i <= 9; i++) soma = soma + (parseInt(__cpf.substring(i - 1, i)) * (11 - i));
+    let resto = (soma * 10) % 11;
+    if ((resto == 10) || (resto == 11)) resto = 0;
+    if (resto != parseInt(__cpf.substring(9, 10))) return false;
+    soma = 0;
+    for (i = 1; i <= 10; i++) soma = soma + (parseInt(__cpf.substring(i - 1, i)) * (12 - i));
+    resto = (soma * 10) % 11;
+    if ((resto == 10) || (resto == 11)) resto = 0;
+    if (resto != parseInt(__cpf.substring(10, 11))) return false;
+    return true;
+}
+
 // mover as funções abaixo para arquivo específico depois
 function validar_cnpj(cnpj) {
     cnpj = cnpj.replace(/[^\d]+/g,'');
@@ -372,4 +410,16 @@ function formatar_cnpj(el) {
                         .replace(/\.(\d{3})(\d)/, '.$1/$2') // Adiciona barra após o oitavo dígito
                         .replace(/(\d{4})(\d)/, '$1-$2') // Adiciona traço após o décimo segundo dígito
                         .replace(/(-\d{2})\d+?$/, '$1'); // Impede a entrada de mais de 14 dígitos
+}
+
+function formatar_fone(el) {
+    let value = el.value;
+    if (!value) return "";
+    value = value.replace(/\D/g, "");
+    if (value.length >= 8 && value.length <= 13) {
+        if (value.length == 10 || value.length == 11) value = value.replace(/(\d{2})(\d)/, "($1) $2");
+        else if (value.length == 12 || value.length == 13) value = value.replace(/(\d{2})(\d{2})(\d)/, "+$1 ($2) $3");
+        value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+    }
+    el.value = value;
 }

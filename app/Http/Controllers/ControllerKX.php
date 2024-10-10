@@ -8,6 +8,15 @@ use Illuminate\Http\Request;
 use App\Models\Log;
 
 class ControllerKX extends Controller {
+    public function retorna_empresa_logada() {
+        if (Auth::check()) {
+            return DB::table("users")
+                    ->where("id", Auth::user()->id)
+                    ->value("id_empresa");
+        }
+        return 0;
+    }
+
     protected function log_consultar($tabela, $tipo = 0) {
         $query = "
             SELECT
@@ -68,16 +77,17 @@ class ControllerKX extends Controller {
     }
 
     protected function grupos_buscar($param = "1") {
+        $minha_empresa = $this->retorna_empresa_logada();
         return DB::table("grupos")
                     ->select(
                         "id",
                         "descr"
                     )
                     ->whereRaw($param)
-                    ->whereRaw("id_empresa = ".Auth::user()->id_empresa." OR id_empresa IN (
+                    ->whereRaw("id_empresa = ".$minha_empresa." OR id_empresa IN (
                         SELECT id
                         FROM empresas
-                        WHERE id_matriz = ".Auth::user()->id_empresa."
+                        WHERE id_matriz = ".$minha_empresa."
                     )")
                     ->where("lixeira", 0);
     }

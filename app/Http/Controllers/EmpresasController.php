@@ -9,24 +9,21 @@ use App\Models\Empresas;
 use App\Models\Enderecos;
 
 class EmpresasController extends ControllerKX {
-    private function obter_filiais($matriz) {
-        return DB::table("empresas")
-                    ->where("id_matriz", $matriz)
-                    ->where("lixeira", 0)
-                    ->pluck("id");
-    }
-
     private function busca_main($consulta, $matriz, $tipo, $id_grupo) {
         return $consulta->where("id_matriz", $matriz)
-                        ->where("tipo", $tipo)
                         ->where("lixeira", 0)
-                        ->where(function($sql) use($id_grupo) {
+                        ->where(function($sql) use($id_grupo, $tipo) {
                             if (intval($id_grupo)) $sql->where("id_grupo", $id_grupo);
+                            if (intval($tipo)) $sql->where("tipo", $tipo);
                         });
     }
 
+    private function obter_filiais($matriz) {
+        return $this->busca_main(DB::table("empresas"), $matriz, 0, 0)->pluck("id");
+    }
+
     private function busca($matriz, $tipo, $id_grupo) {
-        $minha_empresa = Auth::user()->id_empresa;
+        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
         $meu_tipo = intval(Empresas::find($minha_empresa)->tipo);
         $filiais = $this->obter_filiais($minha_empresa);
         $consulta = DB::table("empresas")
@@ -63,7 +60,7 @@ class EmpresasController extends ControllerKX {
             return $this->busca_main($consulta, $matriz, $tipo, $id_grupo)
                         ->where(function($sql) use($minha_empresa, $filiais) {
                             $sql->where(function($query) use($minha_empresa, $filiais) {
-                                $query->whereIn("id_matriz", $filiais->toArray());
+                                $query->whereIn("id", $filiais->toArray());
                             })->orWhere("id", $minha_empresa);
                         })
                         ->orderby("nome_fantasia")
@@ -99,10 +96,13 @@ class EmpresasController extends ControllerKX {
 
     private function ver($tipo, $id_grupo) {
         if ($this->busca(0, $tipo, 0) === false) return redirect("/");
+        $tipo = intval($tipo);
+        $meu_tipo = intval(Empresas::find($this->retorna_empresa_logada())->tipo); // ControllerKX.php
+        $pode_criar = ($meu_tipo == 1 || ($meu_tipo == 2 && $tipo == 3));
         $titulo = $this->legenda($tipo);
         $ultima_atualizacao = $this->log_consultar("empresas", $tipo); // ControllerKX.php
         $breadcumb = array(
-            "Home" => config("app.root_url"),
+            "Home" => $tipo != $meu_tipo ? config("app.root_url")."/home" : "#",
             $titulo => "#"
         );
         $empresas = array();
@@ -112,26 +112,59 @@ class EmpresasController extends ControllerKX {
             array_push($empresas, $matriz);
         }
         $grupos = $this->grupos_buscar()->orderby("descr")->get();
-        return view("empresas", compact("ultima_atualizacao", "titulo", "breadcumb", "empresas", "grupos", "id_grupo"));
+        $novo = "";
+        switch($tipo) {
+            case 1:
+                $novo = "Nova franqueadora";
+                break;
+            case 2:
+                $novo = "Nova franquia";
+                break;
+            case 3:
+                $novo = "Novo cliente";
+                break;
+            case 4:
+                $novo = "Novo fornecedor";
+                break;
+        }
+        return view("empresas", compact("ultima_atualizacao", "titulo", "breadcumb", "empresas", "grupos", "id_grupo", "pode_criar", "novo"));
     }
 
-    private function crud($tipo, $id) {
+    private function crud($tipo, Request $request) {
+        $id = $request->id;
         if ($this->busca(0, $tipo, 0) === false) return redirect("/");
         $titulo = $this->legenda($tipo);
         $breadcumb = array(
-            "Home" => config("app.root_url"),
-            $titulo => config("app.root_url")."/".strtolower($titulo),
-            (intval($id) ? "Editar" : "Novo") => "#"
+            "Home" => config("app.root_url")."/home",
+            $titulo => config("app.root_url")."/".strtolower($titulo)."/grupo/0",
+            (intval($request->id) ? "Editar" : "Novo") => "#"
         );
+        $criando = new \stdClass;
+        $criando->matriz = DB::table("empresas")
+                                ->select(
+                                    "id",
+                                    "nome_fantasia"
+                                )
+                                ->where("id", $request->id_matriz)
+                                ->first();
+        $criando->grupo = DB::table("grupos")
+                            ->select(
+                                "id",
+                                "descr"
+                            )
+                            ->where("id", $request->id_grupo)
+                            ->first();
         $empresa = DB::table("empresas")
                         ->select(
                             "empresas.*",
                             DB::raw("IFNULL(segmentos.descr, '') AS segmento"),
-                            DB::raw("IFNULL(grupos.descr, '') AS grupo")
+                            DB::raw("IFNULL(grupos.descr, '') AS grupo"),
+                            DB::raw("IFNULL(matriz.nome_fantasia, '') AS matriz")
                         )
                         ->leftjoin("segmentos", "segmentos.id", "empresas.id_segmento")
                         ->leftjoin("grupos", "grupos.id", "empresas.id_grupo")
-                        ->where("empresas.id", $id)
+                        ->leftjoin("empresas AS matriz", "matriz.id", "empresas.id_matriz")
+                        ->where("empresas.id", $request->id)
                         ->first();
         if ($empresa !== null) {
             $empresa->enderecos = DB::table("cep")
@@ -150,7 +183,15 @@ class EmpresasController extends ControllerKX {
                                     ->where("id_empresa", $empresa->id)
                                     ->get();
         }
-        return view("empresas_crud", compact("titulo", "breadcumb", "empresa"));
+        return view("empresas_crud", compact("titulo", "breadcumb", "empresa", "criando"));
+    }
+
+    private function url() {
+        return strtolower($this->legenda(Empresas::find($this->retorna_empresa_logada())->tipo))."/grupo/0";  // ControllerKX.php
+    }
+
+    public function home() {
+        return redirect("/".$this->url());
     }
 
     private function selecionarMain($empresa) {
@@ -159,12 +200,7 @@ class EmpresasController extends ControllerKX {
             SET id_empresa = ".$empresa."
             WHERE id = ".Auth::user()->id
         );
-        return strtolower($this->legenda(Empresas::find(
-            DB::table("users")
-                ->where("id", Auth::user()->id)
-                ->value("id_empresa")
-            )->tipo
-        ))."/grupo/0";
+        return $this->url();
     }
 
     public function selecionar(Request $request) {
@@ -209,20 +245,20 @@ class EmpresasController extends ControllerKX {
         return $this->ver(4, $id_grupo);
     }
 
-    public function franqueadoras_crud($id) {
-        return $this->crud(1, $id);
+    public function franqueadoras_crud(Request $request) {
+        return $this->crud(1, $request);
     }
 
-    public function franquias_crud($id) {
-        return $this->crud(2, $id);
+    public function franquias_crud(Request $request) {
+        return $this->crud(2, $request);
     }
 
-    public function clientes_crud($id) {
-        return $this->crud(3, $id);
+    public function clientes_crud(Request $request) {
+        return $this->crud(3, $request);
     }
 
-    public function fornecedores_crud($id) {
-        return $this->crud(4, $id);
+    public function fornecedores_crud(Request $request) {
+        return $this->crud(4, $request);
     }
 
     public function consultar(Request $request) {
@@ -287,7 +323,7 @@ class EmpresasController extends ControllerKX {
         $linha->id_grupo = $request->id_grupo;
         $linha->id_segmento = $request->id_segmento;
         $linha->id_matriz = $request->id_matriz ? $request->id_matriz : 0;
-        $linha->id_criadora = Auth::user()->id_empresa;
+        $linha->id_criadora = $this->retorna_empresa_logada(); // ControllerKX.php
         $linha->save();
 
         $ceps = explode($request->cep, ",");

@@ -11,6 +11,7 @@ use App\Models\EmpresasUsuarios;
 
 class UsuariosController extends ControllerKX {
     private function busca($param = "1") {
+        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
         $param2 = str_replace("name", "email", $param);
         return DB::table("users")
                     ->select(
@@ -21,12 +22,11 @@ class UsuariosController extends ControllerKX {
                     )
                     ->leftjoin("empresas_usuarios AS eu", "eu.id_usuario", "users.id_aux")
                     ->whereRaw("((".$param.") OR (".$param2."))")
-                    ->where(function($sql) {
-                        $id_empresa = Auth::user()->id_empresa;
-                        $tipo = Empresas::find($id_empresa)->tipo;
+                    ->where(function($sql) use($minha_empresa) {
+                        $tipo = Empresas::find($minha_empresa)->tipo;
                         if ($tipo > 1) {
-                            $sql->whereIn("eu.id_empresa", DB::table("empresas")->where($tipo == 2 ? "id_criadora" : "id_matriz", $id_empresa)->pluck("id")->toArray())
-                                ->orWhere("eu.id_empresa", $id_empresa);
+                            $sql->whereIn("eu.id_empresa", DB::table("empresas")->where($tipo == 2 ? "id_criadora" : "id_matriz", $minha_empresa)->pluck("id")->toArray())
+                                ->orWhere("eu.id_empresa", $minha_empresa);
                         }
                     })
                     ->groupby(
@@ -41,7 +41,7 @@ class UsuariosController extends ControllerKX {
 
     public function ver() {
         $breadcumb = array(
-            "Home" => config("app.root_url"),
+            "Home" => config("app.root_url")."/home",
             "Usuários" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("users"); // ControllerKX.php
@@ -50,7 +50,7 @@ class UsuariosController extends ControllerKX {
 
     public function crud($id) {
         $breadcumb = array(
-            "Home" => config("app.root_url"),
+            "Home" => config("app.root_url")."/home",
             "Usuários" => config("app.root_url")."/usuarios",
             (intval($id) ? "Editar" : "Novo") => "#"
         );
@@ -109,7 +109,7 @@ class UsuariosController extends ControllerKX {
             $this->log_inserir("C", "users", $id); // ControllerKX.php
             $linha = new EmpresasUsuarios;
             $linha->id_usuario = DB::table("users")->orderby("id", "DESC")->value("id");
-            $linha->id_empresa = Auth::user()->id_empresa;
+            $linha->id_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
             $linha->save();
             $this->log_inserir("C", "empresas_usuarios", $linha->id); // ControllerKX.php
         } else {

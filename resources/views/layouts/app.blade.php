@@ -16,7 +16,7 @@
 							<i class = "fa-solid fa-magnifying-glass"></i>
 						</span>
 					</div>
-					<input id = "goto-hidden" type = "hidden" onchange = "location.href='/'+URL+'/'+this.value" />
+					<input id = "goto-hidden" type = "hidden" onchange = "location.replace(URL+'/'+this.value)" />
 					<input id = "goto"
 						class = "caixa-pesquisa form-control autocomplete"
 						data-input = "#goto-hidden"
@@ -36,9 +36,12 @@
 				</button>
 				<div class = "dropdown">
 					<button class = "btn btn-custom dropdown-toggle" type = "button" id = "userDropdown" data-bs-toggle = "dropdown" aria-expanded = "false">
-						{{ Auth::user()->name }}
+						{{ Auth::user()->name }} - {{ App\Models\Empresas::find($empresa_logada)->nome_fantasia }}
 					</button>
 					<ul class = "dropdown-menu dropdown-menu-end" aria-labelledby = "userDropdown">
+						<li>
+							<a class = "dropdown-item" href = "{{ config('app.root_url') }}">Trocar empresa</a>
+						</li>
 						<li>
 							<a class = "dropdown-item" href = "#">Editar</a>
 						</li>
@@ -52,12 +55,14 @@
 				</div>
 			</div>
 		</header>
-        <aside class = "bg-white position-fixed">
+        <aside class = "bg-white position-fixed custom-scrollbar">
 			<button id = "menu-fechar" class = "btn btn-custom btn-menu">
 			    <i class = "fas fa-arrow-left menu-icon"></i>
 			</button>
 			<div class = "p-3">
-				<img src="{{ asset('img/logo.png') }}" alt="Logo" class="w-75">
+				<a href = "{{ config('app.root_url') }}/home">
+					<img src = "{{ asset('img/logo.png') }}" alt="Logo" class="w-75">
+				</a>
 				<ul class = "nav flex-column"></ul>
 			</div>
 		</aside>

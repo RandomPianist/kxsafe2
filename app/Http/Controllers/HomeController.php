@@ -7,15 +7,49 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
 
-class HomeController extends Controller {
+class HomeController extends ControllerKX {
+    private function str_ireplace2($search, $replace, $subject) {
+        $len = strlen($search);
+        $result = "";
+        $i = 0;
+    
+        while ($i < strlen($subject)) {
+            if (strtolower(substr($subject, $i, $len)) === strtolower($search)) {
+                $j = 0;
+                $insideTag = false;
+                foreach (str_split($replace) as $char) {
+                    if ($char == "<") {
+                        $insideTag = true;
+                        $result .= $char;
+                    } else if ($char == ">") {
+                        $insideTag = false;
+                        $result .= $char;
+                    } else if (!$insideTag) {
+                        $result .= ctype_upper($subject[$i + $j]) ? strtoupper($char) : strtolower($char);
+                        $j++;
+                    } else $result .= $char;
+                }
+                $i += $len;
+            } else {
+                $result .= $subject[$i];
+                $i++;
+            }
+        }
+        return $result;
+    }
+
     public function index() {
         return redirect("/empresas/selecionar");
     }
 
-    public function autocomplete(Request $request) {        
-        $tipo = Empresas::find(Auth::user()->id_empresa)->tipo;
+    public function autocomplete(Request $request) { 
+        $tabela = $request->table;       
+        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
+        $tipo = Empresas::find($minha_empresa)->tipo;
 
-        $where = " AND ".$request->column." LIKE '".$request->search."%'";
+        $where = " AND ".$request->column." LIKE '";
+        if ($tabela == "menu") $where .= "%";
+        $where .= $request->search."%'";
         
         if ($request->filter_col) {
             $where .= $request->column != "referencia" ? " AND ".$request->filter_col." = '".$request->filter."'" : " AND referencia NOT IN (
@@ -26,9 +60,6 @@ class HomeController extends Controller {
             )";
         }
 
-        if ($request->table == "empresas" && $tipo > 1) $where .= " AND ".Auth::user()->id_empresa." IN (id, id_criadora)";
-
-        $tabela = $request->table;
         if ($tabela == "menu") {
             $tabela = "(
                 SELECT
@@ -83,7 +114,7 @@ class HomeController extends Controller {
                     
                 ORDER BY modulos.ordem, menua.ordem
             ) AS tab";
-        }
+        } else if ($tabela == "empresas" && $tipo > 1) $where .= " AND ".$minha_empresa." IN (id, id_criadora)";
 
         $query = "SELECT ";
         if ($request->column == "referencia") $query .= "MIN(id) AS ";
@@ -94,7 +125,15 @@ class HomeController extends Controller {
         if ($tabela != "menu") $query .= " ORDER BY ".$request->column;
         $query .= " LIMIT 30";
         
-        return json_encode(DB::select(DB::raw($query)));
+        $resultado = array();
+        $consulta = DB::select(DB::raw($query));
+        foreach ($consulta as $linha) {
+            $aux = new \stdClass;
+            $aux->id = $linha->id;
+            $aux->descr = $this->str_ireplace2($request->search, "<b>".$request->search."</b>", $linha->descr);
+            array_push($resultado, $aux);
+        }
+        return json_encode($resultado);
     }
 
     public function menu() {
@@ -115,7 +154,7 @@ class HomeController extends Controller {
                                 ->join("menu_perfis AS mp", "menu.id", "mp.id_menu")
                                 ->where("id_pai", 0)
                                 ->where("id_modulo", $modulo->id)
-                                ->where("mp.tipo", Empresas::find(Auth::user()->id_empresa)->tipo)
+                                ->where("mp.tipo", Empresas::find($this->retorna_empresa_logada())->tipo) // ControllerKX.php
                                 ->orderby("ordem")
                                 ->get();
             if (sizeof($modulo->itens)) array_push($resultado, $modulo);

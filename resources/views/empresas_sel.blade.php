@@ -11,11 +11,23 @@
             .company-card:hover {
                 transform: translateY(-5px);
             }
+
+            #botao-sair {
+                top: 2rem;
+                right: 2rem;
+                cursor: pointer
+            }
+
+            #botao-sair a {
+                color: #FFF;
+                text-decoration: none
+            }
         </style>
     </head>
     <body>
         <div class = "container mt-5">
-            <div class = "row justify-content-center">
+            <div class = "row">
+                <div class="col-md-2"></div>
                 <div class = "col-md-8">
                     <div class = "text-center mb-4 shadow-sm p-3" style = "background-color:var(--cards);border-radius:15px">
                         <div class = "mb-3" style = "width:100px;height:100px;border:2px solid var(--fonte);border-radius:50%;display:inline-grid">
@@ -42,8 +54,16 @@
                         @endforeach
                     </div>
                 </div>
+                <div class="col-md-2"></div>
             </div>
+            <button class = "position-fixed btn btn-secondary" id = "botao-sair" onclick = "sair()">
+                <a href = "#">Sair</a>
+                <form id = "logout-form" class = "d-none" action = "{{ route('logout') }}" method = "POST">
+                    @csrf
+                </form>
+            </button>
         </div>
+            
         <script type = "text/javascript" language = "JavaScript">
             window.onload = function() {
                 document.querySelectorAll(".enter-company").forEach((botao) => {

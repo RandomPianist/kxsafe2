@@ -10,25 +10,26 @@ use App\Models\Naturezas;
 
 class NaturezasController extends ControllerKX {
     private function busca($param = "1") {
+        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
         return DB::table("naturezas")
                     ->select(
                         "id",
                         "descr"
                     )
                     ->whereRaw($param)
-                    ->whereRaw("id_empresa = ".Auth::user()->id_empresa." OR id_empresa IN (
+                    ->whereRaw("id_empresa = ".$minha_empresa." OR id_empresa IN (
                         SELECT id
                         FROM empresas
-                        WHERE id_matriz = ".Auth::user()->id_empresa."
+                        WHERE id_matriz = ".$minha_empresa."
                     )")
                     ->where("lixeira", 0)
                     ->get();
     }
 
     public function ver() {
-        if (!in_array(intval(Empresas::find(Auth::user()->id_empresa)->tipo), [1, 2])) return redirect("/");
+        if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcumb = array(
-            "Home" => config("app.root_url"),
+            "Home" => config("app.root_url")."/home",
             "Naturezas" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("naturezas"); // ControllerKX.php
@@ -56,8 +57,9 @@ class NaturezasController extends ControllerKX {
     }
 
     public function crud($id) {
+        if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcumb = array(
-            "Home" => config("app.root_url"),
+            "Home" => config("app.root_url")."/home",
             "Naturezas" => config("app.root_url")."/naturezas",
             (intval($id) ? "Editar" : "Novo") => "#"
         );

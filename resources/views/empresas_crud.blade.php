@@ -10,7 +10,7 @@
             @endforeach
         </ol>
     </nav>
-    <h2 class = "titulo">Adicionar empresa</h2>
+    <h2 class = "titulo">{{ substr($titulo, 0, -1) }}</h2>
 	<form class = "formulario p-5 custom-scrollbar">
 		<div class = "row">
 			<div class = "col-md-6 mb-3">
@@ -47,12 +47,12 @@
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-4 mb-3">
-				<label for = "ie" class = "form-label">Tipo contribuição:</label>
-				<select id = "ie" name = "ie" class = "form-control">
-					<option selected>Selecione...</option>
-					<option value = "SIM">Sim</option>
-					<option value = "NAO">Não</option>
-					<option value = "ISENTO">Isento</option>	
+				<label for = "tipo_contribuicao" class = "form-label">Tipo de contribuição:</label>
+				<select id = "tipo_contribuicao" name = "tipo_contribuicao" class = "form-control">
+					<option value = "tipo-0">Selecione...</option>
+					<option value = "tipo-1">Sim</option>
+					<option value = "tipo-2">Não</option>
+					<option value = "tipo-3">Isento</option>
 				</select>
 			</div>
 			<div class = "col-md-4 mb-3">
@@ -110,7 +110,7 @@
 			<div class = "col-md-3 mb-3">
 				<label for = "estado" class = "form-label">UF:</label>
 				<select id = "estado" class = "form-control">
-					<option selected>Selecione...</option>
+					<option value = "E0">Selecione...</option>
 					<option value = "AC">Acre</option>
 					<option value = "AL">Alagoas</option>
 					<option value = "AP">Amapá</option>	
@@ -162,11 +162,11 @@
 				<ul class = "lista-enderecos list-group">
 					<li class = "list-group-item">
 						<span>Avenida Rui Barbosa, 1090, Apto. 104 - Centro, Assis-SP</span>
-						<i class = "icone-excluir-endereco my-icon far fa-trash-alt" title = "Excluir"></i>
+						<i class = "my-icon far fa-trash-alt" title = "Excluir"></i>
 					</li>
 					<li class = "list-group-item">
 						<span>Avenida Rui Barbosa, 1090, Apto. 104 - Centro, Assis-SP</span>
-						<i class = "icone-excluir-endereco my-icon far fa-trash-alt" title = "Excluir"></i>
+						<i class = "my-icon far fa-trash-alt" title = "Excluir"></i>
 					</li>
 				</ul>
 			</div>
@@ -178,17 +178,7 @@
 		</button>
 	</div>
     <style type = "text/css">
-        small,
-        .lista-enderecos li {
-            display: flex;
-            align-items: center
-        }
-
-        small {
-            justify-content: flex-end
-        }
-
-        .lista-enderecos li {
+		.lista-enderecos li {
             justify-content: space-between
         }
     </style>

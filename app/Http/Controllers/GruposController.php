@@ -14,7 +14,7 @@ class GruposController extends ControllerKX {
     }
 
     public function ver() {
-        if (!in_array(intval(Empresas::find(Auth::user()->id_empresa)->tipo), [1, 2])) return redirect("/");
+        if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $ultima_atualizacao = $this->log_consultar("grupos"); // ControllerKX.php
         return view("grupos", compact("ultima_atualizacao"));
     }
@@ -39,16 +39,21 @@ class GruposController extends ControllerKX {
         return "0";
     }
 
-    public function mostrar($id) {
-        return json_encode(
-            DB::table("grupos")
-                ->select(
-                    "id",
-                    "descr"
-                )
-                ->where("id", $id)
-                ->first()
+    public function crud($id) {
+        if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
+        $breadcumb = array(
+            "Home" => config("app.root_url")."/home",
+            "Grupos" => config("app.root_url")."/grupos",
+            (intval($id) ? "Editar" : "Novo") => "#"
         );
+        $grupo = DB::table("grupos")
+                        ->select(
+                            "id",
+                            "descr"
+                        )
+                        ->where("id", $id)
+                        ->first();
+        return view("grupos_crud", compact("breadcumb", "grupo"));
     }
 
     public function aviso($id) {
