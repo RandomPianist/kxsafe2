@@ -1,7 +1,7 @@
 let colGlobal;
 let carregado = false;
-let validacao_bloqueada = false;
-let travar_clique_menu = false;
+let validacaoBloqueada = false;
+let travarCliqueMenu = false;
 
 jQuery.fn.sortElements = (function() {
     var sort = [].sort;
@@ -37,7 +37,12 @@ jQuery.fn.sortElements = (function() {
 })();
 
 window.onclick = function(e) {
-    if (carregado && !travar_clique_menu && document.getElementById("header-esquerdo").classList.contains("active") && !document.querySelector("aside").contains(e.target)) document.getElementById("menu-fechar").click();
+    if (
+        carregado &&
+        !travarCliqueMenu &&
+        !document.querySelector("aside").contains(e.target) &&
+        document.getElementById("header-esquerdo").classList.contains("active")
+    ) document.getElementById("menu-fechar").click();
 }
 
 window.onload = function () {
@@ -167,7 +172,12 @@ window.onload = function () {
         }
     });
 
-    carrega_autocomplete();
+    Array.from(document.getElementsByTagName("input")).forEach((el) => {
+        $(el).trigger("oninput");
+        $(el).trigger("keyup");
+    });
+
+    carregaAutocomplete();
     let carrega_lista = true;
     ["crud", "franqueadoras", "franquias", "clientes", "fornecedores"].forEach((pagina) => {
         if (location.href.indexOf(pagina) > -1) carrega_lista = false;
@@ -228,7 +238,7 @@ function autocomplete(_this) {
         data.forEach((item) => {
             div_result.append("<div class = 'autocomplete-line' data-id = '" + item.id + "'>" + item[_column] + "</div>");
         });
-        let retira_chars = function(texto) {
+        let retiraChars = function(texto) {
             let html = texto;
             let div = document.createElement("div");
             div.innerHTML = html;
@@ -248,14 +258,14 @@ function autocomplete(_this) {
         element.parent().find(".autocomplete-line").each(function () {
             $(this).click(function () {
                 $(input_id).val($(this).data().id).trigger("change");
-                element.val(retira_chars($(this).html().toString().split("|")[0].trim()));
+                element.val(retiraChars($(this).html().toString().split("|")[0].trim()));
                 div_result.remove();
             });
 
             $(this).mouseover(function () {
                 if (_table != "menu") {
                     $(input_id).val($(this).data().id).trigger("change");
-                    element.val(retira_chars($(this).html().toString().split("|")[0].trim()));
+                    element.val(retiraChars($(this).html().toString().split("|")[0].trim()));
                 }
                 $(this).parent().find(".hovered").removeClass("hovered");
                 $(this).addClass("hovered");
@@ -264,15 +274,15 @@ function autocomplete(_this) {
     });
 }
 
-function carrega_autocomplete() {
+function carregaAutocomplete() {
     $(".autocomplete").each(function() {
         $(this).keyup(function(e) {
             $(this).removeClass("invalido");
-            if (e.keyCode == 13) validacao_bloqueada = true;
+            if (e.keyCode == 13) validacaoBloqueada = true;
             if ([9, 13, 17, 38, 40].indexOf(e.keyCode) == -1 && $(this).val().trim()) autocomplete($(this));
             if (!$(this).val().trim()) $($(this).data().input).val("");
             setTimeout(function() {
-                validacao_bloqueada = false;
+                validacaoBloqueada = false;
             }, 50);
         });
 
@@ -280,15 +290,15 @@ function carrega_autocomplete() {
             if ([9, 13, 38, 40].indexOf(e.keyCode) > -1) {
                 if (e.keyCode == 13) {
                     e.preventDefault();
-                    validacao_bloqueada = true;
+                    validacaoBloqueada = true;
                 }
-                seta_autocomplete(e.keyCode, $(this));
+                setaAutocomplete(e.keyCode, $(this));
             }
         });
     });
 }
 
-function seta_autocomplete(direcao, _this) {
+function setaAutocomplete(direcao, _this) {
     _this = _this.parent();
     var el = _this.find(".autocomplete-result .autocomplete-line");
     var el_hovered = _this.find(".autocomplete-result .autocomplete-line.hovered");
@@ -310,9 +320,9 @@ function seta_autocomplete(direcao, _this) {
 }
 
 function setTravarCliqueMenu() {
-    travar_clique_menu = true;
+    travarCliqueMenu = true;
     setTimeout(function() {
-        travar_clique_menu = false;
+        travarCliqueMenu = false;
     }, 100);
 }
 
@@ -333,13 +343,35 @@ function dinheiro(texto_final) {
     return texto_final;
 }
 
-function contar_char(el, max) {
+function contarChar(el, max) {
     el.classList.remove("invalido");
     el.value = el.value.substring(0, max);
     el.nextElementSibling.innerHTML = el.value.length + "/" + max;
 }
 
-function formatar_cpf(el) {
+function gotoFuncao(valor) {
+    location.href = URL + "/" + valor;
+}
+
+function erroImg(el) {
+    el.classList.add("d-none");
+    el.nextElementSibling.classList.remove("d-none");
+}
+
+function formatarFone(el) {
+    let value = el.value;
+    if (!value) return "";
+    value = value.replace(/\D/g, "");
+    if (value.length >= 8 && value.length <= 13) {
+        if (value.length == 10 || value.length == 11) value = value.replace(/(\d{2})(\d)/, "($1) $2");
+        else if (value.length == 12 || value.length == 13) value = value.replace(/(\d{2})(\d{2})(\d)/, "+$1 ($2) $3");
+        value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+    }
+    el.value = value;
+}
+
+// mover as funções abaixo para arquivo específico depois
+function formatarCPF(el) {
     el.classList.remove("invalido");
     let cpf = el.value;
     let num = cpf.replace(/[^\d]/g, '');
@@ -353,82 +385,19 @@ function formatar_cpf(el) {
     el.value = cpf;
 }
 
-function validar_cpf(__cpf) {
-    __cpf = __cpf.replace(/\D/g, "");
-    if (__cpf == "00000000000") return false;
-    if (__cpf.length != 11) return false;
+function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, "");
+    if (cpf == "00000000000") return false;
+    if (cpf.length != 11) return false;
     let soma = 0;
-    for (let i = 1; i <= 9; i++) soma = soma + (parseInt(__cpf.substring(i - 1, i)) * (11 - i));
+    for (let i = 1; i <= 9; i++) soma = soma + (parseInt(cpf.substring(i - 1, i)) * (11 - i));
     let resto = (soma * 10) % 11;
     if ((resto == 10) || (resto == 11)) resto = 0;
-    if (resto != parseInt(__cpf.substring(9, 10))) return false;
+    if (resto != parseInt(cpf.substring(9, 10))) return false;
     soma = 0;
-    for (i = 1; i <= 10; i++) soma = soma + (parseInt(__cpf.substring(i - 1, i)) * (12 - i));
+    for (i = 1; i <= 10; i++) soma = soma + (parseInt(cpf.substring(i - 1, i)) * (12 - i));
     resto = (soma * 10) % 11;
     if ((resto == 10) || (resto == 11)) resto = 0;
-    if (resto != parseInt(__cpf.substring(10, 11))) return false;
+    if (resto != parseInt(cpf.substring(10, 11))) return false;
     return true;
-}
-
-function goto_funcao(valor) {
-    location.href = URL + "/" + valor;
-}
-
-function erroImg(el) {
-    el.classList.add("d-none");
-    el.nextElementSibling.classList.remove("d-none");
-}
-
-// mover as funções abaixo para arquivo específico depois
-function validar_cnpj(cnpj) {
-    cnpj = cnpj.replace(/[^\d]+/g,'');
-    if (cnpj == '' || cnpj.length != 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
-    let tamanho = cnpj.length - 2
-    let numeros = cnpj.substring(0, tamanho);
-    let digitos = cnpj.substring(tamanho);
-    let soma = 0;
-    let pos = tamanho - 7;
-    for (let i = tamanho; i >= 1; i--) {
-        soma += numeros.charAt(tamanho - i) * pos--;
-        if (pos < 2) pos = 9;
-    }
-    let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-    if (resultado != digitos.charAt(0)) return false;
-    tamanho = tamanho + 1;
-    numeros = cnpj.substring(0, tamanho);
-    soma = 0;
-    pos = tamanho - 7;
-    for (let i = tamanho; i >= 1; i--) {
-        soma += numeros.charAt(tamanho - i) * pos--;
-        if (pos < 2) pos = 9;
-    }
-    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-    if (resultado != digitos.charAt(1)) return false;
-    return true;
-}
-
-function formatar_cnpj(el) {
-    el.classList.remove("invalido");
-    let rawValue = el.value.replace(/\D/g, "");
-    if (rawValue.length === 15 && rawValue.startsWith("0")) {
-        let potentialCNPJ = rawValue.substring(1);
-        if (validar_cnpj(potentialCNPJ)) rawValue = potentialCNPJ;
-    }
-    el.value  = rawValue.replace(/^(\d{2})(\d)/, '$1.$2') // Adiciona ponto após o segundo dígito
-                        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3') // Adiciona ponto após o quinto dígito
-                        .replace(/\.(\d{3})(\d)/, '.$1/$2') // Adiciona barra após o oitavo dígito
-                        .replace(/(\d{4})(\d)/, '$1-$2') // Adiciona traço após o décimo segundo dígito
-                        .replace(/(-\d{2})\d+?$/, '$1'); // Impede a entrada de mais de 14 dígitos
-}
-
-function formatar_fone(el) {
-    let value = el.value;
-    if (!value) return "";
-    value = value.replace(/\D/g, "");
-    if (value.length >= 8 && value.length <= 13) {
-        if (value.length == 10 || value.length == 11) value = value.replace(/(\d{2})(\d)/, "($1) $2");
-        else if (value.length == 12 || value.length == 13) value = value.replace(/(\d{2})(\d{2})(\d)/, "+$1 ($2) $3");
-        value = value.replace(/(\d)(\d{4})$/, "$1-$2");
-    }
-    el.value = value;
 }
