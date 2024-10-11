@@ -135,11 +135,12 @@ class EmpresasController extends ControllerKX {
                         ->leftjoin("empresas AS matriz", "matriz.id", "empresas.id_matriz")
                         ->where("empresas.id", $request->id)
                         ->first();
+        $enderecos = array();
         if ($empresa !== null) {
             $empresa->enderecos = DB::table("cep")
                                     ->select(
                                         "cod AS cep",
-                                        "logradouro_tipo_abv",
+                                        "logradouro_tipo",
                                         "logradouro_descr",
                                         "bairro",
                                         "cidade",
@@ -151,8 +152,21 @@ class EmpresasController extends ControllerKX {
                                     ->join("enderecos", "enderecos.id_cep", "cep.id")
                                     ->where("id_empresa", $empresa->id)
                                     ->get();
+            foreach ($empresa->enderecos as $endereco) {
+                // tipo logradouro, numero[, complemento] - [bairro, ]cidade - uf cep[ (referencia)]
+                $aux = "";
+                if ($endereco->logradouro_tipo) $aux .= $endereco->logradouro_tipo + " ";
+                $aux .= trim($endereco->logradouro_descr) + ", " + $endereco->numero;
+                if (trim($endereco->complemento)) $aux .= ", " + trim($endereco->complemento);
+                $aux .= " - ";
+                if ($endereco->bairro) $aux .= $endereco->bairro + ", ";
+                $aux .= $endereco->cidade + " - " + $endereco->uf;
+                if (strlen($endereco->cep) == 8) $aux .= " " + $endereco->cep;
+                if (trim($endereco->referencia)) $aux .= " (" + trim($endereco->referencia) + ")";
+                array_push($enderecos, $aux);
+            }
         }
-        return view("empresas_crud", compact("titulo", "breadcumb", "empresa", "criando", "tipo"));
+        return view("empresas_crud", compact("titulo", "breadcumb", "empresa", "criando", "tipo", "enderecos"));
     }
 
     private function url() {

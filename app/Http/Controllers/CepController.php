@@ -9,13 +9,15 @@ use App\Models\Cep;
 
 class CepController extends ControllerKX {
     public function mostrar($cep) {
+        $resultado = new \stdClass;
         $consulta = DB::table("cep")
                         ->where("cod", $cep)
                         ->get();
         if (sizeof($consulta)) {
             $resultado->cod = 200;
-            $resultado->cep = $consulta;
+            $resultado->cep = $consulta[0];
         } else $resultado->cod = 404;
+        return json_encode($resultado);
     }
 
     public function salvar(Request $request) {

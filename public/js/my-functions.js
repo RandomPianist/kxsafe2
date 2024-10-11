@@ -2,6 +2,7 @@ let colGlobal;
 let carregado = false;
 let validacaoBloqueada = false;
 let travarCliqueMenu = false;
+let anteriores = new Array();
 
 jQuery.fn.sortElements = (function() {
     var sort = [].sort;
@@ -368,6 +369,34 @@ function formatarFone(el) {
         value = value.replace(/(\d)(\d{4})$/, "$1-$2");
     }
     el.value = value;
+}
+
+function verificaVazios(arr, _erro) {
+    if (_erro === undefined) _erro = "";
+    let _alterou = false;
+    arr.forEach((id) => {
+        let el = document.getElementById(id);
+        let erro_ou_vazio = !el.value;
+        if (!erro_ou_vazio && id.indexOf("qtd-") > -1) erro_ou_vazio = !parseInt(el.value);
+        if (erro_ou_vazio) {
+            if (!_erro) _erro = "Preencha o campo";
+            else _erro = "Preencha os campos";
+            el.classList.add("invalido");
+        }
+        try {
+            if (el.value.toString().toUpperCase().trim() != anteriores[id].toString().toUpperCase().trim()) _alterou = true;
+        } catch(err) {}
+    });
+    return {
+        alterou : _alterou,
+        erro : _erro
+    };
+}
+
+function limparInvalido() {
+    Array.from(document.getElementsByTagName("INPUT")).forEach((el) => {
+        el.classList.remove("invalido");
+    });
 }
 
 // mover as funções abaixo para arquivo específico depois

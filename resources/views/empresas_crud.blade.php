@@ -12,109 +12,109 @@
     </nav>
     <h2 class = "titulo">{{ substr($titulo, 0, -1) }}</h2>
 	<form class = "formulario p-5 custom-scrollbar">
-		<div class = "row">
-			<div class = "col-md-6 mb-3">
-				<label for = "razao_social" class = "form-label">Razão social:</label>
-				<input type = "text" class = "form-control" id = "razao_social" name = "razao_social" oninput = "contarChar(this, 128)" value = "@if ($empresa !== null) {{ $empresa->razao_social }} @endif" />
-				<small class = "text-muted"></small>
-			</div>
-			<div class = "col-md-6 mb-3">
-				<label for = "nome_fantasia" class = "form-label">Nome fantasia:</label>
-				<input type = "text" class = "form-control" id = "nome_fantasia" name = "nome_fantasia" oninput = "contarChar(this, 64)" value = "@if ($empresa !== null) {{ $empresa->nome_fantasia }} @endif" />
-				<small class = "text-muted"></small>
-			</div>
-		</div>
-		<div class = "row">
-			<div class = "col-md-4 mb-3">
-				<label for = "cnpj" class = "form-label">CNPJ:</label>
-				<input type = "text" class = "form-control" id = "cnpj" name = "cnpj" oninput = "formatarCNPJ(this)" value = "@if ($empresa !== null) {{ $empresa->cnpj }} @endif" />
-			</div>
-			<div class = "col-md-4 mb-3">
-				<label for = "ie" class = "form-label">Inscrição estadual:</label>
-				<input type = "text" class = "form-control" id = "ie" name = "ie" oninput = "contarChar(this, 16)" value = "@if ($empresa !== null) {{ $empresa->ie }} @endif" />
-				<small class = "text-muted"></small>
-			</div>
-			<div class = "col-md-4 mb-3">
-				<label for = "email" class = "form-label">Email:</label>
-				<input type = "text" class = "form-control" id = "email" name = "email" oninput = "contarChar(this, 32)" value = "@if ($empresa !== null) {{ $empresa->email }} @endif" />
-				<small class = "text-muted"></small>
-			</div>
-		</div>
-		<div class = "row">
-			<div class = "col-md-4 mb-3">
-				<label for = "telefone" class = "form-label">Telefone:</label>
-				<input type = "text" class = "form-control" id = "telefone" name = "telefone" oninput = "contarChar(this, 16)" value = "@if ($empresa !== null) {{ $empresa->telefone }} @endif" />
-				<small class = "text-muted"></small>
-			</div>
-			<div class = "col-md-4 mb-3">
-				<label for = "tipo_contribuicao" class = "form-label">Contribuinte:</label>
-				<select id = "tipo_contribuicao" name = "tipo_contribuicao" class = "form-control">
-					<option value = "tipo-0">Selecione...</option>
-					<option value = "tipo-1" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 1) selected @endif @endif>Sim</option>
-					<option value = "tipo-2" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 2) selected @endif @endif>Não</option>
-					<option value = "tipo-3" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 3) selected @endif @endif>Isento</option>
-				</select>
-			</div>
-			<div class = "col-md-4 mb-3">
-				<label for = "royalties" class = "form-label">Royalties:</label>
-				<input type = "text" class = "form-control dinheiro-editavel" id = "royalties" name = "royalties" value = "@if ($empresa !== null) {{ str_replace('.', '', strval($empresa->royalties)) }} @endif" />
-			</div>
-		</div>
-		<div class = "row">
-			<div class = "col-md-4 mb-3">
-				<label for = "grupo" class = "form-label">Grupo:</label>
-				<div class="d-flex align-items-center">
-					<input id = "grupo"
-						class = "form-control autocomplete mr-3"
-						data-input = "#id_grupo"
-						data-table = "grupos"
-						data-column = "descr"
-						data-filter_col = ""
-						data-filter = ""
-						type = "text"
-						value = "@if ($empresa !== null) {{ $empresa->grupo }} @elseif ($criando->grupo !== null) {{ $criando->grupo->descr }} @endif"
-						autocomplete = "off"
-					/>
-					<input
+        <div class = "row">
+            <div class = "col-md-6 mb-3">
+                <label for = "razao_social" class = "form-label">Razão social:</label>
+                <input type = "text" class = "form-control" id = "razao_social" oninput = "contarChar(this, 128)" value = "@if ($empresa !== null) {{ $empresa->razao_social }} @endif" />
+                <small class = "text-muted"></small>
+            </div>
+            <div class = "col-md-6 mb-3">
+                <label for = "nome_fantasia" class = "form-label">Nome fantasia:</label>
+                <input type = "text" class = "form-control" id = "nome_fantasia" oninput = "contarChar(this, 64)" value = "@if ($empresa !== null) {{ $empresa->nome_fantasia }} @endif" />
+                <small class = "text-muted"></small>
+            </div>
+        </div>
+        <div class = "row">
+            <div class = "col-md-4 mb-3">
+                <label for = "cnpj" class = "form-label">CNPJ:</label>
+                <input type = "text" class = "form-control" id = "cnpj" oninput = "formatarCNPJ(this)" value = "@if ($empresa !== null) {{ $empresa->cnpj }} @endif" />
+            </div>
+            <div class = "col-md-4 mb-3">
+                <label for = "ie" class = "form-label">Inscrição estadual:</label>
+                <input type = "text" class = "form-control" id = "ie" oninput = "contarChar(this, 16)" value = "@if ($empresa !== null) {{ $empresa->ie }} @endif" />
+                <small class = "text-muted"></small>
+            </div>
+            <div class = "col-md-4 mb-3">
+                <label for = "email" class = "form-label">Email:</label>
+                <input type = "text" class = "form-control" id = "email" oninput = "contarChar(this, 32)" value = "@if ($empresa !== null) {{ $empresa->email }} @endif" />
+                <small class = "text-muted"></small>
+            </div>
+        </div>
+        <div class = "row">
+            <div class = "col-md-4 mb-3">
+                <label for = "telefone" class = "form-label">Telefone:</label>
+                <input type = "text" class = "form-control" id = "telefone" oninput = "formatarFone(this)" value = "@if ($empresa !== null) {{ $empresa->telefone }} @endif" />
+            </div>
+            <div class = "col-md-4 mb-3">
+                <label for = "tipo_contribuicao" class = "form-label">Contribuinte:</label>
+                <select id = "tipo_contribuicao" class = "form-control">
+                    <option value = "tipo-0">Selecione...</option>
+                    <option value = "tipo-1" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 1) selected @endif @endif>Sim</option>
+                    <option value = "tipo-2" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 2) selected @endif @endif>Não</option>
+                    <option value = "tipo-3" @if ($empresa !== null) @if ($empresa->tipo_contribuicao == 3) selected @endif @endif>Isento</option>
+                </select>
+            </div>
+            <div class = "col-md-4 mb-3">
+                <label for = "royalties" class = "form-label">Royalties:</label>
+                <input type = "text" class = "form-control dinheiro-editavel" id = "royalties" value = "@if ($empresa !== null) {{ str_replace('.', '', strval($empresa->royalties)) }} @endif" />
+            </div>
+        </div>
+        <div class = "row">
+            <div class = "col-md-4 mb-3">
+                <label for = "grupo" class = "form-label">Grupo:</label>
+                <div class = "d-flex align-items-center">
+                    <input
+                        id = "grupo"
+                        class = "form-control autocomplete mr-3"
+                        data-input = "#id_grupo"
+                        data-table = "grupos"
+                        data-column = "descr"
+                        data-filter_col = ""
+                        data-filter = ""
+                        type = "text"
+                        value = "@if ($empresa !== null) {{ $empresa->grupo }} @elseif ($criando->grupo !== null) {{ $criando->grupo->descr }} @endif"
+                        autocomplete = "off"
+                    />
+                    <input
                         id = "id_grupo"
-                        name = "id_grupo"
                         type = "hidden"
                         value = "@if ($empresa !== null) {{ $empresa->id_grupo }} @elseif ($criando->grupo !== null) {{ $criando->grupo->id }} @endif"
                     />
-					<a href = "{{ config('app.root_url') }}/grupos" title = "Cadastro de grupos" target = "_blank">
-						<i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
-					</a>
-				</div>
-			</div>
-			<div class = "col-md-4 mb-3">
-				<label for = "segmento" class = "form-label">Segmento:</label>
-				<div class="d-flex align-items-center">
-                    <input id = "segmento"
-						class = "form-control autocomplete mr-3"
-						data-input = "#id_segmento"
-						data-table = "segmentos"
-						data-column = "descr"
-						data-filter_col = ""
-						data-filter = ""
-						type = "text"
-						value = "@if ($empresa !== null) {{ $empresa->segmento }} @endif"
-						autocomplete = "off"
-					/>
-					<input
+                    <a href = "{{ config('app.root_url') }}/grupos" title = "Cadastro de grupos" target = "_blank">
+                        <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            </div>
+            <div class = "col-md-4 mb-3">
+                <label for = "segmento" class = "form-label">Segmento:</label>
+                <div class = "d-flex align-items-center">
+                    <input
+                        id = "segmento"
+                        class = "form-control autocomplete mr-3"
+                        data-input = "#id_segmento"
+                        data-table = "segmentos"
+                        data-column = "descr"
+                        data-filter_col = ""
+                        data-filter = ""
+                        type = "text"
+                        value = "@if ($empresa !== null) {{ $empresa->segmento }} @endif"
+                        autocomplete = "off"
+                    />
+                    <input
                         id = "id_segmento"
-                        name = "id_segmento"
                         type = "hidden"
                         value = "@if ($empresa !== null) {{ $empresa->id_segmento }} @endif"
                     />
-					<a href = "{{ config('app.root_url') }}/segmentos" title = "Cadastro de segmentos" target = "_blank">
-						<i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
-					</a>
-				</div>
-			</div>
-			<div class = "col-md-4 mb-3">
-				<label for = "matriz" class = "form-label">Matriz:</label>
-				<div class="d-flex align-items-center">
-                    <input id = "matriz"
+                    <a href = "{{ config('app.root_url') }}/segmentos" title = "Cadastro de segmentos" target = "_blank">
+                        <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            </div>
+            <div class = "col-md-4 mb-3">
+                <label for = "matriz" class = "form-label">Matriz:</label>
+                <div class="d-flex align-items-center">
+                    <input
+                        id = "matriz"
                         class = "form-control autocomplete mr-3"
                         data-input = "#id_matriz"
                         data-table = "empresas"
@@ -127,52 +127,51 @@
                     />
                     <input
                         id = "id_matriz"
-                        name = "id_matriz"
                         type = "hidden"
                         value = "@if ($empresa !== null) {{ $empresa->id_matriz }} @elseif ($criando->matriz !== null) {{ $criando->matriz->id }} @endif"
                     />
-					<a href = "{{ config('app.root_url') }}/{{ strtolower($titulo) }}/grupo/0" title = "Cadastro de {{ strtolower($titulo) }}" target = "_blank">
-						<i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
-					</a>
-				</div>
-			</div>
-		</div>
+                    <a href = "{{ config('app.root_url') }}/{{ strtolower($titulo) }}/grupo/0" title = "Cadastro de {{ strtolower($titulo) }}" target = "_blank">
+                        <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
         <div class = "row px-3 mt-3 border-bottom">
-			<h5>Endereços</h5>
-		</div>
-		<div class = "row mt-4">
-			<div class = "col-md-4 mb-3">
-				<label for = "cep" class = "form-label">CEP:</label>
-				<div class="d-flex align-items-center">
-					<input type = "text" class = "form-control mr-3 campo-endereco2" id = "cep" oninput = "carregarCep()" />
-					<a href = "{{ config('app.root_url') }}/cep" title = "Cadastro de cep" target = "_blank">
-						<i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
-					</a>
-				</div>
-			</div>
-			<div class = "col-md-5 mb-3">
-				<label for = "logradouro" class = "form-label">Logradouro:</label>
-				<input type = "text" class = "form-control campo-endereco campo-endereco2" id = "logradouro" oninput = "contarChar(this, 32)" />
-				<small class = "text-muted"></small>
-			</div>
-			<div class = "col-md-3 mb-3">
-				<label for = "numero" class = "form-label">Número:</label>
-				<input type = "text" class = "form-control campo-endereco2" id = "numero" oninput = "contarChar(this, 8)" />
-				<small class = "text-muted"></small>
-			</div>
-		</div>
-		<div class = "row">
-			<div class = "col-md-4 mb-3">
-				<label for = "bairro" class = "form-label">Bairro:</label>
-				<input type = "text" class = "form-control campo-endereco campo-endereco2" id = "bairro" oninput = "contarChar(this, 32)" />
-				<small class = "text-muted"></small>
-			</div>
-			<div class = "col-md-5 mb-3">
-				<label for = "cidade" class = "form-label">Cidade:</label>
-				<input type = "text" class = "form-control campo-endereco campo-endereco2" id = "cidade" oninput = "contarChar(this, 32)" />
-				<small class = "text-muted"></small>
-			</div>
-			<div class = "col-md-3 mb-3">
+            <h5>Endereços</h5>
+        </div>
+        <div class = "row mt-4">
+            <div class = "col-md-4 mb-3">
+                <label for = "cep" class = "form-label">CEP:</label>
+                <div class="d-flex align-items-center">
+                    <input type = "text" class = "form-control mr-3 campo-endereco2" id = "cep" oninput = "carregarCEP()" />
+                    <a href = "{{ config('app.root_url') }}/cep" title = "Cadastro de cep" target = "_blank">
+                        <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            </div>
+            <div class = "col-md-5 mb-3">
+                <label for = "logradouro" class = "form-label">Logradouro:</label>
+                <input type = "text" class = "form-control campo-endereco campo-endereco2" id = "logradouro" oninput = "contarChar(this, 32)" />
+                <small class = "text-muted"></small>
+            </div>
+            <div class = "col-md-3 mb-3">
+                <label for = "numero" class = "form-label">Número:</label>
+                <input type = "text" class = "form-control" id = "numero" oninput = "contarChar(this, 16)" />
+                <small class = "text-muted"></small>
+            </div>
+        </div>
+        <div class = "row">
+            <div class = "col-md-5 mb-3">
+                <label for = "bairro" class = "form-label">Bairro:</label>
+                <input type = "text" class = "form-control campo-endereco campo-endereco2" id = "bairro" oninput = "contarChar(this, 32)" />
+                <small class = "text-muted"></small>
+            </div>
+            <div class = "col-md-4 mb-3">
+                <label for = "cidade" class = "form-label">Cidade:</label>
+                <input type = "text" class = "form-control campo-endereco campo-endereco2" id = "cidade" oninput = "contarChar(this, 32)" />
+                <small class = "text-muted"></small>
+            </div>
+            <div class = "col-md-3 mb-3">
 				<label for = "estado" class = "form-label">UF:</label>
 				<select id = "estado" class = "form-control campo-endereco campo-endereco2">
 					<option value = "E0">Selecione...</option>
@@ -225,21 +224,18 @@
 		<div class = "row">
 			<div class = "col-md-12 mt-4">
 				<ul class = "lista-enderecos list-group">
-                    
-					<li class = "list-group-item">
-						<span>Avenida Rui Barbosa, 1090, Apto. 104 - Centro, Assis-SP</span>
-						<i class = "my-icon far fa-trash-alt" title = "Excluir"></i>
-					</li>
-					<li class = "list-group-item">
-						<span>Avenida Rui Barbosa, 1090, Apto. 104 - Centro, Assis-SP</span>
-						<i class = "my-icon far fa-trash-alt" title = "Excluir"></i>
-					</li>
+                    @for ($i = 0; $i < sizeof($enderecos); $i++)
+                        <li class = "list-group-item">
+                            <span>{{ $endereco[$i] }}</span>
+                            <i class = "my-icon far fa-trash-alt" title = "Excluir" onclick = "excluirEndereco({{ $i }})"></i>
+                        </li>
+                    @endfor
 				</ul>
 			</div>
 		</div>
 	</form>
 	<div class = "d-flex justify-content-end mt-3">
-		<button class = "btn btn-primary" type = "button">
+		<button class = "btn btn-primary" type = "button" onclick = "validar()">
 			Salvar
 		</button>
 	</div>
@@ -253,6 +249,13 @@
         let numeros = new Array();
         let complementos = new Array();
         let referencias = new Array();
+        
+        @foreach ($empresa->enderecos as $endereco)
+            ceps.push("{{ $endereco->cep }}");
+            numeros.push("{{ $endereco->numero }}");
+            complementos.push("{{ $endereco->complemento }}");
+            referencias.push("{{ $endereco->referencia }}");
+        @endforeach
 
 		function validarCNPJ(cnpj) {
 			cnpj = cnpj.replace(/[^\d]+/g,'');
@@ -295,24 +298,32 @@
 								.replace(/(-\d{2})\d+?$/, '$1'); // Impede a entrada de mais de 14 dígitos
 		}
 
+        function formatarCEP(el) {
+            el.classList.remove("invalido");
+            el.value = mascaraCEP(el.value);
+        }
+
         function enableEndereco(ativar) {
             $(".campo-endereco").each(function() {
                 $($(this)[0]).prop("readonly", !ativar);
+                $($(this)[0]).trigger("oninput");
             });
         }
 
-        function carregarCep() {
+        function carregarCEP() {
             const main = function() {
-                const cep = document.getElementById("cep").value.replace(/\D/g, "");
+                let el = document.getElementById("cep");
+                const cep = el.value.replace(/\D/g, "");
+                el.value = cep.replace(/(\d{5})(\d)/,'$1-$2');
                 if (cep.length == 8) {
                     $.get(URL + "/cep/mostrar/" + cep, function(data) {
                         data = $.parseJSON(data);
                         if (parseInt(data.cod) == 200) {
-                            enableEndereco(false);
                             document.getElementById("logradouro").value = data.cep.logradouro_tipo + " " + data.cep.logradouro_descr;
                             document.getElementById("bairro").value = data.cep.bairro;
                             document.getElementById("cidade").value = data.cep.cidade,
                             document.getElementById("estado").value = data.cep.uf;
+                            enableEndereco(false);
                         } else {
                             $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
                                 if (!("erro" in dados)) {
@@ -325,7 +336,7 @@
                                         cod : cep,
                                         logradouro_tipo : _logradouro_tipo,
                                         logradouro_tipo_abv : _logradouro_tipo_abv,
-                                        logradouro_descr : dados.logradouro,
+                                        logradouro_descr : logradouro.join(" "),
                                         cod_ibge_cidade : dados.ibge,
                                         cidade : dados.localidade,
                                         bairro : dados.bairro,
@@ -338,8 +349,10 @@
                             });
                         }
                     });
-                } else enableEndereco(true);
+                } else if (el.value.length > 9) el.value = el.value = el.value.substring(0, 9);
+                else enableEndereco(true);
             }
+            main();
         }
 
         function excluirEndereco(indice) {
@@ -348,6 +361,7 @@
             complementos.splice(indice, 1);
             referencias.splice(indice, 1);
             mostrarEnderecos();
+            document.getElementById("cep").focus();
         }
 
         async function mostrarEnderecos() {
@@ -356,12 +370,15 @@
                 let endereco = await $.get(URL + "/cep/mostrar/" + ceps[i]);
                 endereco = $.parseJSON(endereco);
                 endereco = endereco.cep;
+
+                // tipo logradouro, numero[, complemento] - [bairro, ]cidade - uf cep[ (referencia)]
                 let caminho = "";
                 if (endereco.logradouro_tipo) caminho += endereco.logradouro_tipo + " ";
                 caminho += endereco.logradouro_descr.trim() + ", " + numeros[i];
                 if (complementos[i].trim()) caminho += ", " + complementos[i].trim();
-                if (endereco.bairro) caminho += " - " + endereco.bairro;
-                caminho += ", " + endereco.cidade + " - " + endereco.cidade;
+                caminho += " - ";
+                if (endereco.bairro) caminho += endereco.bairro + ", ";
+                caminho += endereco.cidade + " - " + endereco.uf;
                 if (endereco.cod.length == 8) caminho += " " + endereco.cod;
                 if (referencias[i].trim()) caminho += " (" + referencias[i].trim() + ")";
 
@@ -381,10 +398,11 @@
                 numeros.push(document.getElementById("numero").value);
                 complementos.push(document.getElementById("complemento").value);
                 referencias.push(document.getElementById("referencia").value);
-                enableEndereco(true);
                 $(".campo-endereco2").each(function() {
                     $($(this)[0]).val("");
+                    $($(this)[0]).trigger("oninput");
                 });
+                enableEndereco(true);
                 mostrarEnderecos();
             }
 
@@ -406,6 +424,40 @@
                         main();
                     })
                 } else main();
+            });
+        }
+
+        function validar() {
+            limparInvalido();
+            let erro = "";
+
+            let _cnpj = document.getElementById("cnpj");
+            if (!_cnpj.value) {
+                erro = "Preencha o campo";
+                _cnpj.classList.add("invalido");
+            }
+            const aux = verificaVazios(["nome_fantasia", "razao_social"], erro);
+            erro = aux.erro;
+            let alterou = aux.alterou;
+            if (!erro && !validarCNPJ(_cnpj.value)) {
+                erro = "CNPJ inválido";
+                _cnpj.classList.add("invalido");
+            }
+            if (_cnpj.value != anteriores.cnpj) alterou = true;
+
+            $.get(URL + "/empresas/consultar/", {
+                cnpj : _cnpj.value.replace(/\D/g, "")
+
+            }, function(data) {
+                if (!erro && parseInt(data) && !parseInt(document.getElementById("id").value)) {
+                    erro = "Já existe um registro com esse CNPJ";
+                    _cnpj.classList.add("invalido");
+                }
+                if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
+                if (!erro) {
+                    _cnpj.value = _cnpj.value.replace(/\D/g, "");
+                    
+                } else s_alert(erro);
             });
         }
 	</script>
