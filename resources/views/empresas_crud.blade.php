@@ -218,7 +218,7 @@
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-2 mb-3">
-				<button type = "button" class = "margem-compensa-label btn btn-secondary w-100" onclick = "salvarEndereco()">Salvar Endereço</button>
+				<button type = "button" class = "margem-compensa-label btn btn-secondary w-100" onclick = "salvarEndereco()">Adicionar endereço</button>
 			</div>
 		</div>
 		<div class = "row">
@@ -464,7 +464,6 @@
 
         function validar() {
             limparInvalido();
-            let erro = "";
 
             const elementos = obterElementos([
                 "razao_social",
@@ -497,7 +496,7 @@
                 "telefone",
                 "tipo_contribuicao"
             ]);
-            erro = aux.erro;
+            let erro = aux.erro;
             let alterou = aux.alterou;
             if (!erro && !validarCNPJ(elementos.cnpj.value)) {
                 erro = "CNPJ inválido";
@@ -552,7 +551,7 @@
                         enviar.referencias = referencias.join("|");
                         enviar.complementos = complementos.join("|");
                         enviar.tipo = {{ $tipo }};
-                        $.get(URL + "/empresas/salvar", enviar, function(data) {
+                        $.post(URL + "/empresas/salvar", enviar, function() {
                             location.href = URL + "/{{ strtolower($titulo) }}/grupo/" + (elementos.id_grupo.value.trim() ? elementos.id_grupo.value : "0");
                         });
                     } else s_alert(erro);

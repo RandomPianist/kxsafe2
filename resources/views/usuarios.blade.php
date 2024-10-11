@@ -70,7 +70,7 @@
                         "<td width = '37%'>" + usuario.email + "</td>" +
                         "<td class = 'text-center' width = '13%'>" +
                             "<i class = 'my-icon far fa-edit m-2'  title = 'Editar' onclick = 'ir(" + usuario.id + ")'></i>" +
-                            "<i class = 'my-icon far fa-trash-alt' title = 'Excluir'></i>" +
+                            "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + usuario.id + ", " + '"/usuarios"' + ", event)'></i>" +
                         "</td>" +
                     "</tr>";
                 });

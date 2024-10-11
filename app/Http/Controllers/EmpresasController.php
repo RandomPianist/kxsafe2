@@ -273,6 +273,16 @@ class EmpresasController extends ControllerKX {
         return "0";
     }
 
+    public function consultar2(Request $request) {
+        if (!sizeof(
+            DB::table("empresas")
+                ->where("lixeira", 0)
+                ->where("id", $request->id)
+                ->where("nome_fantasia", $request->nome_fantasia)
+        )) return "1";
+        return "0";
+    }
+
     public function aviso($id) {
         $resultado = new \stdClass;
         $nome = Empresas::find($id)->nome_fantasia;
@@ -327,18 +337,13 @@ class EmpresasController extends ControllerKX {
         $empresa->id_criadora = $this->retorna_empresa_logada(); // ControllerKX.php
         $empresa->save();
 
+        $this->log_inserir2("D", "enderecos", "id_empresa = ".$empresa->id, "NULL"); // ControllerKX.php
+        DB::statement("DELETE FROM enderecos WHERE id_empresa = ".$empresa->id);
         $ceps = explode("|", $request->ceps);
         $numeros = explode("|", $request->numeros);
         $referencias = explode("|", $request->referencias);
         $complementos = explode("|", $request->complementos);
         for ($i = 0; $i < sizeof($ceps); $i++) {
-            $where = "id_empresa = ".$request->id." AND id_cep IN (
-                SELECT id
-                FROM cep
-                WHERE cod = '".$ceps[$i]."'
-            )";
-            $this->log_inserir2("D", "enderecos", $where, "NULL"); // ControllerKX.php
-            DB::statement("DELETE FROM enderecos WHERE ".$where);
             $linha = new Enderecos;
             $linha->id_cep = DB::table("cep")
                                 ->where("cod", $ceps[$i])
@@ -358,5 +363,7 @@ class EmpresasController extends ControllerKX {
         $linha->lixeira = 1;
         $linha->save();
         $this->log_inserir("D", "empresas", $linha->id); // ControllerKX.php
+        $this->log_inserir2("D", "enderecos", "id_empresa = ".$linha->id, "NULL"); // ControllerKX.php
+        DB::statement("DELETE FROM enderecos WHERE id_empresa = ".$linha->id);
     }
 }

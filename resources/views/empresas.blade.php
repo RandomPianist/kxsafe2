@@ -38,7 +38,7 @@
                         </div>
                         <div class = "d-flex justify-content-between">
                             <i class = "my-icon far fa-edit m-2" title = "Editar" onclick = "ir({{ $empresa->id }}, 0, {{ $id_grupo }})"></i>
-                            <i class = "my-icon far fa-trash-alt m-2" title = "Excluir"></i>
+                            <i class = "my-icon far fa-trash-alt m-2" title = "Excluir" onclick = "excluir({{ $empresa->id }}, '/empresas', event)"></i>
                             <i class = "my-icon far fa-add m-2" title = "Adicionar filial" onclick = "ir(0, {{ $empresa->id }}, {{ $id_grupo }})"></i>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                                     <span class = "nome-filial">{{ $filial->nome_fantasia }}</span>
                                     <div> 
                                         <i class = "my-icon far fa-edit m-2" title = "Editar filial" onclick = "ir({{ $filial->id }}, 0, {{ $id_grupo }})"></i>
-                                        <i class = "my-icon far fa-trash-alt mr-3" title = "Excluir filial"></i>
+                                        <i class = "my-icon far fa-trash-alt mr-3" title = "Excluir filial" onclick = "excluir({{ $filial->id }}, '/empresas', event)"></i>
                                     </div>
                                 </div>
                             @endforeach
@@ -66,7 +66,7 @@
         @endif
     @else
         <div class = "d-flex flex-column align-items-center justify-content-center">
-            <img class = "imagem-erro" src = "{{ asset('img/not-found-error.png')}}" alt="Imagem de erro."></img>
+            <img class = "imagem-erro" src = "{{ asset('img/not-found-error.png')}}"></img>
             <h1>Dados não encontrados</h1>
         </div>
     @endif

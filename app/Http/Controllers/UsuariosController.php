@@ -55,7 +55,23 @@ class UsuariosController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        return view("usuarios_crud", compact("breadcumb", "usuario"));
+        $empresas = DB::table("empresas")
+                        ->select(
+                            "id_empresa",
+                            "nome_fantasia"
+                        )
+                        ->leftjoin("empresas_usuarios AS eu", "id_empresa", "empresas.id")
+                        ->where(function($sql) use($id) {
+                            $id = intval($id);
+                            if ($id) $sql->where("id_usuario", $id);
+                            else $sql->where("id_empresa", $this->retorna_empresa_logada()); // ControllerKX.php
+                        })
+                        ->groupby(
+                            "id_empresa",
+                            "nome_fantasia"
+                        )
+                        ->get();
+        return view("usuarios_crud", compact("breadcumb", "usuario", "empresas"));
     }
 
     public function listar(Request $request) {
@@ -90,6 +106,7 @@ class UsuariosController extends ControllerKX {
     }
 
     public function salvar(Request $request) {
+        $id = 0;
         $senha = Hash::make($request->senha);
         $foto = $request->file("foto") ? "foto = '".$request->file("foto")->store("uploads", "public")."'," : "";
         if (!$request->id) {
@@ -99,60 +116,37 @@ class UsuariosController extends ControllerKX {
                     ->value("id");
             if ($foto) DB::statement("UPDATE users SET ".str_replace(",", "", $foto)." WHERE id = ".$id);
             $this->log_inserir("C", "users", $id); // ControllerKX.php
-            $linha = new EmpresasUsuarios;
-            $linha->id_usuario = DB::table("users")->orderby("id", "DESC")->value("id");
-            $linha->id_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
-            $linha->save();
-            $this->log_inserir("C", "empresas_usuarios", $linha->id); // ControllerKX.php
         } else {
+            $id = $request->id;
+            $senha = $request->senha ? "password = '".$senha."'," : "";
             DB::statement("
                 UPDATE users SET
+                    ".$foto.$senha."
                     name = '".mb_strtoupper($request->nome)."',
-                    email = '".mb_strtolower($request->email)."',
-                    ".$foto."
-                    password = '".$senha."'
+                    email = '".mb_strtolower($request->email)."'
                 WHERE id = ".$request->id
             );
             $this->log_inserir("E", "users", $request->id); // ControllerKX.php
         }
+
+        $this->log_inserir2("D", "empresas_usuarios", "id_usuario = ".$id, "NULL"); // ControllerKX.php
+        DB::statement("DELETE FROM empresas_usuarios WHERE id_usuario = ".$id);
+        $empresas = explode("|", $request->empresas);
+        foreach ($empresas as $empresa) {
+            $linha = new EmpresasUsuarios;
+            $linha->id_usuario = $id;
+            $linha->id_empresa = $empresa;
+            $linha->save();
+            $this->log_inserir("C", "empresas_usuarios", $linha->id); // ControllerKX.php
+        }
+
         return redirect("/usuarios");
     }
 
     public function excluir(Request $request) {
         DB::statement("DELETE FROM users WHERE id = ".$request->id);
         $this->log_inserir("D", "users", $request->id); // ControllerKX.php
-        $lista = DB::table("empresas_usuarios")
-                    ->where("id_usuario", $request->id)
-                    ->pluck("id");
-        foreach ($lista as $empresa) $this->log_inserir("D", "empresas_usuarios", $empresa); // ControllerKX.php
+        $this->log_inserir2("D", "empresas_usuarios", "id_usuario = ".$request->id, "NULL"); // ControllerKX.php
         DB::statement("DELETE FROM empresas_usuarios WHERE id_usuario = ".$request->id);
-    }
-
-    public function empresas_listar($id_usuario) {
-        return json_encode(
-            DB::table("empresas_usuario")
-                ->select(
-                    "empresas_usuario.id",
-                    "empresas.nome_fantasia"
-                )
-                ->join("empresas", "empresas.id", "empresas_usuario.id_empresa")
-                ->where("empresas.lixeira", 0)
-                ->where("empresas_usuario.id_usuario", $id_usuario)
-                ->get()
-        );
-    }
-
-    public function empresas_adicionar(Request $request) {
-        $linha = new EmpresasUsuarios;
-        $linha->id_empresa = $request->id_empresa;
-        $linha->id_usuario = $request->id_usuario;
-        $linha->save();
-        $this->log_inserir("C", "empresas_usuario", $linha->id); // ControllerKX.php
-    }
-
-    public function empresas_remover($id) {
-        $linha = EmpresasUsuarios::find($id);
-        $linha->delete();
-        $this->log_inserir("D", "empresas_usuario", $id); // ControllerKX.php
     }
 }

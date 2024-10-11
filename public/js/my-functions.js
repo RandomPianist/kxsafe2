@@ -451,6 +451,42 @@ function s_alert(texto) {
     });
 }
 
+function s_confirm(texto, funcao) {
+    Swal.fire({
+        title: "Aviso",
+        html : texto,
+        showDenyButton : true,
+        confirmButtonText : "NÃO",
+        confirmButtonColor : "rgb(31, 41, 55)",
+        denyButtonText : "SIM"
+    }).then((result) => {
+        if (result.isDenied) funcao();
+    });
+}
+
+function excluirMain(_id, prefixo, aviso, callback) {
+    s_confirm(aviso, function() {
+        $.post(URL + prefixo + "/excluir", {
+            _token : $("meta[name='csrf-token']").attr("content"),
+            id : _id
+        }, function() {
+            callback();
+        });
+    });
+}
+
+function excluir(_id, prefixo, e) {
+    if (e !== undefined) e.preventDefault();
+    $.get(URL + prefixo + "/aviso/" + _id, function(data) {
+        if (typeof data == "string") data = $.parseJSON(data);
+        if (parseInt(data.permitir)) {
+            excluirMain(_id, prefixo, data.aviso, function() {
+                location.reload();
+            });
+        } else s_alert(data.aviso);
+    });
+}
+
 // mover as funções abaixo para arquivo específico depois
 function formatarCPF(el) {
     el.classList.remove("invalido");

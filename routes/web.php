@@ -51,22 +51,6 @@ Route::middleware("auth")->group(function () {
         Route::get ("/aviso/{id}", [UsuariosController::class, "aviso"]);
         Route::post("/salvar",     [UsuariosController::class, "salvar"]);
         Route::post("/excluir",    [UsuariosController::class, "excluir"]);
-
-        Route::group(["prefix" => "empresas"], function() {
-            Route::get ("/{id_usuario}", [UsuariosController::class, "empresas_listar"]);
-            Route::post("/adicionar",    [UsuariosController::class, "empresas_adicionar"]);
-            Route::post("/remover/{id}", [UsuariosController::class, "empresas_remover"]);
-        });
-    });
-
-    Route::group(["prefix" => "empresas"], function() {
-        Route::get ("/selecionar", [EmpresasController::class, "minhas"]);
-        Route::get ("/consultar",  [EmpresasController::class, "consultar"]);
-        Route::get ("/crud",       [EmpresasController::class, "crud"]);
-        Route::get ("/aviso/{id}", [EmpresasController::class, "aviso"]);
-        Route::get ("/salvar",     [EmpresasController::class, "salvar"]);
-        Route::post("/excluir",    [EmpresasController::class, "excluir"]);
-        Route::post("/selecionar", [EmpresasController::class, "selecionar"]);
     });
 
     Route::group(["prefix" => "grupos"], function() {
@@ -157,6 +141,17 @@ Route::middleware("auth")->group(function () {
         Route::get ("/aviso/{id}", [CategoriasController::class, "aviso"]);
         Route::post("/salvar",     [CategoriasController::class, "salvar"]);
         Route::post("/excluir",    [CategoriasController::class, "excluir"]);
+    });
+
+    Route::group(["prefix" => "empresas"], function() {
+        Route::get ("/selecionar",  [EmpresasController::class, "minhas"]);
+        Route::get ("/consultar",   [EmpresasController::class, "consultar"]);
+        Route::get ("/consultar2",  [EmpresasController::class, "consultar2"]);
+        Route::get ("/crud",        [EmpresasController::class, "crud"]);
+        Route::get ("/aviso/{id}",  [EmpresasController::class, "aviso"]);
+        Route::post("/salvar",      [EmpresasController::class, "salvar"]);
+        Route::post("/excluir",     [EmpresasController::class, "excluir"]);
+        Route::post("/selecionar",  [EmpresasController::class, "selecionar"]);
     });
 });
 
