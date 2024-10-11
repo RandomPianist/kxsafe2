@@ -45,11 +45,15 @@
         </div>
         <span class = "ultima-atualizacao">{{ $ultima_atualizacao }}</span>
     </div>
-    <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário">
+    <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
         <i class = "fa-solid fa-plus"></i>
     </button>
 
     <script type = "text/javascript" language = "JavaScript">
+        function ir(id) {
+            location.href = URL + "/usuarios/crud/" + id;
+        }
+
         function listar() {
             $.get(URL + "/usuarios/listar", {
                 filtro : document.getElementById("filtro").value
@@ -65,7 +69,7 @@
                         "<td width = '37%'>" + usuario.name + "</td>" +
                         "<td width = '37%'>" + usuario.email + "</td>" +
                         "<td class = 'text-center' width = '13%'>" +
-                            "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'></i>" +
+                            "<i class = 'my-icon far fa-edit m-2'  title = 'Editar' onclick = 'ir(" + usuario.id + ")'></i>" +
                             "<i class = 'my-icon far fa-trash-alt' title = 'Excluir'></i>" +
                         "</td>" +
                     "</tr>";

@@ -47,7 +47,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [UsuariosController::class, "ver"]);
         Route::get ("/listar",     [UsuariosController::class, "listar"]);
         Route::get ("/consultar",  [UsuariosController::class, "consultar"]);
-        Route::get ("/crud",       [UsuariosController::class, "crud"]);
+        Route::get ("/crud/{id}",  [UsuariosController::class, "crud"]);
         Route::get ("/aviso/{id}", [UsuariosController::class, "aviso"]);
         Route::post("/salvar",     [UsuariosController::class, "salvar"]);
         Route::post("/excluir",    [UsuariosController::class, "excluir"]);

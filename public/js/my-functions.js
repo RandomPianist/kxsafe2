@@ -99,6 +99,14 @@ window.onload = function () {
     document.getElementById("menu-abrir").onclick = function() {
         setTravarCliqueMenu();
         ativar(["main", "aside", "#pesquisa-header", "#header-esquerdo"], true);
+        if (document.getElementById("complemento") !== null) {
+            document.getElementById("complemento").parentElement.classList.remove("col-md-5");
+            document.getElementById("complemento").parentElement.classList.add("col-md-4");
+            document.getElementById("referencia").parentElement.classList.remove("col-md-5");
+            document.getElementById("referencia").parentElement.classList.add("col-md-4");
+            document.querySelector(".btn-secondary").parentElement.classList.remove("col-md-2");
+            document.querySelector(".btn-secondary").parentElement.classList.add("col-md-4");
+        }
     };
 
     document.getElementById("menu-fechar").onclick = function() {
@@ -109,6 +117,14 @@ window.onload = function () {
             }
         });
 		ativar(["main", "aside", "#pesquisa-header", "#header-esquerdo"], false);
+        if (document.getElementById("complemento") !== null) {
+            document.getElementById("complemento").parentElement.classList.add("col-md-5");
+            document.getElementById("complemento").parentElement.classList.remove("col-md-4");
+            document.getElementById("referencia").parentElement.classList.add("col-md-5");
+            document.getElementById("referencia").parentElement.classList.remove("col-md-4");
+            document.querySelector(".btn-secondary").parentElement.classList.add("col-md-2");
+            document.querySelector(".btn-secondary").parentElement.classList.remove("col-md-4");
+        }
     };
 
     const lista = document.getElementsByClassName("breadcrumb-item");
@@ -198,7 +214,7 @@ function ordenar(coluna) {
     }
     $($(".sortable-columns").children()[coluna]).trigger("click");
     document.querySelectorAll(".my-icon, button:not(.btn-menu), #pesquisa-header, input").forEach((el) => {
-        el.onclick = function() {
+        el.onmousedown = function() {
             setTravarCliqueMenu();
         }
     });

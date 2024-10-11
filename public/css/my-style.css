@@ -354,9 +354,13 @@ footer a {
 }
 
 small,
-.lista-enderecos li {
+.lista-crud li {
 	display: flex;
 	align-items: center
+}
+
+.lista-crud li {
+	justify-content: space-between
 }
 
 small {

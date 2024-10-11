@@ -223,7 +223,7 @@
 		</div>
 		<div class = "row">
 			<div class = "col-md-12 mt-4">
-				<ul class = "lista-enderecos list-group">
+				<ul class = "lista-crud list-group">
                     @for ($i = 0; $i < sizeof($enderecos); $i++)
                         <li class = "list-group-item">
                             <span>{{ $enderecos[$i] }}</span>
@@ -239,11 +239,6 @@
 			Salvar
 		</button>
 	</div>
-    <style type = "text/css">
-		.lista-enderecos li {
-            justify-content: space-between
-        }
-    </style>
 	<script type = "text/javascript" language = "JavaScript">
         @if ($empresa !== null)
             const id = {{ $empresa->id }};
@@ -260,16 +255,18 @@
         let complementos_ant = new Array();
         let referencias_ant = new Array();
         
-        @foreach ($empresa->enderecos as $endereco)
-            ceps.push("{{ $endereco->cep }}");
-            numeros.push("{{ $endereco->numero }}");
-            complementos.push("{{ $endereco->complemento }}");
-            referencias.push("{{ $endereco->referencia }}");
-            ceps_ant.push("{{ $endereco->cep }}");
-            numeros_ant.push("{{ $endereco->numero }}");
-            complementos_ant.push("{{ $endereco->complemento }}");
-            referencias_ant.push("{{ $endereco->referencia }}");
-        @endforeach
+        @if ($empresa !== null) {
+            @foreach ($empresa->enderecos as $endereco)
+                ceps.push("{{ $endereco->cep }}");
+                numeros.push("{{ $endereco->numero }}");
+                complementos.push("{{ $endereco->complemento }}");
+                referencias.push("{{ $endereco->referencia }}");
+                ceps_ant.push("{{ $endereco->cep }}");
+                numeros_ant.push("{{ $endereco->numero }}");
+                complementos_ant.push("{{ $endereco->complemento }}");
+                referencias_ant.push("{{ $endereco->referencia }}");
+            @endforeach
+        @endif
 
 		function validarCNPJ(cnpj) {
 			cnpj = cnpj.replace(/[^\d]+/g,'');
@@ -323,6 +320,7 @@
                 else $($(this)[0]).addClass("readonly");
                 $($(this)[0]).trigger("oninput");
             });
+            if (ativar) document.querySelector(".btn-secondary").disabled = false;
         }
 
         function preventPipe(el, max) {
@@ -333,11 +331,17 @@
         }
 
         function carregarCEP() {
+            limparInvalido();
             const main = function() {
                 let el = document.getElementById("cep");
                 const cep = el.value.replace(/\D/g, "");
                 el.value = cep.replace(/(\d{5})(\d)/,'$1-$2');
                 if (cep.length == 8) {
+                    enableEndereco(false);
+                    Array.from(document.getElementsByClassName("campo-endereco")).forEach((el) => {
+                        el.value = "Carregando...";
+                    });
+                    document.querySelector(".btn-secondary").disabled = true;
                     $.get(URL + "/cep/mostrar/" + cep, function(data) {
                         data = $.parseJSON(data);
                         if (parseInt(data.cod) == 200) {
@@ -345,7 +349,6 @@
                             document.getElementById("bairro").value = data.cep.bairro;
                             document.getElementById("cidade").value = data.cep.cidade,
                             document.getElementById("uf").value = data.cep.uf;
-                            enableEndereco(false);
                         } else {
                             $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
                                 if (!("erro" in dados)) {
@@ -400,7 +403,7 @@
                     "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluirEndereco(" + i + ")'></i>" +
 				"</li>";
             }
-            document.querySelector(".lista-enderecos").innerHTML = resultado;
+            document.querySelector(".lista-crud").innerHTML = resultado;
         }
 
         function excluirEndereco(indice) {
@@ -413,50 +416,50 @@
         }
 
         function salvarEndereco() {
-            const cep = document.getElementById("cep").value.replace(/\D/g, "");
+            let cep = document.getElementById("cep").value.replace(/\D/g, "");
 
             const main = function() {
-                limparInvalido();
-                const erro = verificaVazios([
-                    "cep",
-                    "cidade",
-                    "uf",
-                    "logradouro",
-                    "numero"
-                ]).erro;
-                if (!erro) {
-                    ceps.push(cep);
-                    numeros.push(document.getElementById("numero").value);
-                    complementos.push(document.getElementById("complemento").value);
-                    referencias.push(document.getElementById("referencia").value);
-                    $(".campo-endereco2").each(function() {
-                        $($(this)[0]).val("");
-                        $($(this)[0]).trigger("oninput");
-                    });
-                    enableEndereco(true);
-                    mostrarEnderecos();
-                } else s_alert(erro);
+                ceps.push(cep);
+                numeros.push(document.getElementById("numero").value);
+                complementos.push(document.getElementById("complemento").value);
+                referencias.push(document.getElementById("referencia").value);
+                $(".campo-endereco2").each(function() {
+                    $($(this)[0]).val("");
+                    $($(this)[0]).trigger("oninput");
+                });
+                enableEndereco(true);
+                mostrarEnderecos();
             }
 
-            $.get(URL + "/cep/mostrar/" + cep, function(data) {
-                data = $.parseJSON(data);
-                if (parseInt(data.cod) != 200) {
-                    $.post(URL + "/cep/salvar", {
-                        _token : $("meta[name='csrf-token']").attr("content"),
-                        cod : cep,
-                        logradouro_tipo : "",
-                        logradouro_tipo_abv : "",
-                        logradouro_descr : document.getElementById("logradouro").value,
-                        cod_ibge_cidade : "",
-                        cidade : document.getElementById("cidade").value,
-                        bairro : document.getElementById("bairro").value,
-                        estado : document.querySelector("option[value='" + dados.uf + "']").innerHTML,
-                        uf : document.getElementById("uf").value
-                    }, function(data) {
-                        main();
-                    })
-                } else main();
-            });
+            limparInvalido();
+            const erro = verificaVazios([
+                "cep",
+                "cidade",
+                "uf",
+                "logradouro",
+                "numero"
+            ]).erro;
+            if (!erro) {
+                $.get(URL + "/cep/mostrar/" + cep, function(data) {
+                    data = $.parseJSON(data);
+                    if (parseInt(data.cod) != 200) {
+                        $.post(URL + "/cep/salvar", {
+                            _token : $("meta[name='csrf-token']").attr("content"),
+                            cod : cep,
+                            logradouro_tipo : "",
+                            logradouro_tipo_abv : "",
+                            logradouro_descr : document.getElementById("logradouro").value,
+                            cod_ibge_cidade : "",
+                            cidade : document.getElementById("cidade").value,
+                            bairro : document.getElementById("bairro").value,
+                            estado : document.querySelector("option[value='" + document.getElementById("uf").value + "']").innerHTML,
+                            uf : document.getElementById("uf").value
+                        }, function(data) {
+                            main();
+                        })
+                    } else main();
+                });
+            } else s_alert(erro);
         }
 
         function validar() {

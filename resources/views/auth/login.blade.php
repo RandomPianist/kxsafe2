@@ -15,16 +15,6 @@
             .col-4 a:hover {
                 color: var(--hover-principal)
             }
-
-            .login-input,
-            .icone-login {
-                font-size: 13pt
-            } 
-
-            .icone-login {
-                padding-right: 2pt;
-                color: var(--fonte)
-            }
         </style>
     </head>
 
