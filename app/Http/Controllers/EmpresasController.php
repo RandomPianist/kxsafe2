@@ -251,7 +251,25 @@ class EmpresasController extends ControllerKX {
                 ->where("cnpj", $request->cnpj)
                 ->where("tipo", $request->tipo)
                 ->get()
-        )) return "1";
+        )) return "cnpj";
+        if (!sizeof(
+            DB::table("empresas")
+                ->where("lixeira", 0)
+                ->where("id", $request->id_matriz)
+                ->where("nome_fantasia", $request->matriz)
+        )) return "Matriz";
+        if (!sizeof(
+            DB::table("segmentos")
+                ->where("lixeira", 0)
+                ->where("id", $request->id_segmento)
+                ->where("descr", $request->segmento)
+        )) return "Segmento";
+        if (!sizeof(
+            DB::table("grupos")
+                ->where("lixeira", 0)
+                ->where("id", $request->id_grupo)
+                ->where("descr", $request->grupo)
+        )) return "Grupo";
         return "0";
     }
 
@@ -309,7 +327,7 @@ class EmpresasController extends ControllerKX {
         $linha->id_criadora = $this->retorna_empresa_logada(); // ControllerKX.php
         $linha->save();
 
-        $ceps = explode($request->cep, ",");
+        $ceps = explode($request->ceps, ",");
         $numeros = explode($request->numeros, ",");
         $referencias = explode($request->referencias, ",");
         $complementos = explode($request->complementos, ",");

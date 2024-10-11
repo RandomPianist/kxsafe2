@@ -245,16 +245,30 @@
         }
     </style>
 	<script type = "text/javascript" language = "JavaScript">
+        @if ($empresa === null)
+            const criando = true;
+        @else
+            const criando = false;
+        @endif
+
         let ceps = new Array();
         let numeros = new Array();
         let complementos = new Array();
         let referencias = new Array();
+        let ceps_ant = new Array();
+        let numeros_ant = new Array();
+        let complementos_ant = new Array();
+        let referencias_ant = new Array();
         
         @foreach ($empresa->enderecos as $endereco)
             ceps.push("{{ $endereco->cep }}");
             numeros.push("{{ $endereco->numero }}");
             complementos.push("{{ $endereco->complemento }}");
             referencias.push("{{ $endereco->referencia }}");
+            ceps_ant.push("{{ $endereco->cep }}");
+            numeros_ant.push("{{ $endereco->numero }}");
+            complementos_ant.push("{{ $endereco->complemento }}");
+            referencias_ant.push("{{ $endereco->referencia }}");
         @endforeach
 
 		function validarCNPJ(cnpj) {
@@ -431,33 +445,92 @@
             limparInvalido();
             let erro = "";
 
-            let _cnpj = document.getElementById("cnpj");
-            if (!_cnpj.value) {
-                erro = "Preencha o campo";
-                _cnpj.classList.add("invalido");
-            }
-            const aux = verificaVazios(["nome_fantasia", "razao_social"], erro);
+            let elementos = obterElementos([
+                "razao_social",
+                "nome_fantasia",
+                "cnpj",
+                "ie",
+                "email",
+                "telefone",
+                "tipo_contribuicao",
+                "royalties",
+                "grupo",
+                "segmento",
+                "matriz",
+                "cep",
+                "logradouro",
+                "numero",
+                "bairro",
+                "cidade",
+                "estado",
+                "complemento",
+                "referencia"
+            ]);
+
+            const aux = verificaVazios([
+                "razao_social",
+                "nome_fantasia",
+                "cnpj",
+                "ie",
+                "email",
+                "telefone",
+                "tipo_contribuicao"
+            ], erro);
             erro = aux.erro;
             let alterou = aux.alterou;
-            if (!erro && !validarCNPJ(_cnpj.value)) {
+            if (!erro && !validarCNPJ(elementos.cnpj)) {
                 erro = "CNPJ inválido";
-                _cnpj.classList.add("invalido");
+                elementos.cnpj.classList.add("invalido");
             }
-            if (_cnpj.value != anteriores.cnpj) alterou = true;
+            if (elementos.cnpj.value != anteriores.cnpj) alterou = true;
 
-            $.get(URL + "/empresas/consultar/", {
-                cnpj : _cnpj.value.replace(/\D/g, "")
-
-            }, function(data) {
-                if (!erro && parseInt(data) && !parseInt(document.getElementById("id").value)) {
+            let consulta = obterElementosValor(elementos, ["matriz", "grupo", "segmento"]);
+            consulta.cnpj = elementos.cnpj.value.replace(/\D/g, "");
+            consulta.tipo = {{ $tipo }};
+            
+            $.get(URL + "/empresas/consultar/", consulta, function(data) {
+                if (!erro && data == "cnpj" && criando) {
                     erro = "Já existe um registro com esse CNPJ";
-                    _cnpj.classList.add("invalido");
+                    elementos.cnpj.classList.add("invalido");
                 }
-                if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
-                if (!erro) {
-                    _cnpj.value = _cnpj.value.replace(/\D/g, "");
-                    
-                } else s_alert(erro);
+                if (!erro && data != "0") {
+                    erro = data + " não encontrad" + (data == "Matriz" ? "a" : "o");
+                    elementos[data.toLowerCase()].classList.add("invalido");
+                }
+                if (!erro && !alterou) {
+                    if (dinheiro(anteriores.royalties) != document.getElementById("royalties").value) alterou = true;
+                    ["grupo", "segmento", "matriz"].forEach((item) => {
+                        if (anteriores[item] != document.getElementById(item).value) alterou = true;
+                    });
+                    if (ceps_ant.join("|") != ceps.join("|")) alterou = true;
+                    if (numeros_ant.join("|") != numeros.join("|")) alterou = true;
+                    if (complementos_ant.join("|") != complementos.join("|")) alterou = true;
+                    if (numeros_ant.join("|") != numeros.join("|")) alterou = true;
+                    if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
+                    if (!erro) {
+                        let enviar = obterElementosValor(elementos, [
+                            "razao_social",
+                            "nome_fantasia",
+                            "cnpj",
+                            "ie",
+                            "email",
+                            "telefone",
+                            "tipo_contribuicao",
+                            "royalties",
+                            "grupo",
+                            "segmento",
+                            "matriz"
+                        ]);
+                        enviar._token = $("meta[name='csrf-token']").attr("content");
+                        enviar.ceps = ceps.join(",");
+                        enviar.numero = numeros.join(",");
+                        enviar.referencias = referencias.join(",");
+                        enviar.complementos = complementos.join(",");
+                        $.post(URL + "/cep/salvar", enviar, function() {
+                            location.href = URL + "/{{ strtolower($titulo) }}/grupo/" + (elementos.id_grupo.value ? elementos.id_grupo.value : "0");
+                        });
+                    } else s_alert(erro);
+                }
             });
         }
 	</script>

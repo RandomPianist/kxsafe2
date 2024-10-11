@@ -178,6 +178,10 @@ window.onload = function () {
         $(el).trigger("keyup");
     });
 
+    document.querySelectorAll("input, select").forEach((el) => {
+        anteriores[el.id] = el.value;
+    });
+
     carregaAutocomplete();
     let carrega_lista = true;
     ["crud", "franqueadoras", "franquias", "clientes", "fornecedores"].forEach((pagina) => {
@@ -378,6 +382,7 @@ function verificaVazios(arr, _erro) {
         let el = document.getElementById(id);
         let erro_ou_vazio = !el.value;
         if (!erro_ou_vazio && id.indexOf("qtd-") > -1) erro_ou_vazio = !parseInt(el.value);
+        if (!erro_ou_vazio && el.tagName == "SELECT") erro_ou_vazio = el.value.indexOf("0") > -1;
         if (erro_ou_vazio) {
             if (!_erro) _erro = "Preencha o campo";
             else _erro = "Preencha os campos";
@@ -396,6 +401,36 @@ function verificaVazios(arr, _erro) {
 function limparInvalido() {
     Array.from(document.getElementsByTagName("INPUT")).forEach((el) => {
         el.classList.remove("invalido");
+    });
+}
+
+function obterElementos(lista, prefixo) {
+    if (prefixo === undefined) prefixo = "";
+    let resultado = {};
+    lista.forEach((item) => {
+        let chave = item.replace(/[0-9]/g, '');
+        resultado[chave] = document.getElementById(prefixo + item);
+        let el = document.getElementById(prefixo + "id_" + item);
+        if (el !== null) resultado["id_" + chave] = el;
+    });
+    return resultado;
+}
+
+function obterElementosValor(elementos, chaves) {
+    let resultado = {};
+    chaves.forEach((chave) => {
+        resultado[chave] = elementos[chave].value;
+        resultado["id_" + chave] = elementos["id_" + chave].value;
+    });
+    return resultado;
+}
+
+function s_alert(texto) {
+    Swal.fire({
+        icon : "warning",
+        title : "Atenção",
+        html : texto,
+        confirmButtonColor : "rgb(31, 41, 55)"
     });
 }
 

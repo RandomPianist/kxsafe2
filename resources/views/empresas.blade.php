@@ -25,44 +25,50 @@
             </div>
         </div>
     </div>
-    <div class = "lista-empresas custom-scrollbar">
-        @foreach ($empresas as $empresa)
-            <div class = "empresa-matriz mb-2">
-                <div class = "matriz-header d-flex justify-content-between align-items-center p-3">
-                    <div class = "d-flex justify-content-between align-items-center">
-                        <span class = "toggle-icon mr-3">+</span>
-                        <span class = "nome-matriz">
-                            <strong>{{ $empresa->nome_fantasia }}</strong>
-                        </span>
+    @if(sizeof($empresas))
+        <div class = "lista-empresas custom-scrollbar">
+            @foreach ($empresas as $empresa)
+                <div class = "empresa-matriz mb-2">
+                    <div class = "matriz-header d-flex justify-content-between align-items-center p-3">
+                        <div class = "d-flex justify-content-between align-items-center">
+                            <span class = "toggle-icon mr-3">+</span>
+                            <span class = "nome-matriz">
+                                <strong>{{ $empresa->nome_fantasia }}</strong>
+                            </span>
+                        </div>
+                        <div class = "d-flex justify-content-between">
+                            <i class = "my-icon far fa-edit m-2" title = "Editar" onclick = "ir({{ $empresa->id }}, 0, {{ $id_grupo }})"></i>
+                            <i class = "my-icon far fa-trash-alt m-2" title = "Excluir"></i>
+                            <i class = "my-icon far fa-add m-2" title = "Adicionar filial" onclick = "ir(0, {{ $empresa->id }}, {{ $id_grupo }})"></i>
+                        </div>
                     </div>
-                    <div class = "d-flex justify-content-between">
-                        <i class = "my-icon far fa-edit m-2" title = "Editar" onclick = "ir({{ $empresa->id }}, 0, {{ $id_grupo }})"></i>
-                        <i class = "my-icon far fa-trash-alt m-2" title = "Excluir"></i>
-                        <i class = "my-icon far fa-add m-2" title = "Adicionar filial" onclick = "ir(0, {{ $empresa->id }}, {{ $id_grupo }})"></i>
-                    </div>
-                </div>
-                @if (sizeof($empresa->filiais))
-                    <div class = "filiais-lista">
-                        @foreach ($empresa->filiais as $filial)
-                            <div class = "d-flex justify-content-between align-items-center pt-3 pb-3 pl-3 pr-2">
-                                <span class = "nome-filial">{{ $filial->nome_fantasia }}</span>
-                                <div> 
-                                    <i class = "my-icon far fa-edit m-2" title = "Editar filial" onclick = "ir({{ $filial->id }}, 0, {{ $id_grupo }})"></i>
-                                    <i class = "my-icon far fa-trash-alt mr-3" title = "Excluir filial"></i>
+                    @if (sizeof($empresa->filiais))
+                        <div class = "filiais-lista">
+                            @foreach ($empresa->filiais as $filial)
+                                <div class = "d-flex justify-content-between align-items-center pt-3 pb-3 pl-3 pr-2">
+                                    <span class = "nome-filial">{{ $filial->nome_fantasia }}</span>
+                                    <div> 
+                                        <i class = "my-icon far fa-edit m-2" title = "Editar filial" onclick = "ir({{ $filial->id }}, 0, {{ $id_grupo }})"></i>
+                                        <i class = "my-icon far fa-trash-alt mr-3" title = "Excluir filial"></i>
+                                    </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-        @endforeach
-    </div>
-    @if ($pode_criar)
-        <button class = "botao-target botao-adicionar" type = "button" title = "{{ $novo }} (matriz)" onclick = "ir(0, 0, {{ $id_grupo }})">
-            <i class = "fa-solid fa-plus"></i>
-        </button>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+        @if ($pode_criar)
+            <button class = "botao-target botao-adicionar" type = "button" title = "{{ $novo }} (matriz)" onclick = "ir(0, 0, {{ $id_grupo }})">
+                <i class = "fa-solid fa-plus"></i>
+            </button>
+        @endif
+    @else
+        <div class = "d-flex flex-column align-items-center justify-content-center">
+            <img class = "imagem-erro" src = "{{ asset('img/not-found-error.png')}}" alt="Imagem de erro."></img>
+            <h1>Dados não encontrados</h1>
+        </div>
     @endif
-
     <style type = "text/css">
         .lista-empresas {
             margin-top: 1.5rem;

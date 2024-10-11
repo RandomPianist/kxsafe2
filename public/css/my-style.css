@@ -382,3 +382,12 @@ label {
 .tabela-arredondada tr:last-child td:last-child {
 	border-bottom-right-radius: 10px
 }
+
+.invalido {
+    border: 2px solid #F00;
+}
+
+.imagem-erro {
+    width: 500px;
+    height: 500px
+}
