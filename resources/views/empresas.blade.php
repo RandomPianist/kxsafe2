@@ -58,6 +58,7 @@
                 </div>
             @endforeach
         </div>
+        <span class = "ultima-atualizacao">{{ $ultima_atualizacao }}</span>
         @if ($pode_criar)
             <button class = "botao-target botao-adicionar" type = "button" title = "{{ $novo }} (matriz)" onclick = "ir(0, 0, {{ $id_grupo }})">
                 <i class = "fa-solid fa-plus"></i>

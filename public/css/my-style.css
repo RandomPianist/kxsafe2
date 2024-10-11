@@ -390,4 +390,14 @@ label {
 .imagem-erro {
     width: 500px;
     height: 500px
+}	
+
+.readonly {
+	background-color: #e9ecef;
+	pointer-events: none
+}
+
+.ultima-atualizacao {
+	font-size: 9pt;
+    color: var(--icone-secundario)
 }

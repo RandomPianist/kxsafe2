@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int    $id
  * @property int    $lixeira
- * @property int    $id_empresa
  * @property int    $created_at
  * @property int    $updated_at
  * @property string $descr
@@ -34,7 +33,7 @@ class Categorias extends Model
      * @var array
      */
     protected $fillable = [
-        'descr', 'lixeira', 'id_empresa', 'created_at', 'updated_at'
+        'descr', 'lixeira', 'created_at', 'updated_at'
     ];
 
     /**
@@ -52,7 +51,7 @@ class Categorias extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'descr' => 'string', 'lixeira' => 'int', 'id_empresa' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'id' => 'int', 'descr' => 'string', 'lixeira' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
     ];
 
     /**

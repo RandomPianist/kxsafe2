@@ -6,14 +6,15 @@ use DB;
 use Auth;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
-use App\Models\Categorias;
+use App\Models\Cfop;
 
-class CategoriasController extends ControllerKX {
+class CfopController extends ControllerKX {
     private function busca($param = "1") {
         $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
-        return DB::table("categorias")
+        return DB::table("cfop")
                     ->select(
                         "id",
+                        "cfop",
                         "descr"
                     )
                     ->whereRaw($param)
@@ -22,13 +23,13 @@ class CategoriasController extends ControllerKX {
     }
 
     public function ver() {
-        if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
+        if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",
-            "Categorias" => "#"
+            "Cfop" => "#"
         );
-        $ultima_atualizacao = $this->log_consultar("categorias"); // ControllerKX.php
-        return view("categorias", compact("ultima_atualizacao", "breadcumb"));
+        $ultima_atualizacao = $this->log_consultar("cfop"); // ControllerKX.php
+        return view("cfop", compact("ultima_atualizacao", "breadcumb"));
     }
     
     public function listar(Request $request) {
@@ -43,7 +44,7 @@ class CategoriasController extends ControllerKX {
 
     public function consultar(Request $request) {
         if (sizeof(
-            DB::table("categorias")
+            DB::table("cfop")
                 ->where("lixeira", 0)
                 ->where("descr", $request->descr)
                 ->get()
@@ -55,37 +56,38 @@ class CategoriasController extends ControllerKX {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",
-            "Categorias" => config("app.root_url")."/categorias",
+            "Cfop" => config("app.root_url")."/cfop",
             (intval($id) ? "Editar" : "Novo") => "#"
         );
-        $categoria = DB::table("categorias")
+        $cfop = DB::table("cfop")
                         ->select(
                             "id",
+                            "cfop",
                             "descr"
                         )
                         ->where("id", $id)
                         ->first();
-        return view("categorias_crud", compact("breadcumb", "categoria"));
+        return view("cfop_crud", compact("breadcumb", "cfop"));
     }
 
     public function aviso($id) {
         $resultado = new \stdClass;
-        $resultado->aviso = "Tem certeza que deseja excluir ".Categorias::find($id)->descr."?";
+        $resultado->aviso = "Tem certeza que deseja excluir ".Cfop::find($id)->descr."?";
         $resultado->permitir = 1;
         return json_encode($resultado);
     }
 
     public function salvar(Request $request) {
-        $linha = Categorias::firstOrNew(["id" => $request->id]);
+        $linha = Cfop::firstOrNew(["id" => $request->id]);
         $linha->descr = $request->descr;
         $linha->save();
-        $this->log_inserir($request->id ? "E" : "C", "categorias", $linha->id);  // ControllerKX.php
+        $this->log_inserir($request->id ? "E" : "C", "cfop", $linha->id);  // ControllerKX.php
     }
 
     public function excluir(Request $request) {
-        $linha = Categorias::find($request->id);
+        $linha = Cfop::find($request->id);
         $linha->lixeira = 1;
         $linha->save();
-        $this->log_inserir("D", "categorias", $linha->id);  // ControllerKX.php
+        $this->log_inserir("D", "cfop", $linha->id);  // ControllerKX.php
     }
 }

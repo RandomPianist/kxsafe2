@@ -43,6 +43,7 @@
         <div class = "table-body-scroll custom-scrollbar">
             <table id = "table-dados" class = "table"></table>
         </div>
+        <span class = "ultima-atualizacao">{{ $ultima_atualizacao }}</span>
     </div>
     <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário">
         <i class = "fa-solid fa-plus"></i>

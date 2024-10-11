@@ -64,7 +64,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/consultar",  [EmpresasController::class, "consultar"]);
         Route::get ("/crud",       [EmpresasController::class, "crud"]);
         Route::get ("/aviso/{id}", [EmpresasController::class, "aviso"]);
-        Route::post("/salvar",     [EmpresasController::class, "salvar"]);
+        Route::get ("/salvar",     [EmpresasController::class, "salvar"]);
         Route::post("/excluir",    [EmpresasController::class, "excluir"]);
         Route::post("/selecionar", [EmpresasController::class, "selecionar"]);
     });
@@ -130,6 +130,26 @@ Route::middleware("auth")->group(function () {
     });
 
     Route::group(["prefix" => "categorias"], function() {
+        Route::get ("/",           [CategoriasController::class, "ver"]);
+        Route::get ("/listar",     [CategoriasController::class, "listar"]);
+        Route::get ("/consultar",  [CategoriasController::class, "consultar"]);
+        Route::get ("/crud",       [CategoriasController::class, "crud"]);
+        Route::get ("/aviso/{id}", [CategoriasController::class, "aviso"]);
+        Route::post("/salvar",     [CategoriasController::class, "salvar"]);
+        Route::post("/excluir",    [CategoriasController::class, "excluir"]);
+    });
+
+    Route::group(["prefix" => "bancos"], function() {
+        Route::get ("/",           [CategoriasController::class, "ver"]);
+        Route::get ("/listar",     [CategoriasController::class, "listar"]);
+        Route::get ("/consultar",  [CategoriasController::class, "consultar"]);
+        Route::get ("/crud",       [CategoriasController::class, "crud"]);
+        Route::get ("/aviso/{id}", [CategoriasController::class, "aviso"]);
+        Route::post("/salvar",     [CategoriasController::class, "salvar"]);
+        Route::post("/excluir",    [CategoriasController::class, "excluir"]);
+    });
+
+    Route::group(["prefix" => "cfop"], function() {
         Route::get ("/",           [CategoriasController::class, "ver"]);
         Route::get ("/listar",     [CategoriasController::class, "listar"]);
         Route::get ("/consultar",  [CategoriasController::class, "consultar"]);

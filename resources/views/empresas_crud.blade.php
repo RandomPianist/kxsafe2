@@ -156,7 +156,7 @@
             </div>
             <div class = "col-md-3 mb-3">
                 <label for = "numero" class = "form-label">Número:</label>
-                <input type = "text" class = "form-control" id = "numero" oninput = "contarChar(this, 16)" />
+                <input type = "text" class = "form-control campo-endereco2 text-right" id = "numero" oninput = "preventPipe(this, 16)" />
                 <small class = "text-muted"></small>
             </div>
         </div>
@@ -172,8 +172,8 @@
                 <small class = "text-muted"></small>
             </div>
             <div class = "col-md-3 mb-3">
-				<label for = "estado" class = "form-label">UF:</label>
-				<select id = "estado" class = "form-control campo-endereco campo-endereco2">
+				<label for = "uf" class = "form-label">UF:</label>
+				<select id = "uf" class = "form-control campo-endereco campo-endereco2">
 					<option value = "E0">Selecione...</option>
 					<option value = "AC">Acre</option>
 					<option value = "AL">Alagoas</option>
@@ -209,12 +209,12 @@
 		<div class = "row">
 			<div class = "col-md-5 mb-3">
 				<label for = "complemento" class = "form-label">Complemento:</label>
-				<input type = "text" class = "form-control campo-endereco2" id = "complemento" oninput = "contarChar(this, 32)" />
+				<input type = "text" class = "form-control campo-endereco2" id = "complemento" oninput = "preventPipe(this, 32)" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-5 mb-3">
 				<label for = "referencia" class = "form-label">Referência:</label>
-				<input type = "text" class = "form-control campo-endereco2" id = "referencia" oninput = "contarChar(this, 64)" />
+				<input type = "text" class = "form-control campo-endereco2" id = "referencia" oninput = "preventPipe(this, 64)" />
 				<small class = "text-muted"></small>
 			</div>
 			<div class = "col-md-2 mb-3">
@@ -226,7 +226,7 @@
 				<ul class = "lista-enderecos list-group">
                     @for ($i = 0; $i < sizeof($enderecos); $i++)
                         <li class = "list-group-item">
-                            <span>{{ $endereco[$i] }}</span>
+                            <span>{{ $enderecos[$i] }}</span>
                             <i class = "my-icon far fa-trash-alt" title = "Excluir" onclick = "excluirEndereco({{ $i }})"></i>
                         </li>
                     @endfor
@@ -245,10 +245,10 @@
         }
     </style>
 	<script type = "text/javascript" language = "JavaScript">
-        @if ($empresa === null)
-            const criando = true;
+        @if ($empresa !== null)
+            const id = {{ $empresa->id }};
         @else
-            const criando = false;
+            const id = 0;
         @endif
 
         let ceps = new Array();
@@ -319,9 +319,17 @@
 
         function enableEndereco(ativar) {
             $(".campo-endereco").each(function() {
-                $($(this)[0]).prop("readonly", !ativar);
+                if (ativar) $($(this)[0]).removeClass("readonly");
+                else $($(this)[0]).addClass("readonly");
                 $($(this)[0]).trigger("oninput");
             });
+        }
+
+        function preventPipe(el, max) {
+            let val = el.value;
+            while (val.indexOf("|") > -1) val = val.replace("|", "");
+            el.value = val;
+            contarChar(el, max);
         }
 
         function carregarCEP() {
@@ -336,7 +344,7 @@
                             document.getElementById("logradouro").value = data.cep.logradouro_tipo + " " + data.cep.logradouro_descr;
                             document.getElementById("bairro").value = data.cep.bairro;
                             document.getElementById("cidade").value = data.cep.cidade,
-                            document.getElementById("estado").value = data.cep.uf;
+                            document.getElementById("uf").value = data.cep.uf;
                             enableEndereco(false);
                         } else {
                             $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
@@ -356,7 +364,7 @@
                                         bairro : dados.bairro,
                                         estado : document.querySelector("option[value='" + dados.uf + "']").innerHTML,
                                         uf : dados.uf
-                                    }, function() {
+                                    }, function(data) {
                                         main();
                                     })
                                 } else enableEndereco(true);
@@ -367,15 +375,6 @@
                 else enableEndereco(true);
             }
             main();
-        }
-
-        function excluirEndereco(indice) {
-            ceps.splice(indice, 1);
-            numeros.splice(indice, 1);
-            complementos.splice(indice, 1);
-            referencias.splice(indice, 1);
-            mostrarEnderecos();
-            document.getElementById("cep").focus();
         }
 
         async function mostrarEnderecos() {
@@ -404,20 +403,39 @@
             document.querySelector(".lista-enderecos").innerHTML = resultado;
         }
 
+        function excluirEndereco(indice) {
+            ceps.splice(indice, 1);
+            numeros.splice(indice, 1);
+            complementos.splice(indice, 1);
+            referencias.splice(indice, 1);
+            mostrarEnderecos();
+            document.getElementById("cep").focus();
+        }
+
         function salvarEndereco() {
             const cep = document.getElementById("cep").value.replace(/\D/g, "");
 
             const main = function() {
-                ceps.push(cep);
-                numeros.push(document.getElementById("numero").value);
-                complementos.push(document.getElementById("complemento").value);
-                referencias.push(document.getElementById("referencia").value);
-                $(".campo-endereco2").each(function() {
-                    $($(this)[0]).val("");
-                    $($(this)[0]).trigger("oninput");
-                });
-                enableEndereco(true);
-                mostrarEnderecos();
+                limparInvalido();
+                const erro = verificaVazios([
+                    "cep",
+                    "cidade",
+                    "uf",
+                    "logradouro",
+                    "numero"
+                ]).erro;
+                if (!erro) {
+                    ceps.push(cep);
+                    numeros.push(document.getElementById("numero").value);
+                    complementos.push(document.getElementById("complemento").value);
+                    referencias.push(document.getElementById("referencia").value);
+                    $(".campo-endereco2").each(function() {
+                        $($(this)[0]).val("");
+                        $($(this)[0]).trigger("oninput");
+                    });
+                    enableEndereco(true);
+                    mostrarEnderecos();
+                } else s_alert(erro);
             }
 
             $.get(URL + "/cep/mostrar/" + cep, function(data) {
@@ -434,7 +452,7 @@
                         bairro : document.getElementById("bairro").value,
                         estado : document.querySelector("option[value='" + dados.uf + "']").innerHTML,
                         uf : document.getElementById("uf").value
-                    }, function() {
+                    }, function(data) {
                         main();
                     })
                 } else main();
@@ -445,7 +463,7 @@
             limparInvalido();
             let erro = "";
 
-            let elementos = obterElementos([
+            const elementos = obterElementos([
                 "razao_social",
                 "nome_fantasia",
                 "cnpj",
@@ -475,10 +493,10 @@
                 "email",
                 "telefone",
                 "tipo_contribuicao"
-            ], erro);
+            ]);
             erro = aux.erro;
             let alterou = aux.alterou;
-            if (!erro && !validarCNPJ(elementos.cnpj)) {
+            if (!erro && !validarCNPJ(elementos.cnpj.value)) {
                 erro = "CNPJ inválido";
                 elementos.cnpj.classList.add("invalido");
             }
@@ -489,11 +507,11 @@
             consulta.tipo = {{ $tipo }};
             
             $.get(URL + "/empresas/consultar/", consulta, function(data) {
-                if (!erro && data == "cnpj" && criando) {
+                if (!erro && data == "cnpj" && !id) {
                     erro = "Já existe um registro com esse CNPJ";
                     elementos.cnpj.classList.add("invalido");
                 }
-                if (!erro && data != "0") {
+                if (!erro && data != "0" && data != "cnpj") {
                     erro = data + " não encontrad" + (data == "Matriz" ? "a" : "o");
                     elementos[data.toLowerCase()].classList.add("invalido");
                 }
@@ -521,16 +539,21 @@
                             "segmento",
                             "matriz"
                         ]);
+                        enviar.id = id;
+                        enviar.tipo_contribuicao = enviar.tipo_contribuicao.replace("tipo-", "");
+                        enviar.royalties = parseInt(enviar.royalties.replace(/\D/g, "")) / 100;
+                        enviar.cnpj = enviar.cnpj.replace(/\D/g, "");
                         enviar._token = $("meta[name='csrf-token']").attr("content");
-                        enviar.ceps = ceps.join(",");
-                        enviar.numero = numeros.join(",");
-                        enviar.referencias = referencias.join(",");
-                        enviar.complementos = complementos.join(",");
-                        $.post(URL + "/cep/salvar", enviar, function() {
-                            location.href = URL + "/{{ strtolower($titulo) }}/grupo/" + (elementos.id_grupo.value ? elementos.id_grupo.value : "0");
+                        enviar.ceps = ceps.join("|");
+                        enviar.numeros = numeros.join("|");
+                        enviar.referencias = referencias.join("|");
+                        enviar.complementos = complementos.join("|");
+                        enviar.tipo = {{ $tipo }};
+                        $.get(URL + "/empresas/salvar", enviar, function(data) {
+                            location.href = URL + "/{{ strtolower($titulo) }}/grupo/" + (elementos.id_grupo.value.trim() ? elementos.id_grupo.value : "0");
                         });
                     } else s_alert(erro);
-                }
+                } else s_alert(erro);
             });
         }
 	</script>

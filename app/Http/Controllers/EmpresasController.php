@@ -155,14 +155,14 @@ class EmpresasController extends ControllerKX {
             foreach ($empresa->enderecos as $endereco) {
                 // tipo logradouro, numero[, complemento] - [bairro, ]cidade - uf cep[ (referencia)]
                 $aux = "";
-                if ($endereco->logradouro_tipo) $aux .= $endereco->logradouro_tipo + " ";
-                $aux .= trim($endereco->logradouro_descr) + ", " + $endereco->numero;
-                if (trim($endereco->complemento)) $aux .= ", " + trim($endereco->complemento);
+                if ($endereco->logradouro_tipo) $aux .= $endereco->logradouro_tipo." ";
+                $aux .= trim($endereco->logradouro_descr).", ".$endereco->numero;
+                if (trim($endereco->complemento)) $aux .= ", ".trim($endereco->complemento);
                 $aux .= " - ";
-                if ($endereco->bairro) $aux .= $endereco->bairro + ", ";
-                $aux .= $endereco->cidade + " - " + $endereco->uf;
-                if (strlen($endereco->cep) == 8) $aux .= " " + $endereco->cep;
-                if (trim($endereco->referencia)) $aux .= " (" + trim($endereco->referencia) + ")";
+                if ($endereco->bairro) $aux .= $endereco->bairro.", ";
+                $aux .= $endereco->cidade." - ".$endereco->uf;
+                if (strlen($endereco->cep) == 8) $aux .= " ".$endereco->cep;
+                if (trim($endereco->referencia)) $aux .= " (".trim($endereco->referencia).")";
                 array_push($enderecos, $aux);
             }
         }
@@ -311,46 +311,46 @@ class EmpresasController extends ControllerKX {
     }
 
     public function salvar(Request $request) {
-        $linha = Empresas::firstOrNew(["id" => $request->id]);
-        $linha->nome_fantasia = mb_strtoupper($request->nome_fantasia);
-        $linha->razao_social = mb_strtoupper($request->razao_social);
-        $linha->cnpj = $request->cnpj;
-        $linha->ie = $request->ie;
-        $linha->email = mb_strtoupper($request->email);
-        $linha->telefone = $request->telefone;
-        $linha->tipo_contribuicao = $request->tipo_contribuicao;
-        $linha->tipo = $request->tipo;
-        $linha->royalties = $request->royalties;
-        $linha->id_grupo = $request->id_grupo;
-        $linha->id_segmento = $request->id_segmento;
-        $linha->id_matriz = $request->id_matriz ? $request->id_matriz : 0;
-        $linha->id_criadora = $this->retorna_empresa_logada(); // ControllerKX.php
-        $linha->save();
+        $empresa = Empresas::firstOrNew(["id" => $request->id]);
+        $empresa->nome_fantasia = mb_strtoupper($request->nome_fantasia);
+        $empresa->razao_social = mb_strtoupper($request->razao_social);
+        $empresa->cnpj = $request->cnpj;
+        $empresa->ie = $request->ie;
+        $empresa->email = $request->email;
+        $empresa->telefone = $request->telefone;
+        $empresa->tipo_contribuicao = $request->tipo_contribuicao;
+        $empresa->tipo = $request->tipo;
+        $empresa->royalties = $request->royalties;
+        $empresa->id_grupo = $request->id_grupo;
+        $empresa->id_segmento = $request->id_segmento;
+        $empresa->id_matriz = $request->id_matriz ? $request->id_matriz : 0;
+        $empresa->id_criadora = $this->retorna_empresa_logada(); // ControllerKX.php
+        $empresa->save();
 
-        $ceps = explode($request->ceps, ",");
-        $numeros = explode($request->numeros, ",");
-        $referencias = explode($request->referencias, ",");
-        $complementos = explode($request->complementos, ",");
-
+        $ceps = explode("|", $request->ceps);
+        $numeros = explode("|", $request->numeros);
+        $referencias = explode("|", $request->referencias);
+        $complementos = explode("|", $request->complementos);
         for ($i = 0; $i < sizeof($ceps); $i++) {
             $where = "id_empresa = ".$request->id." AND id_cep IN (
                 SELECT id
-                FROM ceps
+                FROM cep
                 WHERE cod = '".$ceps[$i]."'
             )";
             $this->log_inserir2("D", "enderecos", $where, "NULL"); // ControllerKX.php
             DB::statement("DELETE FROM enderecos WHERE ".$where);
             $linha = new Enderecos;
-            $linha->id_cep = DB::table("ceps")
+            $linha->id_cep = DB::table("cep")
                                 ->where("cod", $ceps[$i])
                                 ->value("id");
             $linha->numero = $numeros[$i];
             $linha->referencia = $referencias[$i];
             $linha->complemento = $complementos[$i];
+            $linha->id_empresa = $empresa->id;
             $linha->save();
             $this->log_inserir("C", "enderecos", $linha->id); // ControllerKX.php
         }
-        $this->log_inserir($request->id ? "E" : "C", "empresas", $linha->id); // ControllerKX.php
+        $this->log_inserir($request->id ? "E" : "C", "empresas", $empresa->id); // ControllerKX.php
     }
 
     public function excluir(Request $request) {

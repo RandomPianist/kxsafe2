@@ -53,7 +53,7 @@ class ControllerKX extends Controller {
         $linha->acao = $acao;
         $linha->tabela = $tabela;
         $linha->fk = $fk;
-        if (!$api) $linha->id_pessoa = Auth::user()->id;
+        if (!$api) $linha->id_usuario = Auth::user()->id;
         $linha->save();
         return $linha;
     }
@@ -61,13 +61,13 @@ class ControllerKX extends Controller {
     protected function log_inserir2($acao, $tabela, $where, $nome, $api = false) {
         if ($nome != "NULL") $nome = "'".$nome."'";
         $sql = "INSERT INTO log (acao, tabela, nome, ";
-        if (!$api) $sql .= "id_pessoa, ";
+        if (!$api) $sql .= "id_usuario, ";
         $sql .= "fk) SELECT
             '".$acao."',
             '".$tabela."',
             ".$nome.",
         ";
-        if (!$api) $sql .= Auth::user()->id_pessoa.",";
+        if (!$api) $sql .= Auth::user()->id.",";
         $sql .= "
             id
 

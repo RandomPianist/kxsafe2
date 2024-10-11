@@ -420,7 +420,8 @@ function obterElementosValor(elementos, chaves) {
     let resultado = {};
     chaves.forEach((chave) => {
         resultado[chave] = elementos[chave].value;
-        resultado["id_" + chave] = elementos["id_" + chave].value;
+        let el = elementos["id_" + chave];
+        if (el !== null && el !== undefined) resultado["id_" + chave] = el.value;
     });
     return resultado;
 }
