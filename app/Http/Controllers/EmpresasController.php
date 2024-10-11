@@ -279,6 +279,7 @@ class EmpresasController extends ControllerKX {
                 ->where("lixeira", 0)
                 ->where("id", $request->id)
                 ->where("nome_fantasia", $request->nome_fantasia)
+                ->get()
         )) return "1";
         return "0";
     }

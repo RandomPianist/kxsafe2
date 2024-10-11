@@ -52,12 +52,14 @@ class HomeController extends ControllerKX {
         $where .= $request->search."%'";
         
         if ($tabela == "empresas") {
-            $colunas = explode(",", $request->filter_col);
-            $valores = explode(",", $request->filter);
-            for ($i = 0; $i < sizeof($colunas); $i++) {
-                $valor = $valores[$i];
-                if (!in_array($colunas[$i], ["id_matriz", "id_grupo", "id_segmento", "id_criadora", "tipo", "tipo_contribuicao"])) $valor = "'".$valor."'";
-                $where .= " AND ".$colunas[$i]." = ".$valor;
+            if ($request->filter_col) {
+                $colunas = explode(",", $request->filter_col);
+                $valores = explode(",", $request->filter);
+                for ($i = 0; $i < sizeof($colunas); $i++) {
+                    $valor = $valores[$i];
+                    if (!in_array($colunas[$i], ["id_matriz", "id_grupo", "id_segmento", "id_criadora", "tipo", "tipo_contribuicao"])) $valor = "'".$valor."'";
+                    $where .= " AND ".$colunas[$i]." = ".$valor;
+                }                
             }
         } else if ($request->filter_col) {
             $where .= $request->column != "referencia" ? " AND ".$request->filter_col." = '".$request->filter."'" : " AND referencia NOT IN (
@@ -136,9 +138,11 @@ class HomeController extends ControllerKX {
         $resultado = array();
         $consulta = DB::select(DB::raw($query));
         foreach ($consulta as $linha) {
-            $aux = new \stdClass;
-            $aux->id = $linha->id;
-            $aux->descr = $this->str_ireplace2($request->search, "<b>".$request->search."</b>", $linha->descr);
+            $linha = (array) $linha;
+            $aux = array(
+                "id" => $linha["id"],
+                $request->column => $this->str_ireplace2($request->search, "<b>".$request->search."</b>", $linha[$request->column])
+            );
             array_push($resultado, $aux);
         }
         return json_encode($resultado);

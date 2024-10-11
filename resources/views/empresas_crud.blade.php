@@ -118,7 +118,7 @@
                         class = "form-control autocomplete mr-3"
                         data-input = "#id_matriz"
                         data-table = "empresas"
-                        data-column = "descr"
+                        data-column = "nome_fantasia"
                         data-filter_col = "tipo,id_matriz"
                         data-filter = "{{ $tipo }},0"
                         type = "text"
@@ -255,7 +255,7 @@
         let complementos_ant = new Array();
         let referencias_ant = new Array();
         
-        @if ($empresa !== null) {
+        @if ($empresa !== null)
             @foreach ($empresa->enderecos as $endereco)
                 ceps.push("{{ $endereco->cep }}");
                 numeros.push("{{ $endereco->numero }}");

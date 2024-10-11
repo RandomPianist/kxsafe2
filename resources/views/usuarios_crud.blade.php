@@ -14,19 +14,19 @@
     <form class = "formulario p-5 custom-scrollbar">
         <div class = "row">
             <div class = "mb-5 d-flex justify-content-center align-items-center" style = "margin:auto;width:100px;height:100px;border:2px solid var(--fonte);border-radius:50%">
-                <img class = "user-photo" src = "" onerror = "this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')" />
+                <img class = "user-photo" src = "@if ($usuario !== null) {{ $usuario->foto }} @endif" onerror = "this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')" />
                 <i class = "fas fa-user" style = "font-size:60px"></i>
             </div>
         </div>
         <div class = "row">
             <div class = "col-md-6 mb-3">
                 <label for = "nome" class = "form-label">Nome:</label>
-                <input type = "text" class = "form-control" id = "nome" oninput = "contarChar(this, 255)" />
+                <input type = "text" class = "form-control" id = "nome" oninput = "contarChar(this, 255)" value = "@if ($usuario !== null) {{ $usuario->name }} @endif" />
                 <small class = "text-muted"></small>
             </div>
             <div class = "col-md-6 mb-3">
                 <label for = "email" class = "form-label">Email:</label>
-                <input type = "email" class = "form-control" id = "email" oninput = "contarChar(this, 255)" />
+                <input type = "email" class = "form-control" id = "email" oninput = "contarChar(this, 255)" value = "@if ($usuario !== null) {{ $usuario->email }} @endif" />
                 <small class = "text-muted"></small>
             </div>
         </div>
@@ -57,7 +57,7 @@
                         class = "form-control autocomplete mr-3"
                         data-input = "#id_empresa"
                         data-table = "empresas"
-                        data-column = "descr"
+                        data-column = "nome_fantasia"
                         data-filter_col = ""
                         data-filter = ""
                         type = "text"
@@ -75,7 +75,7 @@
                 </div>
             </div>
             <div class = "col-md-3 mb-3">
-                <button type = "submit" class = "margem-compensa-label btn btn-secondary w-100" onclick = "salvarEmpresa()">Adicionar empresa</button>
+                <button type = "button" class = "margem-compensa-label btn btn-secondary w-100" onclick = "salvarEmpresa()">Adicionar empresa</button>
             </div>
         </div>
         <div class = "row">
@@ -83,7 +83,7 @@
                 <ul class = "lista-crud list-group">
                     @for ($i = 0; $i < sizeof($empresas); $i++)
                         <li class = "list-group-item">
-                            <span>{{ $empresas[$i] }}</span>
+                            <span>{{ $empresas[$i]->nome_fantasia }}</span>
                             <i class = "my-icon far fa-trash-alt" title = "Excluir" onclick = "excluirEmpresa({{ $i }})"></i>
                         </li>
                     @endfor
@@ -130,19 +130,20 @@
             empresas.splice(indice, 1);
             id_empresas.splice(indice, 1);
             mostrarEmpresas();
-            document.getElementById("empresa").focus();
         }
 
         function salvarEmpresa() {
             let empresa = document.getElementById("empresa");
-            const id_empresa = document.getElementById("id_empresa").value;
+            const id_empresa = document.getElementById("id_empresa");
             $.get(URL + "/empresas/consultar2", {
-                id : id_empresa,
+                id : id_empresa.value,
                 nome_fantasia : empresa.value
             }, function(data) {
                 if (!parseInt(data)) {
-                    id_empresas.push(id_empresa);
+                    id_empresas.push(id_empresa.value);
                     empresas.push(empresa.value);
+                    id_empresa.value = "";
+                    empresa.value = "";
                     mostrarEmpresas();
                 } else {
                     s_alert("Empresa não encontrada");
@@ -170,10 +171,11 @@
                 $.get(URL + "/usuarios/consultar", {
                     email : _email.value
                 }, function(data) {
-                    if (!parseInt(data)) {
+                    if (!parseInt(data) || id) {
                         let formData = new FormData();
                         formData.append("_token", $("meta[name='csrf-token']").attr("content"));
                         formData.append("foto", $("#foto")[0].files[0]);
+                        formData.append("id", id);
                         formData.append("nome", document.getElementById("nome").value);
                         formData.append("email", document.getElementById("email").value);
                         formData.append("senha", document.getElementById("senha").value);

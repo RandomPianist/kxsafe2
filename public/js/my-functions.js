@@ -239,7 +239,9 @@ function autocomplete(_this) {
     if (!element.parent().find(".autocomplete-result").length) {
         let largura = document.getElementById($(element).attr("id")).offsetWidth;
         if (_table == "menu") largura += 32;
-        div_result = $("<div class = 'autocomplete-result custom-scrollbar' style = 'width:" + largura + "px;top:" + document.getElementById($(element).attr("id")).offsetHeight + "px'>");
+        let top = document.getElementById($(element).attr("id")).offsetHeight;
+        if (_table != "menu") top += 25;
+        div_result = $("<div class = 'autocomplete-result custom-scrollbar' style = 'width:" + largura + "px;top:" + top + "px'>");
         element.after(div_result);
     } else {
         div_result = element.parent().find(".autocomplete-result");

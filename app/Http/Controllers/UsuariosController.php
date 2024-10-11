@@ -17,7 +17,7 @@ class UsuariosController extends ControllerKX {
                         "users.id",
                         "users.name",
                         "users.email",
-                        "users.foto"
+                        DB::raw("IFNULL(users.foto, '') AS foto")
                     )
                     ->join("empresas_usuarios AS eu", "eu.id_usuario", "users.id_aux")
                     ->whereRaw("((".$param.") OR (".$param2."))")
@@ -51,13 +51,13 @@ class UsuariosController extends ControllerKX {
                             "id",
                             "name",
                             "email",
-                            "foto"
+                            DB::raw("IFNULL(foto, '') AS foto")
                         )
                         ->where("id", $id)
                         ->first();
         $empresas = DB::table("empresas")
                         ->select(
-                            "id_empresa",
+                            "empresas.id",
                             "nome_fantasia"
                         )
                         ->leftjoin("empresas_usuarios AS eu", "id_empresa", "empresas.id")
@@ -71,6 +71,9 @@ class UsuariosController extends ControllerKX {
                             "nome_fantasia"
                         )
                         ->get();
+        if ($usuario !== null) {
+            if ($usuario->foto) $usuario->foto = asset("storage/".$usuario->foto);
+        }
         return view("usuarios_crud", compact("breadcumb", "usuario", "empresas"));
     }
 
@@ -81,7 +84,16 @@ class UsuariosController extends ControllerKX {
             if (sizeof($busca) < 3) $busca = $this->busca("name LIKE '%".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("(name LIKE '%".implode("%' AND name LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
         } else $busca = $this->busca();
-        return json_encode($busca);
+        $resultado = array();
+        foreach ($busca as $usuario) {
+            $aux = new \stdClass;
+            $aux->id = $usuario->id;
+            $aux->name = $usuario->name;
+            $aux->email = $usuario->email;
+            $aux->foto = $usuario->foto ? asset("storage/".$usuario->foto) : "";
+            array_push($resultado, $aux);
+        }
+        return json_encode($resultado);
     }
 
     public function consultar(Request $request) {
