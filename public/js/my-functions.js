@@ -96,17 +96,45 @@ window.onload = function () {
         $(this).addClass("text-right");
     });
 
+    $("input.data").each(function() {
+        $(this).datepicker({
+            dateFormat: "dd/mm/yy",
+            closeText: "Fechar",
+            prevText: "Anterior",
+            nextText: "Próximo",
+            currentText: "Hoje",
+            monthNames: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+            monthNamesShort: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+            dayNames: ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"],
+            dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+            dayNamesMin: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+            weekHeader: "Sm",
+            firstDay: 1,
+            beforeShow: function(elem, dp) {
+                setTimeout(function() {
+                    let tamanho = elem.offsetWidth > 244 ? elem.offsetWidth : 244;
+                    dp.dpDiv[0].style.width = tamanho + "px";
+                }, 0);
+            }
+        });
+        $(this).keyup(function() {
+            let resultado = $(this).val().replace(/\D/g, "");
+            if (resultado.length >= 8) {
+                resultado = resultado.substring(0, 8);
+                resultado = resultado.substring(0, 2) + "/" + resultado.substring(2, 4) + "/" + resultado.substring(4, 8);
+                $(this).val(resultado);    
+            }
+        });
+        $(this).blur(function() {
+            let aux = $(this).val().split("/");
+            data = new Date(parseInt(aux[2]), parseInt(aux[1]) - 1, parseInt(aux[0]));
+            if (data.getFullYear() != aux[2] || data.getMonth() + 1 != aux[1] || data.getDate() != aux[0]) $(this).val("");
+        });
+    });
+
     document.getElementById("menu-abrir").onclick = function() {
         setTravarCliqueMenu();
         ativar(["main", "aside", "#pesquisa-header", "#header-esquerdo"], true);
-        if (document.getElementById("complemento") !== null) {
-            document.getElementById("complemento").parentElement.classList.remove("col-md-5");
-            document.getElementById("complemento").parentElement.classList.add("col-md-4");
-            document.getElementById("referencia").parentElement.classList.remove("col-md-5");
-            document.getElementById("referencia").parentElement.classList.add("col-md-4");
-            document.querySelector(".btn-secondary").parentElement.classList.remove("col-md-2");
-            document.querySelector(".btn-secondary").parentElement.classList.add("col-md-4");
-        }
     };
 
     document.getElementById("menu-fechar").onclick = function() {
@@ -117,14 +145,6 @@ window.onload = function () {
             }
         });
 		ativar(["main", "aside", "#pesquisa-header", "#header-esquerdo"], false);
-        if (document.getElementById("complemento") !== null) {
-            document.getElementById("complemento").parentElement.classList.add("col-md-5");
-            document.getElementById("complemento").parentElement.classList.remove("col-md-4");
-            document.getElementById("referencia").parentElement.classList.add("col-md-5");
-            document.getElementById("referencia").parentElement.classList.remove("col-md-4");
-            document.querySelector(".btn-secondary").parentElement.classList.add("col-md-2");
-            document.querySelector(".btn-secondary").parentElement.classList.remove("col-md-4");
-        }
     };
 
     const lista = document.getElementsByClassName("breadcrumb-item");
@@ -487,6 +507,15 @@ function excluir(_id, prefixo, e) {
             });
         } else s_alert(data.aviso);
     });
+}
+
+function mostrarImagemErro() {
+    let imagem = document.getElementById("nao-encontrado");
+    let caixaPesquisa = document.querySelectorAll(".caixa-pesquisa")[1].parentElement;
+    imagem.classList.remove("d-none");
+    imagem.previousElementSibling.classList.add("d-none");
+    caixaPesquisa.classList.add("d-none");
+    caixaPesquisa.classList.remove("d-flex");
 }
 
 // mover as funções abaixo para arquivo específico depois

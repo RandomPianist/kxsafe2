@@ -121,6 +121,7 @@ class HomeController extends ControllerKX {
 
                 WHERE (url IS NOT NULL OR submenu_url IS NOT NULL)
                   AND mp.tipo = ".$meu_tipo."
+                  AND mp.admin IN (0, ".Auth::user()->admin.")
                     
                 ORDER BY modulos.ordem, menua.ordem
             ) AS tab";
@@ -167,6 +168,7 @@ class HomeController extends ControllerKX {
                                 ->where("id_pai", 0)
                                 ->where("id_modulo", $modulo->id)
                                 ->where("mp.tipo", Empresas::find($this->retorna_empresa_logada())->tipo) // ControllerKX.php
+                                ->whereIn("mp.admin", [0, Auth::user()->admin])
                                 ->orderby("ordem")
                                 ->get();
             if (sizeof($modulo->itens)) array_push($resultado, $modulo);

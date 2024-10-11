@@ -207,17 +207,17 @@
 			</div>
 		</div>
 		<div class = "row">
-			<div class = "col-md-5 mb-3">
+			<div class = "col-md-4 mb-3">
 				<label for = "complemento" class = "form-label">Complemento:</label>
 				<input type = "text" class = "form-control campo-endereco2" id = "complemento" oninput = "preventPipe(this, 32)" />
 				<small class = "text-muted"></small>
 			</div>
-			<div class = "col-md-5 mb-3">
+			<div class = "col-md-4 mb-3">
 				<label for = "referencia" class = "form-label">Referência:</label>
 				<input type = "text" class = "form-control campo-endereco2" id = "referencia" oninput = "preventPipe(this, 64)" />
 				<small class = "text-muted"></small>
 			</div>
-			<div class = "col-md-2 mb-3">
+			<div class = "col-md-4 mb-3">
 				<button type = "button" class = "margem-compensa-label btn btn-secondary w-100" onclick = "salvarEndereco()">Adicionar endereço</button>
 			</div>
 		</div>
@@ -517,44 +517,42 @@
                     erro = data + " não encontrad" + (data == "Matriz" ? "a" : "o");
                     elementos[data.toLowerCase()].classList.add("invalido");
                 }
-                if (!erro && !alterou) {
-                    if (dinheiro(anteriores.royalties) != document.getElementById("royalties").value) alterou = true;
-                    ["grupo", "segmento", "matriz"].forEach((item) => {
-                        if (anteriores[item] != document.getElementById(item).value) alterou = true;
+                if (dinheiro(anteriores.royalties) != document.getElementById("royalties").value) alterou = true;
+                ["grupo", "segmento", "matriz"].forEach((item) => {
+                    if (anteriores[item] != document.getElementById(item).value) alterou = true;
+                });
+                if (ceps_ant.join("|") != ceps.join("|")) alterou = true;
+                if (numeros_ant.join("|") != numeros.join("|")) alterou = true;
+                if (complementos_ant.join("|") != complementos.join("|")) alterou = true;
+                if (numeros_ant.join("|") != numeros.join("|")) alterou = true;
+                if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";                    
+                if (!erro) {
+                    let enviar = obterElementosValor(elementos, [
+                        "razao_social",
+                        "nome_fantasia",
+                        "cnpj",
+                        "ie",
+                        "email",
+                        "telefone",
+                        "tipo_contribuicao",
+                        "royalties",
+                        "grupo",
+                        "segmento",
+                        "matriz"
+                    ]);
+                    enviar.id = id;
+                    enviar.tipo_contribuicao = enviar.tipo_contribuicao.replace("tipo-", "");
+                    enviar.royalties = parseInt(enviar.royalties.replace(/\D/g, "")) / 100;
+                    enviar.cnpj = enviar.cnpj.replace(/\D/g, "");
+                    enviar._token = $("meta[name='csrf-token']").attr("content");
+                    enviar.ceps = ceps.join("|");
+                    enviar.numeros = numeros.join("|");
+                    enviar.referencias = referencias.join("|");
+                    enviar.complementos = complementos.join("|");
+                    enviar.tipo = {{ $tipo }};
+                    $.post(URL + "/empresas/salvar", enviar, function() {
+                        location.href = URL + "/{{ strtolower($titulo) }}/grupo/" + (elementos.id_grupo.value.trim() ? elementos.id_grupo.value : "0");
                     });
-                    if (ceps_ant.join("|") != ceps.join("|")) alterou = true;
-                    if (numeros_ant.join("|") != numeros.join("|")) alterou = true;
-                    if (complementos_ant.join("|") != complementos.join("|")) alterou = true;
-                    if (numeros_ant.join("|") != numeros.join("|")) alterou = true;
-                    if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
-                    if (!erro) {
-                        let enviar = obterElementosValor(elementos, [
-                            "razao_social",
-                            "nome_fantasia",
-                            "cnpj",
-                            "ie",
-                            "email",
-                            "telefone",
-                            "tipo_contribuicao",
-                            "royalties",
-                            "grupo",
-                            "segmento",
-                            "matriz"
-                        ]);
-                        enviar.id = id;
-                        enviar.tipo_contribuicao = enviar.tipo_contribuicao.replace("tipo-", "");
-                        enviar.royalties = parseInt(enviar.royalties.replace(/\D/g, "")) / 100;
-                        enviar.cnpj = enviar.cnpj.replace(/\D/g, "");
-                        enviar._token = $("meta[name='csrf-token']").attr("content");
-                        enviar.ceps = ceps.join("|");
-                        enviar.numeros = numeros.join("|");
-                        enviar.referencias = referencias.join("|");
-                        enviar.complementos = complementos.join("|");
-                        enviar.tipo = {{ $tipo }};
-                        $.post(URL + "/empresas/salvar", enviar, function() {
-                            location.href = URL + "/{{ strtolower($titulo) }}/grupo/" + (elementos.id_grupo.value.trim() ? elementos.id_grupo.value : "0");
-                        });
-                    } else s_alert(erro);
                 } else s_alert(erro);
             });
         }

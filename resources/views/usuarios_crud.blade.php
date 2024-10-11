@@ -12,10 +12,16 @@
     </nav>
     <h2 class = "titulo">Usuário</h2>
     <form class = "formulario p-5 custom-scrollbar">
-        <div class = "row">
-            <div class = "mb-5 d-flex justify-content-center align-items-center" style = "margin:auto;width:100px;height:100px;border:2px solid var(--fonte);border-radius:50%">
+        <div class="d-flex justify-content-center align-items-top">
+            <div class = "mb-3 " style = "width:12rem;height:12rem;border:2px solid var(--fonte);border-radius:50%;display:flex;justify-content: center; align-items: center;">
                 <img class = "user-photo" src = "@if ($usuario !== null) {{ $usuario->foto }} @endif" onerror = "this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')" />
                 <i class = "fas fa-user" style = "font-size:60px"></i>
+            </div>
+            <div>
+                <button type = "button" class = "adicionar-foto" onclick = "$(this).next().trigger('click')">
+                    <i class = "fa-solid fa-camera"></i>
+                </button>
+                <input type = "file" id = "foto" class = "d-none">
             </div>
         </div>
         <div class = "row">
@@ -25,12 +31,17 @@
                 <small class = "text-muted"></small>
             </div>
             <div class = "col-md-6 mb-3">
+                <label for = "administrador" class="form-label">Administrador:</label>
+                <select class = "form-control @if ($usuario !== null) @if ($usuario->id == Auth::user()->id) readonly @endif @endif" id = "admin">
+                    <option value = "opt-1">Não</option>
+                    <option value = "opt-2" @if ($usuario !== null) @if (intval($usuario->admin)) selected @endif @endif>Sim</option>
+                </select>
+            </div>
+            <div class = "col-md-6 mb-3">
                 <label for = "email" class = "form-label">Email:</label>
                 <input type = "email" class = "form-control" id = "email" oninput = "contarChar(this, 255)" value = "@if ($usuario !== null) {{ $usuario->email }} @endif" />
                 <small class = "text-muted"></small>
             </div>
-        </div>
-        <div class = "row">
             <div class = "col-md-6 mb-3">
                 <label for = "senha" class = "form-label">Senha:</label>
                 <div class = "d-flex flex-column justify-content-center align-items-center w-100">
@@ -39,10 +50,6 @@
                         <i class = "icone-login fas fa-eye ms-2 toggle-senha" onclick = "toggleSenha(this)"></i>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <button type = "button" class = "margem-compensa-label btn btn-secondary w-100" onclick = "$(this).next().trigger('click')">Adicionar imagem</button>
-                <input type = "file" id = "foto" class = "d-none" />
             </div>
         </div>
         <div class = "row px-3 py-4 border-top">
@@ -155,7 +162,7 @@
         function validar() {
             limparInvalido();
             let _email = document.getElementById("email");
-            let verificar = ["nome", "email"];
+            let verificar = ["nome", "email", "admin"];
             if (!id) verificar.push("senha");
 
             const aux = verificaVazios(verificar);
@@ -165,7 +172,8 @@
                 erro = "Deve haver pelo menos uma empresa associada";
                 document.getElementById("empresa").focus();
             }
-            if (!alterou && id_empresas_ant.join("|") != id_empresas.join("|")) alterou = true;
+            if (id_empresas_ant.join("|") != id_empresas.join("|")) alterou = true;
+            if (id && document.getElementById("senha").value) alterou = true;
             if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
             if (!erro) {
                 $.get(URL + "/usuarios/consultar", {
@@ -176,9 +184,11 @@
                         formData.append("_token", $("meta[name='csrf-token']").attr("content"));
                         formData.append("foto", $("#foto")[0].files[0]);
                         formData.append("id", id);
+                        formData.append("admin", parseInt(document.getElementById("admin").value.replace("opt-", "")) - 1);
                         formData.append("nome", document.getElementById("nome").value);
                         formData.append("email", document.getElementById("email").value);
                         formData.append("senha", document.getElementById("senha").value);
+                        formData.append("empresas", id_empresas.join("|"));
                         $.ajax({
                             url : URL + "/usuarios/salvar",
                             type : "POST",

@@ -30,7 +30,7 @@ class LocaisController extends ControllerKX {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",
-            "Locais" => "#"
+            "Locais de estoque" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("locais"); // ControllerKX.php
         return view("locais", compact("ultima_atualizacao", "breadcumb"));
@@ -60,7 +60,7 @@ class LocaisController extends ControllerKX {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",
-            "Locais" => config("app.root_url")."/locais",
+            "Locais de estoque" => config("app.root_url")."/locais",
             (intval($id) ? "Editar" : "Novo") => "#"
         );
         $local = DB::table("locais")

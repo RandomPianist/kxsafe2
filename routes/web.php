@@ -11,6 +11,8 @@ use App\Http\Controllers\NaturezasController;
 use App\Http\Controllers\TpdocController;
 use App\Http\Controllers\LocaisController;
 use App\Http\Controllers\CategoriasController;
+use App\Http\Controllers\BancosController;
+use App\Http\Controllers\CfopController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -124,23 +126,23 @@ Route::middleware("auth")->group(function () {
     });
 
     Route::group(["prefix" => "bancos"], function() {
-        Route::get ("/",           [CategoriasController::class, "ver"]);
-        Route::get ("/listar",     [CategoriasController::class, "listar"]);
-        Route::get ("/consultar",  [CategoriasController::class, "consultar"]);
-        Route::get ("/crud",       [CategoriasController::class, "crud"]);
-        Route::get ("/aviso/{id}", [CategoriasController::class, "aviso"]);
-        Route::post("/salvar",     [CategoriasController::class, "salvar"]);
-        Route::post("/excluir",    [CategoriasController::class, "excluir"]);
+        Route::get ("/",           [BancosController::class, "ver"]);
+        Route::get ("/listar",     [BancosController::class, "listar"]);
+        Route::get ("/consultar",  [BancosController::class, "consultar"]);
+        Route::get ("/crud",       [BancosController::class, "crud"]);
+        Route::get ("/aviso/{id}", [BancosController::class, "aviso"]);
+        Route::post("/salvar",     [BancosController::class, "salvar"]);
+        Route::post("/excluir",    [BancosController::class, "excluir"]);
     });
 
     Route::group(["prefix" => "cfop"], function() {
-        Route::get ("/",           [CategoriasController::class, "ver"]);
-        Route::get ("/listar",     [CategoriasController::class, "listar"]);
-        Route::get ("/consultar",  [CategoriasController::class, "consultar"]);
-        Route::get ("/crud",       [CategoriasController::class, "crud"]);
-        Route::get ("/aviso/{id}", [CategoriasController::class, "aviso"]);
-        Route::post("/salvar",     [CategoriasController::class, "salvar"]);
-        Route::post("/excluir",    [CategoriasController::class, "excluir"]);
+        Route::get ("/",           [CfopController::class, "ver"]);
+        Route::get ("/listar",     [CfopController::class, "listar"]);
+        Route::get ("/consultar",  [CfopController::class, "consultar"]);
+        Route::get ("/crud",       [CfopController::class, "crud"]);
+        Route::get ("/aviso/{id}", [CfopController::class, "aviso"]);
+        Route::post("/salvar",     [CfopController::class, "salvar"]);
+        Route::post("/excluir",    [CfopController::class, "excluir"]);
     });
 
     Route::group(["prefix" => "empresas"], function() {

@@ -18,7 +18,6 @@ class CfopController extends ControllerKX {
                         "descr"
                     )
                     ->whereRaw($param)
-                    ->where("lixeira", 0)
                     ->get();
     }
 

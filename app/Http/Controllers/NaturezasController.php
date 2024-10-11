@@ -30,7 +30,7 @@ class NaturezasController extends ControllerKX {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",
-            "Naturezas" => "#"
+            "Naturezas do documento" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("naturezas"); // ControllerKX.php
         return view("naturezas", compact("ultima_atualizacao", "breadcumb"));
@@ -60,7 +60,7 @@ class NaturezasController extends ControllerKX {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",
-            "Naturezas" => config("app.root_url")."/naturezas",
+            "Naturezas do documento" => config("app.root_url")."/naturezas",
             (intval($id) ? "Editar" : "Novo") => "#"
         );
         $natureza = DB::table("naturezas")

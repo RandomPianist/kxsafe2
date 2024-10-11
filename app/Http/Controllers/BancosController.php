@@ -18,7 +18,6 @@ class BancosController extends ControllerKX {
                         "descr"
                     )
                     ->whereRaw($param)
-                    ->where("lixeira", 0)
                     ->get();
     }
 

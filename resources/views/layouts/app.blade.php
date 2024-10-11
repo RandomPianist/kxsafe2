@@ -43,7 +43,7 @@
 							<a class = "dropdown-item" href = "{{ config('app.root_url') }}">Trocar empresa</a>
 						</li>
 						<li>
-							<a class = "dropdown-item" href = "#">Editar</a>
+							<a class = "dropdown-item" href = "{{ config('app.root_url') }}/usuarios/crud/{{ Auth::user()->id }}">Editar</a>
 						</li>
 						<li>
 							<a class = "dropdown-item" href = "javascript:sair()">Sair</a>

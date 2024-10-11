@@ -17,6 +17,7 @@ class UsuariosController extends ControllerKX {
                         "users.id",
                         "users.name",
                         "users.email",
+                        DB::raw("IFNULL(users.admin, 0) AS admin"),
                         DB::raw("IFNULL(users.foto, '') AS foto")
                     )
                     ->join("empresas_usuarios AS eu", "eu.id_usuario", "users.id_aux")
@@ -26,12 +27,14 @@ class UsuariosController extends ControllerKX {
                         "id",
                         "name",
                         "email",
-                        "foto"
+                        "foto",
+                        "admin"
                     )
                     ->get();
     }
 
     public function ver() {
+        if (!Auth::user()->admin) return redirect("/");
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",
             "Usuários" => "#"
@@ -41,6 +44,7 @@ class UsuariosController extends ControllerKX {
     }
 
     public function crud($id) {
+        if (!Auth::user()->admin && $id != Auth::user()->id) return redirect("/");
         $breadcumb = array(
             "Home" => config("app.root_url")."/home",
             "Usuários" => config("app.root_url")."/usuarios",
@@ -51,6 +55,7 @@ class UsuariosController extends ControllerKX {
                             "id",
                             "name",
                             "email",
+                            DB::raw("IFNULL(users.admin, 0) AS admin"),
                             DB::raw("IFNULL(foto, '') AS foto")
                         )
                         ->where("id", $id)
@@ -90,6 +95,7 @@ class UsuariosController extends ControllerKX {
             $aux->id = $usuario->id;
             $aux->name = $usuario->name;
             $aux->email = $usuario->email;
+            $aux->admin = $usuario->admin;
             $aux->foto = $usuario->foto ? asset("storage/".$usuario->foto) : "";
             array_push($resultado, $aux);
         }
@@ -122,7 +128,7 @@ class UsuariosController extends ControllerKX {
         $senha = Hash::make($request->senha);
         $foto = $request->file("foto") ? "foto = '".$request->file("foto")->store("uploads", "public")."'," : "";
         if (!$request->id) {
-            DB::statement("INSERT INTO users (name, email, password) VALUES ('".mb_strtoupper($request->nome)."', '".mb_strtolower($request->email)."', '".$senha."')");
+            DB::statement("INSERT INTO users (name, email, password, admin) VALUES ('".mb_strtoupper($request->nome)."', '".mb_strtolower($request->email)."', '".$senha."', ".$request->admin.")");
             $id = DB::table("users")
                     ->orderby("id", "DESC")
                     ->value("id");
@@ -135,6 +141,7 @@ class UsuariosController extends ControllerKX {
                 UPDATE users SET
                     ".$foto.$senha."
                     name = '".mb_strtoupper($request->nome)."',
+                    admin = ".$request->admin.",
                     email = '".mb_strtolower($request->email)."'
                 WHERE id = ".$request->id
             );

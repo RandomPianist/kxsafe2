@@ -15,8 +15,12 @@ class GruposController extends ControllerKX {
 
     public function ver() {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
+        $breadcumb = array(
+            "Home" => config("app.root_url")."/home",
+            "Grupos" => "#"
+        );
         $ultima_atualizacao = $this->log_consultar("grupos"); // ControllerKX.php
-        return view("grupos", compact("ultima_atualizacao"));
+        return view("grupos", compact("ultima_atualizacao", "breadcumb"));
     }
     
     public function listar(Request $request) {

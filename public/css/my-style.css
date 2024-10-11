@@ -392,8 +392,8 @@ label {
 }
 
 .imagem-erro {
-    width: 500px;
-    height: 500px
+    width: 20%;
+    height: 20%
 }	
 
 .readonly {
@@ -404,4 +404,14 @@ label {
 .ultima-atualizacao {
 	font-size: 9pt;
     color: var(--icone-secundario)
+}
+
+.adicionar-foto {
+	border: none;
+	background-color: transparent;
+	width: 100%;
+}
+.adicionar-foto i {
+	font-size: 25pt;
+	color: #333;
 }
