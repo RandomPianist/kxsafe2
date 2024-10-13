@@ -59,12 +59,10 @@ class ItensController extends ControllerKX {
                 ->where("id", $request->id_categoria)
                 ->where("nome_fantasia", $request->categoria)
         )) return "Categoria";
-        if (sizeof(
-            DB::table("atribuicoes")
-                ->where("produto_ou_referencia_valor", Itens::find($request->id)->referencia)
-                ->where("produto_ou_referencia_chave", "R")
-                ->get()
-        ) == 1 && !trim($request->referencia)) return "aviso";
+        if (
+            $this->atribuicoes_na_referencia(Itens::find($request->id)->referencia) == 1 && // ControllerKX.php
+            !trim($request->referencia)
+        ) return "aviso";
         return "0";
     }
 

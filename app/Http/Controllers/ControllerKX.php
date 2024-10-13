@@ -137,23 +137,35 @@ class ControllerKX extends Controller {
                     ->where("lixeira", 0);
     }
 
+    protected function atribuicoes_na_referencia($referencia) {
+        return sizeof(
+            DB::table("atribuicoes")
+                ->where("lixeira", 0)
+                ->where("produto_ou_referencia_valor", $referencia)
+                ->where("produto_ou_referencia_chave", "R")
+                ->get()
+        );
+    }
+
     protected function atribuicoes_atualizar($id, $antigo, $novo, $nome, $chave, $api = false) {
         if ($id) {
             $novo = trim($novo);
             $where = "produto_ou_referencia_valor = '".$antigo."' AND produto_ou_referencia_chave = '".$chave."'";
-            DB::statement("
-                UPDATE atribuicoes
-                SET ".(
-                    ($novo || sizeof(
-                        DB::table("atribuicoes")
-                            ->where("produto_ou_referencia_valor", $antigo)
-                            ->where("produto_ou_referencia_chave", "R")
-                            ->get()
-                    ) > 1) ? "produto_ou_referencia_valor = '".$novo."'" : "lixeira = 1"
-                )."
-                WHERE ".$where
-            );
-            $this->log_inserir2($novo ? "E" : "D", "atribuicoes", $where, $nome, $api);
+            if ($novo) {
+                DB::statement("
+                    UPDATE atribuicoes
+                    SET produto_ou_referencia_valor = '".$novo."'
+                    WHERE ".$where
+                );
+                $this->log_inserir2("E", "atribuicoes", $where, $nome, $api);
+            } else if ($chave == "R" && $this->atribuicoes_na_referencia($antigo) == 1) {
+                DB::statement("
+                    UPDATE atribuicoes
+                    SET lixeira = 1
+                    WHERE ".$where
+                );
+                $this->log_inserir2("D", "atribuicoes", $where, $nome, $api);
+            }
         }
     }
 }
