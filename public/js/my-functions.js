@@ -456,6 +456,10 @@ function obterElementos(lista, prefixo) {
 
 function obterElementosValor(elementos, chaves) {
     let resultado = {};
+    if (chaves === undefined) {
+        var chaves = new Array();
+        for (x in elementos) chaves.push(x);
+    }
     chaves.forEach((chave) => {
         resultado[chave] = elementos[chave].value;
         let el = elementos["id_" + chave];

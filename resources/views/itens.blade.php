@@ -3,7 +3,7 @@
 @section("content")
     <nav aria-label = "breadcrumb">
         <ol class = "breadcrumb">
-            @foreach ($breadcumb as $nome => $url)
+            @foreach ($breadcrumb as $nome => $url)
                 <li class = "breadcrumb-item">
                     <a href = "{{ $url }}">{{ $nome }}</a>
                 </li>
@@ -11,7 +11,7 @@
         </ol>
     </nav>
     <div class = "d-flex justify-content-between align-items-center">
-        <h2 class = "titulo">Categorias</h2>
+        <h2 class = "titulo">Itens</h2>
         <div class = "d-flex">
             <input type = "text" class = "caixa-pesquisa form-control" placeholder = "Pesquisar..." aria-label = "Pesquisar" id = "filtro">
             <button class = "botao-target botao-pesquisa ml-1" type = "button" onclick = "listar()">

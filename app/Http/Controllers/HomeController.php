@@ -59,7 +59,7 @@ class HomeController extends ControllerKX {
                     $valor = $valores[$i];
                     if (!in_array($colunas[$i], ["id_matriz", "id_grupo", "id_segmento", "id_criadora", "tipo", "tipo_contribuicao"])) $valor = "'".$valor."'";
                     $where .= " AND ".$colunas[$i]." = ".$valor;
-                }                
+                }
             }
         } else if ($request->filter_col) {
             $where .= $request->column != "referencia" ? " AND ".$request->filter_col." = '".$request->filter."'" : " AND referencia NOT IN (

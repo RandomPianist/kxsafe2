@@ -21,12 +21,12 @@ class CategoriasController extends ControllerKX {
 
     public function ver() {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Categorias" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("categorias"); // ControllerKX.php
-        return view("categorias", compact("ultima_atualizacao", "breadcumb"));
+        return view("categorias", compact("ultima_atualizacao", "breadcrumb"));
     }
     
     public function listar(Request $request) {
@@ -51,7 +51,7 @@ class CategoriasController extends ControllerKX {
 
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Categorias" => config("app.root_url")."/categorias",
             (intval($id) ? "Editar" : "Novo") => "#"
@@ -63,7 +63,7 @@ class CategoriasController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        return view("categorias_crud", compact("breadcumb", "categoria"));
+        return view("categorias_crud", compact("breadcrumb", "categoria"));
     }
 
     public function aviso($id) {

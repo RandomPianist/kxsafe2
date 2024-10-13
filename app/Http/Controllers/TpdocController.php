@@ -22,12 +22,12 @@ class TpdocController extends ControllerKX {
 
     public function ver() {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Tipos de documento" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("tpdoc"); // ControllerKX.php
-        return view("tpdoc", compact("ultima_atualizacao", "breadcumb"));
+        return view("tpdoc", compact("ultima_atualizacao", "breadcrumb"));
     }
     
     public function listar(Request $request) {
@@ -52,7 +52,7 @@ class TpdocController extends ControllerKX {
 
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Tipos de documento" => config("app.root_url")."/tpdoc",
             (intval($id) ? "Editar" : "Novo") => "#"
@@ -64,7 +64,7 @@ class TpdocController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        return view("tpdoc_crud", compact("breadcumb", "tpdoc"));
+        return view("tpdoc_crud", compact("breadcrumb", "tpdoc"));
     }
 
     public function aviso($id) {

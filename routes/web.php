@@ -60,7 +60,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [GruposController::class, "ver"]);
         Route::get ("/listar",     [GruposController::class, "listar"]);
         Route::get ("/consultar",  [GruposController::class, "consultar"]);
-        Route::get ("/crud",       [GruposController::class, "crud"]);
+        Route::get ("/crud/{id}",  [GruposController::class, "crud"]);
         Route::get ("/aviso/{id}", [GruposController::class, "aviso"]);
         Route::post("/salvar",     [GruposController::class, "salvar"]);
         Route::post("/excluir",    [GruposController::class, "excluir"]);
@@ -70,7 +70,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [SegmentosController::class, "ver"]);
         Route::get ("/listar",     [SegmentosController::class, "listar"]);
         Route::get ("/consultar",  [SegmentosController::class, "consultar"]);
-        Route::get ("/crud",       [SegmentosController::class, "crud"]);
+        Route::get ("/crud/{id}",  [SegmentosController::class, "crud"]);
         Route::get ("/aviso/{id}", [SegmentosController::class, "aviso"]);
         Route::post("/salvar",     [SegmentosController::class, "salvar"]);
         Route::post("/excluir",    [SegmentosController::class, "excluir"]);
@@ -80,7 +80,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [SetoresController::class, "ver"]);
         Route::get ("/listar",     [SetoresController::class, "listar"]);
         Route::get ("/consultar",  [SetoresController::class, "consultar"]);
-        Route::get ("/crud",       [SetoresController::class, "crud"]);
+        Route::get ("/crud/{id}",  [SetoresController::class, "crud"]);
         Route::get ("/aviso/{id}", [SetoresController::class, "aviso"]);
         Route::post("/salvar",     [SetoresController::class, "salvar"]);
         Route::post("/excluir",    [SetoresController::class, "excluir"]);
@@ -90,7 +90,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [NaturezasController::class, "ver"]);
         Route::get ("/listar",     [NaturezasController::class, "listar"]);
         Route::get ("/consultar",  [NaturezasController::class, "consultar"]);
-        Route::get ("/crud",       [NaturezasController::class, "crud"]);
+        Route::get ("/crud/{id}",  [NaturezasController::class, "crud"]);
         Route::get ("/aviso/{id}", [NaturezasController::class, "aviso"]);
         Route::post("/salvar",     [NaturezasController::class, "salvar"]);
         Route::post("/excluir",    [NaturezasController::class, "excluir"]);
@@ -100,7 +100,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [TpdocController::class, "ver"]);
         Route::get ("/listar",     [TpdocController::class, "listar"]);
         Route::get ("/consultar",  [TpdocController::class, "consultar"]);
-        Route::get ("/crud",       [TpdocController::class, "crud"]);
+        Route::get ("/crud/{id}",  [TpdocController::class, "crud"]);
         Route::get ("/aviso/{id}", [TpdocController::class, "aviso"]);
         Route::post("/salvar",     [TpdocController::class, "salvar"]);
         Route::post("/excluir",    [TpdocController::class, "excluir"]);
@@ -110,7 +110,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [LocaisController::class, "ver"]);
         Route::get ("/listar",     [LocaisController::class, "listar"]);
         Route::get ("/consultar",  [LocaisController::class, "consultar"]);
-        Route::get ("/crud",       [LocaisController::class, "crud"]);
+        Route::get ("/crud/{id}",  [LocaisController::class, "crud"]);
         Route::get ("/aviso/{id}", [LocaisController::class, "aviso"]);
         Route::post("/salvar",     [LocaisController::class, "salvar"]);
         Route::post("/excluir",    [LocaisController::class, "excluir"]);
@@ -120,7 +120,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [CategoriasController::class, "ver"]);
         Route::get ("/listar",     [CategoriasController::class, "listar"]);
         Route::get ("/consultar",  [CategoriasController::class, "consultar"]);
-        Route::get ("/crud",       [CategoriasController::class, "crud"]);
+        Route::get ("/crud/{id}",  [CategoriasController::class, "crud"]);
         Route::get ("/aviso/{id}", [CategoriasController::class, "aviso"]);
         Route::post("/salvar",     [CategoriasController::class, "salvar"]);
         Route::post("/excluir",    [CategoriasController::class, "excluir"]);
@@ -130,7 +130,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [BancosController::class, "ver"]);
         Route::get ("/listar",     [BancosController::class, "listar"]);
         Route::get ("/consultar",  [BancosController::class, "consultar"]);
-        Route::get ("/crud",       [BancosController::class, "crud"]);
+        Route::get ("/crud/{id}",  [BancosController::class, "crud"]);
         Route::get ("/aviso/{id}", [BancosController::class, "aviso"]);
         Route::post("/salvar",     [BancosController::class, "salvar"]);
         Route::post("/excluir",    [BancosController::class, "excluir"]);
@@ -140,7 +140,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [CfopController::class, "ver"]);
         Route::get ("/listar",     [CfopController::class, "listar"]);
         Route::get ("/consultar",  [CfopController::class, "consultar"]);
-        Route::get ("/crud",       [CfopController::class, "crud"]);
+        Route::get ("/crud/{id}",  [CfopController::class, "crud"]);
         Route::get ("/aviso/{id}", [CfopController::class, "aviso"]);
         Route::post("/salvar",     [CfopController::class, "salvar"]);
         Route::post("/excluir",    [CfopController::class, "excluir"]);
@@ -150,7 +150,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/",           [ItensController::class, "ver"]);
         Route::get ("/listar",     [ItensController::class, "listar"]);
         Route::get ("/consultar",  [ItensController::class, "consultar"]);
-        Route::get ("/crud",       [ItensController::class, "crud"]);
+        Route::get ("/crud/{id}",  [ItensController::class, "crud"]);
         Route::get ("/aviso/{id}", [ItensController::class, "aviso"]);
         Route::post("/salvar",     [ItensController::class, "salvar"]);
         Route::post("/excluir",    [ItensController::class, "excluir"]);
@@ -160,7 +160,6 @@ Route::middleware("auth")->group(function () {
         Route::get ("/selecionar",  [EmpresasController::class, "minhas"]);
         Route::get ("/consultar",   [EmpresasController::class, "consultar"]);
         Route::get ("/consultar2",  [EmpresasController::class, "consultar2"]);
-        Route::get ("/crud",        [EmpresasController::class, "crud"]);
         Route::get ("/aviso/{id}",  [EmpresasController::class, "aviso"]);
         Route::post("/salvar",      [EmpresasController::class, "salvar"]);
         Route::post("/excluir",     [EmpresasController::class, "excluir"]);

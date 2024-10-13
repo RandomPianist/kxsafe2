@@ -21,12 +21,12 @@ class CfopController extends ControllerKX {
 
     public function ver() {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Cfop" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("cfop"); // ControllerKX.php
-        return view("cfop", compact("ultima_atualizacao", "breadcumb"));
+        return view("cfop", compact("ultima_atualizacao", "breadcrumb"));
     }
     
     public function listar(Request $request) {
@@ -51,7 +51,7 @@ class CfopController extends ControllerKX {
 
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Cfop" => config("app.root_url")."/cfop",
             (intval($id) ? "Editar" : "Novo") => "#"
@@ -64,7 +64,7 @@ class CfopController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        return view("cfop_crud", compact("breadcumb", "cfop"));
+        return view("cfop_crud", compact("breadcrumb", "cfop"));
     }
 
     public function aviso($id) {

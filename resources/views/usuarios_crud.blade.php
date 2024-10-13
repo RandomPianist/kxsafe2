@@ -3,7 +3,7 @@
 @section("content")
     <nav aria-label = "breadcrumb">
         <ol class = "breadcrumb">
-            @foreach ($breadcumb as $nome => $url)
+            @foreach ($breadcrumb as $nome => $url)
                 <li class = "breadcrumb-item">
                     <a href = "{{ $url }}">{{ $nome }}</a>
                 </li>
@@ -174,7 +174,7 @@
             }
             if (id_empresas_ant.join("|") != id_empresas.join("|")) alterou = true;
             if (id && document.getElementById("senha").value) alterou = true;
-            if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
+            if (!erro && !alterou && !document.getElementById("foto").value) erro = "Altere pelo menos um campo para salvar";
             if (!erro) {
                 $.get(URL + "/usuarios/consultar", {
                     email : _email.value

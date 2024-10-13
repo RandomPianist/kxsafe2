@@ -3,7 +3,7 @@
 @section("content")
     <nav aria-label = "breadcrumb">
         <ol class = "breadcrumb">
-            @foreach ($breadcumb as $nome => $url)
+            @foreach ($breadcrumb as $nome => $url)
                 <li class = "breadcrumb-item">
                     <a href = "{{ $url }}">{{ $nome }}</a>
                 </li>
@@ -27,11 +27,11 @@
         <div class = "row">
             <div class = "col-md-4 mb-3">
                 <label for = "cod_externo" class = "form-label">Código externo:</label>
-                <input type = "text" class = "form-control" id = "cod_externo" name = "cod_externo" value = "@if ($item !== null) {{ $item->cod_externo }} @endif" disabled />
+                <input type = "text" class = "form-control readonly" id = "cod_externo" name = "cod_externo" value = "@if ($item !== null) {{ $item->cod_externo }} @endif" />
             </div>
             <div class = "col-md-4 mb-3">
-                <label for = "descricao" class = "form-label">Descrição:</label>
-                <input type = "text" class = "form-control" id = "descricao" name = "descricao" oninput = "contarChar(this, 255)" value = "@if ($item !== null) {{ $item->descr }} @endif" />
+                <label for = "descr" class = "form-label">Descrição:</label>
+                <input type = "text" class = "form-control" id = "descr" name = "descr" oninput = "contarChar(this, 255)" value = "@if ($item !== null) {{ $item->descr }} @endif" />
                 <small class = "text-muted"></small>
             </div>
             <div class = "col-md-4 mb-3">
@@ -69,8 +69,8 @@
                 <small class = "text-muted"></small>
             </div>
             <div class = "col-md-4 mb-3">
-                <label for = "validade" class = "form-label">Validade CA:</label>
-                <input type = "text" class = "form-control data" id = "validade" name = "validade" value = "@if ($item !== null) {{ $item->validade_ca }} @endif" />
+                <label for = "validade_ca" class = "form-label">Validade CA:</label>
+                <input type = "text" class = "form-control data" id = "validade_ca" name = "validade_ca" value = "@if ($item !== null) {{ $item->validade_ca }} @endif" />
             </div>
         </div>
         <div class = "row">
@@ -106,10 +106,10 @@
                         id = "fornecedor"
                         class = "form-control autocomplete mr-3"
                         data-input = "#id_fornecedor"
-                        data-table = "fornecedores"
-                        data-column = "descr"
-                        data-filter_col = ""
-                        data-filter = ""
+                        data-table = "empresas"
+                        data-column = "nome_fantasia"
+                        data-filter_col = "tipo"
+                        data-filter = "4"
                         type = "text"
                         value = "@if ($item !== null) {{ $item->fornecedor }} @endif"
                         autocomplete = "off"
@@ -117,7 +117,7 @@
                     <input
                         id = "id_fornecedor"
                         type = "hidden"
-                        value = "@if ($item !== null) {{ $item->id_categoria }} @endif"
+                        value = "@if ($item !== null) {{ $item->id_fornecedor }} @endif"
                     />
                     <a href = "{{ config('app.root_url') }}/fornecedores" title = "Cadastro de fornecedores" target = "_blank">
                         <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
@@ -140,7 +140,39 @@
     </div>
 	<script type = "text/javascript" language = "JavaScript">
         function validar() {
-            
+            limparInvalido();
+            let elementos = obterElementos(["fornecedor", "categoria", "referencia", "preco", "detalhes", "tamanho"]);
+
+            const aux = verificaVazios(["descr", "ca", "validade", "categoria", "tamanho", "validade_ca"]);
+            let erro = aux.erro;
+            let alterou = aux.alterou;
+            if (!erro && parseInt(elementos.preco.value.replace(/\D/g, "")) <= 0) {
+                erro = "Valor inválido";
+                elementos.preco.classList.add("invalido");
+            }
+            if (elementos.preco.value.trim() != dinheiro(anteriores.preco.toString())) alterou = true;
+            const valores = obterElementosValor(elementos);
+            for (x in valores) {
+                if (valores[x] != anteriores[x]) alterou = true;
+            }
+
+            let consulta = obterElementosValor(elementos, ["categoria", "fornecedor", "referencia"]);
+            consulta.id = @if ($item !== null) {{ $item->id }} @else 0 @endif;
+            $.get(URL + "/produtos/consultar/", consulta, function(data) {
+                if (!erro && data != "0" && data != "aviso") {
+                    erro = data + " não encontrad" + (data == "Categoria" ?  "a" : "o");
+                    elementos[data.toLowerCase()].classList.add("invalido");
+                }
+                if (!erro && !alterou && !document.getElementById("foto").value) erro = "Altere pelo menos um campo para salvar";
+                if (!erro) {
+                    const fn = function() {
+                        elementos.preco.value = parseInt(elementos.preco.value.replace(/\D/g, "")) / 100;
+                        document.querySelector("form").submit();
+                    }
+                    if (data == "aviso") s_confirm("Prosseguir apagará atribuições.<br>Deseja continuar?", fn);
+                    else fn();
+                } else s_alert(erro);
+            });
         }
 	</script>
 @endsection

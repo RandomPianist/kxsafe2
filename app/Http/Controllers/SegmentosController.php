@@ -22,12 +22,12 @@ class SegmentosController extends ControllerKX {
 
     public function ver() {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Segmentos" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("segmentos"); // ControllerKX.php
-        return view("segmentos", compact("ultima_atualizacao", "breadcumb"));
+        return view("segmentos", compact("ultima_atualizacao", "breadcrumb"));
     }
     
     public function listar(Request $request) {
@@ -52,7 +52,7 @@ class SegmentosController extends ControllerKX {
 
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Segmentos" => config("app.root_url")."/segmentos",
             (intval($id) ? "Editar" : "Novo") => "#"
@@ -64,7 +64,7 @@ class SegmentosController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        return view("segmentos_crud", compact("breadcumb", "segmento"));
+        return view("segmentos_crud", compact("breadcrumb", "segmento"));
     }
 
     public function aviso($id) {

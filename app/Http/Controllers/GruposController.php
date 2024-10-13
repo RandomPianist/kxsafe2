@@ -14,12 +14,12 @@ class GruposController extends ControllerKX {
 
     public function ver() {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Grupos" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("grupos"); // ControllerKX.php
-        return view("grupos", compact("ultima_atualizacao", "breadcumb"));
+        return view("grupos", compact("ultima_atualizacao", "breadcrumb"));
     }
     
     public function listar(Request $request) {
@@ -44,7 +44,7 @@ class GruposController extends ControllerKX {
 
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Grupos" => config("app.root_url")."/grupos",
             (intval($id) ? "Editar" : "Novo") => "#"
@@ -56,7 +56,7 @@ class GruposController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        return view("grupos_crud", compact("breadcumb", "grupo"));
+        return view("grupos_crud", compact("breadcrumb", "grupo"));
     }
 
     public function aviso($id) {

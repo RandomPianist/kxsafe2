@@ -21,12 +21,12 @@ class BancosController extends ControllerKX {
 
     public function ver() {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Bancos" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("bancos"); // ControllerKX.php
-        return view("bancos", compact("ultima_atualizacao", "breadcumb"));
+        return view("bancos", compact("ultima_atualizacao", "breadcrumb"));
     }
     
     public function listar(Request $request) {
@@ -51,7 +51,7 @@ class BancosController extends ControllerKX {
 
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Bancos" => config("app.root_url")."/bancos",
             (intval($id) ? "Editar" : "Novo") => "#"
@@ -64,7 +64,7 @@ class BancosController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        return view("bancos_crud", compact("breadcumb", "banco"));
+        return view("bancos_crud", compact("breadcrumb", "banco"));
     }
 
     public function aviso($id) {

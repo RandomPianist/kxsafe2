@@ -411,7 +411,65 @@ label {
 	background-color: transparent;
 	width: 100%;
 }
+
 .adicionar-foto i {
 	font-size: 25pt;
 	color: #333;
+}
+
+.nav-atribuicoes li button {
+    background-color: var(--cards);
+    border-bottom: none
+}
+
+.nav-atribuicoes li button:focus {
+    outline: none
+}
+
+.container-atribuicoes {
+    background-color: var(--fundo);
+    border-radius: 0 .75rem .75rem .75rem
+}
+
+.nav-tabs {
+    border: none
+}
+
+.nav-tabs .nav-item {
+    margin-bottom: -8px
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: var(--fonte);
+    background-color: var(--fundo);
+    border-bottom: transparent;
+    border-color: transparent
+}
+
+.tabela-atribuicoes thead{
+    background-color: var(--header-tabela)
+}
+
+.tabela-atribuicoes tbody tr{
+    background-color: var(--cards)
+}
+
+.col-produto {
+    width: 40%
+}
+
+.col-quantidade {
+    width: 10%
+}
+
+.col-validade {
+    width: 20%
+}
+
+.col-obrigatorio {
+    width: 15%
+}
+
+.col-acoes {
+    width: 15%
 }

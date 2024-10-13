@@ -70,7 +70,7 @@ class EmpresasController extends ControllerKX {
         $pode_criar = ($meu_tipo == 1 || ($meu_tipo == 2 && $tipo == 3));
         $titulo = $this->legenda($tipo);
         $ultima_atualizacao = $this->log_consultar("empresas", $tipo); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => $tipo != $meu_tipo ? config("app.root_url")."/home" : "#",
             $titulo => "#"
         );
@@ -96,14 +96,14 @@ class EmpresasController extends ControllerKX {
                 $novo = "Novo fornecedor";
                 break;
         }
-        return view("empresas", compact("ultima_atualizacao", "titulo", "breadcumb", "empresas", "grupos", "id_grupo", "pode_criar", "novo"));
+        return view("empresas", compact("ultima_atualizacao", "titulo", "breadcrumb", "empresas", "grupos", "id_grupo", "pode_criar", "novo"));
     }
 
     private function crud($tipo, Request $request) {
         $id = $request->id;
         if (!$this->permanecer($tipo)) return redirect("/");
         $titulo = $this->legenda($tipo);
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             $titulo => config("app.root_url")."/".strtolower($titulo)."/grupo/0",
             (intval($request->id) ? "Editar" : "Novo") => "#"
@@ -166,7 +166,7 @@ class EmpresasController extends ControllerKX {
                 array_push($enderecos, $aux);
             }
         }
-        return view("empresas_crud", compact("titulo", "breadcumb", "empresa", "criando", "tipo", "enderecos"));
+        return view("empresas_crud", compact("titulo", "breadcrumb", "empresa", "criando", "tipo", "enderecos"));
     }
 
     private function url() {

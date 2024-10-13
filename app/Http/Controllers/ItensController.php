@@ -28,12 +28,12 @@ class ItensController extends ControllerKX {
 
     public function ver() {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Itens" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("itens"); // ControllerKX.php
-        return view("itens", compact("ultima_atualizacao", "breadcumb"));
+        return view("itens", compact("ultima_atualizacao", "breadcrumb"));
     }
     
     public function listar(Request $request) {
@@ -68,7 +68,7 @@ class ItensController extends ControllerKX {
 
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Itens" => config("app.root_url")."/itens",
             (intval($id) ? "Editar" : "Novo") => "#"
@@ -87,7 +87,7 @@ class ItensController extends ControllerKX {
             $item->foto = asset("storage/".$item->foto);
             $item->validade_ca = Carbon::createFromFormat('Y-m-d', $item->validade_ca)->format('d/m/Y');
         }
-        return view("itens_crud", compact("breadcumb", "item"));
+        return view("itens_crud", compact("breadcrumb", "item"));
     }
 
     public function aviso($id) {

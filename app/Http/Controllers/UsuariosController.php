@@ -35,17 +35,17 @@ class UsuariosController extends ControllerKX {
 
     public function ver() {
         if (!Auth::user()->admin) return redirect("/");
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Usuários" => "#"
         );
         $ultima_atualizacao = $this->log_consultar("users"); // ControllerKX.php
-        return view("usuarios", compact("ultima_atualizacao", "breadcumb"));
+        return view("usuarios", compact("ultima_atualizacao", "breadcrumb"));
     }
 
     public function crud($id) {
         if (!Auth::user()->admin && $id != Auth::user()->id) return redirect("/");
-        $breadcumb = array(
+        $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Usuários" => config("app.root_url")."/usuarios",
             (intval($id) ? "Editar" : "Novo") => "#"
@@ -79,7 +79,7 @@ class UsuariosController extends ControllerKX {
         if ($usuario !== null) {
             if ($usuario->foto) $usuario->foto = asset("storage/".$usuario->foto);
         }
-        return view("usuarios_crud", compact("breadcumb", "usuario", "empresas"));
+        return view("usuarios_crud", compact("breadcrumb", "usuario", "empresas"));
     }
 
     public function listar(Request $request) {

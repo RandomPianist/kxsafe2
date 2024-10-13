@@ -3,7 +3,7 @@
 @section("content")
     <nav aria-label = "breadcrumb">
         <ol class = "breadcrumb">
-            @foreach ($breadcumb as $nome => $url)
+            @foreach ($breadcrumb as $nome => $url)
                 <li class = "breadcrumb-item">
                     <a href = "{{ $url }}">{{ $nome }}</a>
                 </li>
