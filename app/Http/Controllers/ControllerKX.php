@@ -77,22 +77,6 @@ class ControllerKX extends Controller {
         DB::statement($sql);
     }
 
-    protected function grupos_buscar($param = "1") {
-        $minha_empresa = $this->retorna_empresa_logada();
-        return DB::table("grupos")
-                    ->select(
-                        "id",
-                        "descr"
-                    )
-                    ->whereRaw($param)
-                    ->whereRaw("id_empresa = ".$minha_empresa." OR id_empresa IN (
-                        SELECT id
-                        FROM empresas
-                        WHERE id_matriz = ".$minha_empresa."
-                    )")
-                    ->where("lixeira", 0);
-    }
-
     protected function empresas_acessiveis() {
         $minha_empresa = $this->retorna_empresa_logada();
         $meu_tipo = intval(Empresas::find($minha_empresa)->tipo);
@@ -138,6 +122,18 @@ class ControllerKX extends Controller {
             GROUP BY empresas.id
         " : " WHERE (id = ".$minha_empresa." OR id_matriz = ".$minha_empresa.") AND lixeira = 0";
         return DB::table(DB::raw("(".$query.") AS tab"))->pluck("id")->toArray();
+    }
+
+    protected function grupos_buscar($param = "1") {
+        $minha_empresa = $this->retorna_empresa_logada();
+        return DB::table("grupos")
+                    ->select(
+                        "id",
+                        "descr"
+                    )
+                    ->whereRaw($param)
+                    ->whereIn("id_empresa", $this->empresas_acessiveis())
+                    ->where("lixeira", 0);
     }
 
     protected function atribuicoes_atualizar($id, $antigo, $novo, $nome, $chave, $api = false) {

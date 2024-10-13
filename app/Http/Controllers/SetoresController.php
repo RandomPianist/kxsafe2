@@ -9,18 +9,13 @@ use App\Models\Setores;
 
 class SetoresController extends ControllerKX {
     private function busca($param = "1") {
-        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
         return DB::table("setores")
                     ->select(
                         "id",
                         "descr"
                     )
                     ->whereRaw($param)
-                    ->whereRaw("id_empresa = ".$minha_empresa." OR id_empresa IN (
-                        SELECT id
-                        FROM empresas
-                        WHERE id_matriz = ".$minha_empresa."
-                    )")
+                    ->whereIn("id_empresa", $this->empresas_acessiveis()) // ControllerKX.php
                     ->where("lixeira", 0)
                     ->get();
     }

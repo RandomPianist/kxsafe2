@@ -9,7 +9,6 @@ use App\Models\Cfop;
 
 class CfopController extends ControllerKX {
     private function busca($param = "1") {
-        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
         return DB::table("cfop")
                     ->select(
                         "id",
