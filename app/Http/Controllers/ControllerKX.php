@@ -143,7 +143,14 @@ class ControllerKX extends Controller {
             $where = "produto_ou_referencia_valor = '".$antigo."' AND produto_ou_referencia_chave = '".$chave."'";
             DB::statement("
                 UPDATE atribuicoes
-                SET ".($novo ? "produto_ou_referencia_valor = '".$novo."'" : "lixeira = 1")."
+                SET ".(
+                    ($novo || sizeof(
+                        DB::table("atribuicoes")
+                            ->where("produto_ou_referencia_valor", $antigo)
+                            ->where("produto_ou_referencia_chave", "R")
+                            ->get()
+                    ) > 1) ? "produto_ou_referencia_valor = '".$novo."'" : "lixeira = 1"
+                )."
                 WHERE ".$where
             );
             $this->log_inserir2($novo ? "E" : "D", "atribuicoes", $where, $nome, $api);

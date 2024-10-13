@@ -61,10 +61,10 @@ class ItensController extends ControllerKX {
         )) return "Categoria";
         if (sizeof(
             DB::table("atribuicoes")
-                ->where("produto_ou_referencia_valor", Produtos::find($request->id)->referencia)
+                ->where("produto_ou_referencia_valor", Itens::find($request->id)->referencia)
                 ->where("produto_ou_referencia_chave", "R")
                 ->get()
-        ) && !trim($request->referencia)) return "aviso";
+        ) == 1 && !trim($request->referencia)) return "aviso";
         return "0";
     }
 
