@@ -27,6 +27,8 @@
 		</button>
     </div>
 	<script type = "text/javascript" language = "JavaScript">
-        
+        function validar() {
+            
+        }
 	</script>
 @endsection

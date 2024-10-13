@@ -4,14 +4,13 @@
     $aux->id = "produto";
     $aux->nome = "produto";
     $aux->abv = "prod";
-    $aux->letra = "P";
     array_push($abas, $aux);
     $aux = new stdClass();
     $aux->id = "referencia";
     $aux->nome = "referência";
     $aux->abv = "refer";
-    $aux->letra = "R";
     array_push($abas, $aux);
+    $sufixosJS = ["", "_ant"];
 @endphp
 
 <h5 class = "mt-4">Atribuições</h5>
@@ -75,7 +74,7 @@
                         </select>
                     </div>
                     <div class = "col-md-3 mb-3">
-                        <button type = "button" class = "margem-compensa-label btn btn-primary w-100" onclick = "salvarAtribuicao('{{ $aba->letra }}')">Adicionar atribuição</button>
+                        <button type = "button" class = "margem-compensa-label btn btn-primary w-100" onclick = "salvarAtribuicao('{{ strtoupper(substr($aba->id, 0, 1)) }}')">Adicionar atribuição</button>
                     </div>
                 </div>
                 <table class = "tabela-atribuicoes tabela-arredondada table table-hover table-bordered mt-2">
@@ -83,18 +82,18 @@
                         <tr>
                             <th scope = "col" class = "col-produto">Produto</th>
                             <th scope = "col" class = "text-right col-quantidade">Quantidade</th>
-                            <th scope = "col" class = "col-validade">Validade em dias</th>
+                            <th scope = "col" class = "text-right col-validade">Validade em dias</th>
                             <th scope = "col" class = "col-obrigatorio">Obrigatório</th>
                             <th scope = "col" class = "text-center col-acoes">Ações</th>
                         </tr>
                     </thead>
                     <tbody id = "atb-{{ $aba->abv }}-tabela">
                         @foreach ($atribuicoes as $atribuicao)
-                            @if ($atribuicao->produto_ou_referencia_chave == $aba->letra)
+                            @if ($atribuicao->produto_ou_referencia_chave == strtoupper(substr($aba->id, 0, 1)))
                                 <tr>
-                                    <td>{{ $atribuicao->produto }}</td>
+                                    <td>{{ $atribuicao->descr }}</td>
                                     <td class = "text-right">{{ $atribuicao->qtd }}</td>
-                                    <td>{{ $atribuicao->validade }}</td>
+                                    <td class = "text-right">{{ $atribuicao->validade }}</td>
                                     <td>@if ($atribuicao->obrigatorio) Sim @else Não @endif</td>
                                     <td class = "text-center">
                                         <i class = "my-icon far fa-hand-holding-box" title = "Retirar"></i>
@@ -109,3 +108,26 @@
         @endforeach
     </div>
 </div>
+<script type = "text/javascript" language = "JavaScript">
+    @foreach ($abas as $aba)
+        let atb{{ ucfirst($aba->abv) }}PermiteRetirar = new Array();
+        @foreach ($sufixosJS as $sufixo)
+            let atb{{ ucfirst($aba->abv) }}Id{{ $sufixo }} = new Array();
+            let atb{{ ucfirst($aba->abv) }}Descr{{ $sufixo }} = new Array();
+            let atb{{ ucfirst($aba->abv) }}Qtd{{ $sufixo }} = new Array();
+            let atb{{ ucfirst($aba->abv) }}Validade{{ $sufixo }} = new Array();
+            let atb{{ ucfirst($aba->abv) }}Obrigatorio{{ $sufixo }} = new Array();
+        @endforeach
+
+        @foreach ($atribuicoes as $atribuicao)
+            @if ($atribuicao->produto_ou_referencia_chave == strtoupper(substr($aba->id, 0, 1)))
+                atb{{ ucfirst($aba->abv) }}Id.push("{{ $atribuicao->id }}");
+                atb{{ ucfirst($aba->abv) }}Descr.push("{{ $atribuicao->descr }}");
+                atb{{ ucfirst($aba->abv) }}Qtd.push("{{ $atribuicao->qtd }}");
+                atb{{ ucfirst($aba->abv) }}Validade.push("{{ $atribuicao->validade }}");
+                atb{{ ucfirst($aba->abv) }}Obrigatorio.push("@if ($atribuicao->obrigatorio) 'Sim' @else 'Não' @endif");
+                atb{{ ucfirst($aba->abv) }}PermiteRetirar.push(1);
+            @endif
+        @endforeach
+    @endforeach
+</script>

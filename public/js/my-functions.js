@@ -522,6 +522,59 @@ function mostrarImagemErro() {
     caixaPesquisa.classList.remove("d-flex");
 }
 
+function mostrarAtribuicoes() {
+    let resultado = "";
+    for (let i = 0; i < atbProdId.length; i++) {
+        resultado += "<tr>" +
+            "<td>" + atbProdDescr[i] + "</td>" +
+            "<td class = 'text-right'>" + atbProdQtd[i] + "</td>" +
+            "<td class = 'text-right'>" + atbProdValidade[i] + "</td>" +
+            "<td>" + atbProdObrigatorio[i] + "</td>" +
+            "<td class = 'text-center'>" +
+                "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar'></i>" +
+                (atbProdPermiteRetirar[i] ? "<i class = 'my-icon far fa-trash-alt' title = 'Excluir'></i>" : "") +
+            "</td>" +
+        "</tr>";
+    }
+    document.getElementById("atb-prod-tabela").innerHTML = resultado;
+    resultado = "";
+    for (let i = 0; i < atbReferId.length; i++) {
+        resultado += "<tr>" +
+            "<td>" + atbReferDescr[i] + "</td>" +
+            "<td class = 'text-right'>" + atbReferQtd[i] + "</td>" +
+            "<td class = 'text-right'>" + atbReferValidade[i] + "</td>" +
+            "<td>" + atbReferObrigatorio[i] + "</td>" +
+            "<td class = 'text-center'>" +
+                "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar'></i>" +
+                (atbReferPermiteRetirar[i] ? "<i class = 'my-icon far fa-trash-alt' title = 'Excluir'></i>" : "") +
+            "</td>" +
+        "</tr>";
+    }
+    document.getElementById("atb-refer-tabela").innerHTML = resultado;
+}
+
+function salvarAtribuicao(chave) {
+    if (chave == "P") {
+        atbProdId.push(0);
+        atbProdQtd.push(document.getElementById("atb-prod-qtd").value);
+        atbProdValidade.push(document.getElementById("atb-prod-validade").value);
+        atbProdObrigatorio.push(document.getElementById("atb-prod-obrigatorio").value == "S" ? "Sim" : "Não");
+        atbProdPermiteRetirar.push(0);
+    } else {
+        atbReferId.push(0);
+        atbReferQtd.push(document.getElementById("atb-refer-qtd").value);
+        atbReferValidade.push(document.getElementById("atb-refer-validade").value);
+        atbReferObrigatorio.push(document.getElementById("atb-refer-obrigatorio").value == "S" ? "Sim" : "Não");
+        atbReferPermiteRetirar.push(0);
+    }
+    const pai = "#por-" + (chave == "P" ? "produto" : "referencia");
+    Array.from(document.querySelectorAll(pai + " input, " + pai + " select")).forEach((el) => {
+        el.value = "";
+    });
+    document.querySelector(pai + " input").focus();
+    mostrarAtribuicoes();
+}
+
 // mover as funções abaixo para arquivo específico depois
 function formatarCPF(el) {
     el.classList.remove("invalido");

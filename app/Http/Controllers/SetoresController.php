@@ -70,7 +70,7 @@ class SetoresController extends ControllerKX {
                                     CASE
                                         WHEN produto_ou_referencia_chave = 'P' THEN produtos.descr
                                         ELSE produtos.referencia
-                                    END AS produto
+                                    END AS descr
                                 "),
                                 "atribuicoes.id",
                                 "qtd",
@@ -114,5 +114,13 @@ class SetoresController extends ControllerKX {
         $linha->lixeira = 1;
         $linha->save();
         $this->log_inserir("D", "setores", $linha->id); // ControllerKX.php
+
+        $where = "pessoa_ou_setor_chave = 'S' AND pessoa_ou_setor_valor = '".$linha->id."'";
+        DB::statement("
+            UPDATE atribuicoes
+            SET lixeira = 1
+            WHERE ".$where
+        );
+        $this->log_inserir2("D", "atribuicoes", $where, "NULL"); // ControllerKX.php
     }
 }
