@@ -64,7 +64,35 @@ class SetoresController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        return view("setores_crud", compact("breadcrumb", "setor"));
+        $atribuicoes = DB::table("atribuicoes")
+                            ->select(
+                                DB::raw("
+                                    CASE
+                                        WHEN produto_ou_referencia_chave = 'P' THEN produtos.descr
+                                        ELSE produtos.referencia
+                                    END AS produto
+                                "),
+                                "atribuicoes.id",
+                                "qtd",
+                                "atribuicoes.validade",
+                                "obrigatorio",
+                                "produto_ou_referencia_chave"
+                            )
+                            ->join("itens", function($join) {
+                                $join->on(function($sql) {
+                                    $sql->on("produto_ou_referencia_valor", "cod_ou_id")
+                                        ->where("produto_ou_referencia_chave", "P");
+                                })->orOn(function($sql) {
+                                    $sql->on("produto_ou_referencia_valor", "referencia")
+                                        ->where("produto_ou_referencia_chave", "R");
+                                });
+                            })
+                            ->where("pessoa_ou_setor_chave", "S")
+                            ->where("pessoa_ou_setor_valor", $id)
+                            ->where("atribuicoes.lixeira", 0)
+                            ->where("itens.lixeira", 0)
+                            ->get();
+        return view("setores_crud", compact("breadcrumb", "setor", "atribuicoes"));
     }
 
     public function aviso($id) {

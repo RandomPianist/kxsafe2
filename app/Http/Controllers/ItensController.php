@@ -125,5 +125,13 @@ class ItensController extends ControllerKX {
         $linha->lixeira = 1;
         $linha->save();
         $this->log_inserir("D", "itens", $linha->id);  // ControllerKX.php
+
+        $where = "produto_ou_referencia_chave = 'P' AND produto_ou_referencia_valor = '".$linha->cod_ou_id."'";
+        DB::statement("
+            UPDATE atribuicoes
+            SET lixeira = 1
+            WHERE ".$where
+        );
+        $this->log_inserir2("D", "atribuicoes", $where, "NULL");
     }
 }
