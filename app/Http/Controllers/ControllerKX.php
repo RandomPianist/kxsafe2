@@ -139,4 +139,17 @@ class ControllerKX extends Controller {
         " : " WHERE (id = ".$minha_empresa." OR id_matriz = ".$minha_empresa.") AND lixeira = 0";
         return DB::table(DB::raw("(".$query.") AS tab"))->pluck("id")->toArray();
     }
+
+    protected function atribuicoes_atualizar($id, $antigo, $novo, $nome, $chave, $api = false) {
+        if ($id) {
+            $novo = trim($novo);
+            $where = "produto_ou_referencia_valor = '".$antigo."' AND produto_ou_referencia_chave = '".$chave."'";
+            DB::statement("
+                UPDATE atribuicoes
+                SET ".($novo ? "produto_ou_referencia_valor = '".$novo."'" : "lixeira = 1")."
+                WHERE ".$where
+            );
+            $this->log_inserir2($novo ? "E" : "D", "atribuicoes", $where, $nome, $api);
+        }
+    }
 }

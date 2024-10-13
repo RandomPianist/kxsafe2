@@ -69,7 +69,7 @@
                             "<td width = '13%' class = 'text-right'>" + grupo.id.toString().padStart(6, "0") + "</td>" +
                             "<td width = '74%'>" + grupo.descr + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar' onclick = 'ir(" + grupo.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + grupo.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + grupo.id + ", " + '"/grupos"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";

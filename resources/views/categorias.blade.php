@@ -69,7 +69,7 @@
                             "<td width = '13%' class = 'text-right'>" + categoria.id.toString().padStart(6, "0") + "</td>" +
                             "<td width = '74%'>" + categoria.descr + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar' onclick = 'ir(" + categoria.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + categoria.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + categoria.id + ", " + '"/categorias"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";

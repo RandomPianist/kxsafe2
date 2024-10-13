@@ -257,19 +257,19 @@ class EmpresasController extends ControllerKX {
                 ->where("lixeira", 0)
                 ->where("id", $request->id_matriz)
                 ->where("nome_fantasia", $request->matriz)
-        )) return "Matriz";
+        ) && trim($request->matriz)) return "Matriz";
         if (!sizeof(
             DB::table("segmentos")
                 ->where("lixeira", 0)
                 ->where("id", $request->id_segmento)
                 ->where("descr", $request->segmento)
-        )) return "Segmento";
+        ) && trim($request->segmento)) return "Segmento";
         if (!sizeof(
             DB::table("grupos")
                 ->where("lixeira", 0)
                 ->where("id", $request->id_grupo)
                 ->where("descr", $request->grupo)
-        )) return "Grupo";
+        ) && trim($request->grupo)) return "Grupo";
         return "0";
     }
 

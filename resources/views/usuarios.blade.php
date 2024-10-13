@@ -74,7 +74,7 @@
                         "<td width = '30%'>" + usuario.email + "</td>" +
                         "<td width = '15%'>" + (usuario.admin ? "Sim" : "Não") + "</td>" +
                         "<td class = 'text-center' width = '15%'>" +
-                            "<i class = 'my-icon far fa-edit m-2'  title = 'Editar' onclick = 'ir(" + usuario.id + ")'></i>" +
+                            "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + usuario.id + ")'></i>" +
                             "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + usuario.id + ", " + '"/usuarios"' + ", event)'></i>" +
                         "</td>" +
                     "</tr>";

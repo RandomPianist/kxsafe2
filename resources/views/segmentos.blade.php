@@ -69,7 +69,7 @@
                             "<td width = '13%' class = 'text-right'>" + segmento.id.toString().padStart(6, "0") + "</td>" +
                             "<td width = '74%'>" + segmento.descr + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar' onclick = 'ir(" + segmento.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + segmento.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + segmento.id + ", " + '"/segmentos"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";

@@ -69,7 +69,7 @@
                             "<td width = '13%' class = 'text-right'>" + natureza.id.toString().padStart(6, "0") + "</td>" +
                             "<td width = '74%'>" + natureza.descr + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar' onclick = 'ir(" + natureza.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + natureza.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + natureza.id + ", " + '"/naturezas"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";

@@ -13,6 +13,7 @@ use App\Http\Controllers\LocaisController;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\BancosController;
 use App\Http\Controllers\CfopController;
+use App\Http\Controllers\ItensController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -143,6 +144,16 @@ Route::middleware("auth")->group(function () {
         Route::get ("/aviso/{id}", [CfopController::class, "aviso"]);
         Route::post("/salvar",     [CfopController::class, "salvar"]);
         Route::post("/excluir",    [CfopController::class, "excluir"]);
+    });
+
+    Route::group(["prefix" => "itens"], function() {
+        Route::get ("/",           [ItensController::class, "ver"]);
+        Route::get ("/listar",     [ItensController::class, "listar"]);
+        Route::get ("/consultar",  [ItensController::class, "consultar"]);
+        Route::get ("/crud",       [ItensController::class, "crud"]);
+        Route::get ("/aviso/{id}", [ItensController::class, "aviso"]);
+        Route::post("/salvar",     [ItensController::class, "salvar"]);
+        Route::post("/excluir",    [ItensController::class, "excluir"]);
     });
 
     Route::group(["prefix" => "empresas"], function() {

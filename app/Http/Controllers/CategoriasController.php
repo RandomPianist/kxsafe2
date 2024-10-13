@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use DB;
-use Auth;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
 use App\Models\Categorias;
 
 class CategoriasController extends ControllerKX {
     private function busca($param = "1") {
-        $minha_empresa = $this->retorna_empresa_logada(); // ControllerKX.php
         return DB::table("categorias")
                     ->select(
                         "id",

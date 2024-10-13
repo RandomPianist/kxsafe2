@@ -16,7 +16,7 @@
 							<i class = "fa-solid fa-magnifying-glass"></i>
 						</span>
 					</div>
-					<input id = "goto-hidden" type = "hidden" onchange = "goto_funcao(this.value)" />
+					<input id = "goto-hidden" type = "hidden" onchange = "gotoFuncao(this.value)" />
 					<input id = "goto"
 						class = "caixa-pesquisa form-control autocomplete"
 						data-input = "#goto-hidden"

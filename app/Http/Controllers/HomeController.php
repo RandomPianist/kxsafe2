@@ -72,58 +72,65 @@ class HomeController extends ControllerKX {
 
         if ($tabela == "menu") {
             $tabela = "(
-                SELECT
-                    IFNULL(submenu_url, url) AS id,
-                    CONCAT(modulos.descr, ' > ', menua.descr, IFNULL(CONCAT(' > ', submenu_descr), '')) AS descr,
-                    0 AS lixeira
-                    
-                FROM modulos
-
-                JOIN (
+                SELECT * FROM (
                     SELECT
-                        id,
-                        id_modulo,
-                        descr,
-                        url,
-                        NULL AS submenu_descr,
-                        NULL AS submenu_url,
-                        ordem
-                    
-                    FROM menu
-                    
-                    WHERE id_pai = 0
-                    
-                    UNION ALL (
+                        IFNULL(submenu_url, url) AS id,
+                        CONCAT(modulos.descr, ' > ', menua.descr, IFNULL(CONCAT(' > ', submenu_descr), '')) AS descr,
+                        0 AS lixeira
+                        
+                    FROM modulos
+
+                    JOIN (
                         SELECT
-                            menu.id,
-                            menu.id_modulo,
-                            menu.descr,
-                            menu.url,
-                            submenu.descr,
-                            submenu.url,
-                            0
+                            id,
+                            id_modulo,
+                            descr,
+                            url,
+                            NULL AS submenu_descr,
+                            NULL AS submenu_url,
+                            ordem
                         
                         FROM menu
                         
-                        LEFT JOIN menu AS submenu
-                            ON submenu.id_pai = menu.id
-
-                        JOIN menu_perfis AS mp
-                            ON mp.id_menu = submenu.id
+                        WHERE id_pai = 0
                         
-                        WHERE menu.id_pai = 0
-                          AND mp.tipo = ".$meu_tipo."
-                    )
-                ) AS menua ON menua.id_modulo = modulos.id
+                        UNION ALL (
+                            SELECT
+                                menu.id,
+                                menu.id_modulo,
+                                menu.descr,
+                                menu.url,
+                                submenu.descr,
+                                submenu.url,
+                                0
+                            
+                            FROM menu
+                            
+                            LEFT JOIN menu AS submenu
+                                ON submenu.id_pai = menu.id
 
-                JOIN menu_perfis AS mp
-                    ON mp.id_menu = menua.id
+                            JOIN menu_perfis AS mp
+                                ON mp.id_menu = submenu.id
+                            
+                            WHERE menu.id_pai = 0
+                            AND mp.tipo = ".$meu_tipo."
+                        )
+                    ) AS menua ON menua.id_modulo = modulos.id
 
-                WHERE (url IS NOT NULL OR submenu_url IS NOT NULL)
-                  AND mp.tipo = ".$meu_tipo."
-                  AND mp.admin IN (0, ".Auth::user()->admin.")
-                    
-                ORDER BY modulos.ordem, menua.ordem
+                    JOIN menu_perfis AS mp
+                        ON mp.id_menu = menua.id
+
+                    WHERE (url IS NOT NULL OR submenu_url IS NOT NULL)
+                    AND mp.tipo = ".$meu_tipo."
+                    AND mp.admin IN (0, ".Auth::user()->admin.")
+                        
+                    ORDER BY modulos.ordem, menua.ordem
+                ) AS main
+
+                GROUP BY
+                    id,
+                    descr,
+                    lixeira
             ) AS tab";
         } else if ($tabela == "empresas") $where .= " AND id IN (".implode(",", $this->empresas_acessiveis()).")"; // ControllerKX.php
 
