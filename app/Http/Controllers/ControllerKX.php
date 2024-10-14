@@ -35,17 +35,11 @@ class ControllerKX extends Controller {
             LEFT JOIN users
                 ON users.id_aux = log.id_usuario
         ";
-        switch($tabela) {
-            case "empresas":
-                $query .= "
-                    JOIN empresas
-                        ON empresas.id = log.fk
-
-                    WHERE tipo = ".$tipo;
-                break;
-            default:
-                $query .= "WHERE 1";
-        }
+        if (in_array($tabela, ["setores", "funcionarios", "empresas", "grupos", "segmentos"])) {
+            $query .= " JOIN ".$tabela." ON ".$tabela.".id = log.fk";
+            if ($tabela == "empresas") $query .= " WHERE tipo = ".$tipo;
+            else $query .= " WHERE ".$tabela.".id_empresa IN (".implode(",", $this->empresas_acessiveis()).")";
+        } else $query .= " WHERE 1 ";
         $query .= " AND tabela = '".$tabela."'";
         $consulta = DB::select(DB::raw($query));
         return sizeof($consulta) ? "Última atualização feita por ".$consulta[0]->nome." em ".$consulta[0]->data : "Nenhuma atualização feita";
@@ -127,6 +121,16 @@ class ControllerKX extends Controller {
         return DB::table(DB::raw("(".$query.") AS tab"))->pluck("id")->toArray();
     }
 
+    protected function empresas_consultar(Request $request) {
+        return (!sizeof(
+            DB::table("empresas")
+                ->where("id", $request->id_empresa)
+                ->where("nome_fantasia", $request->empresa)
+                ->where("lixeira", 0)
+                ->get()
+        ));
+    }
+
     protected function grupos_buscar($param = "1") {
         $minha_empresa = $this->retorna_empresa_logada();
         return DB::table("grupos")
@@ -137,6 +141,38 @@ class ControllerKX extends Controller {
                     ->whereRaw($param)
                     ->whereIn("id_empresa", $this->empresas_acessiveis())
                     ->where("lixeira", 0);
+    }
+
+    protected function atribuicoes($funcionario_ou_setor_chave, $funcionario_ou_setor_valor) {
+        return DB::table("atribuicoes")
+                    ->select(
+                        DB::raw("
+                            CASE
+                                WHEN produto_ou_referencia_chave = 'P' THEN descr
+                                ELSE referencia
+                            END AS descr
+                        "),
+                        "atribuicoes.id",
+                        "qtd",
+                        "atribuicoes.validade",
+                        "obrigatorio",
+                        "produto_ou_referencia_chave",
+                        "produto_ou_referencia_valor"
+                    )
+                    ->join("itens", function($join) {
+                        $join->on(function($sql) {
+                            $sql->on("produto_ou_referencia_valor", "cod_ou_id")
+                                ->where("produto_ou_referencia_chave", "P");
+                        })->orOn(function($sql) {
+                            $sql->on("produto_ou_referencia_valor", "referencia")
+                                ->where("produto_ou_referencia_chave", "R");
+                        });
+                    })
+                    ->where("funcionario_ou_setor_chave", $funcionario_ou_setor_chave)
+                    ->where("funcionario_ou_setor_valor", $funcionario_ou_setor_valor)
+                    ->where("atribuicoes.lixeira", 0)
+                    ->where("itens.lixeira", 0)
+                    ->get();
     }
 
     protected function atribuicoes_na_referencia($referencia) {
@@ -204,7 +240,7 @@ class ControllerKX extends Controller {
                         $atribuicao->produto_ou_referencia_chave = $tipo == "prod" ? "P" : "R";
                         $atribuicao->produto_ou_referencia_valor = $tipo == "prod" ? $atb["valor"][$i] : $item->referencia;
                         $atribuicao->qtd = $atb["qtd"][$i];
-                        $atribuicao->validade = $atb["validade"][$i];
+                        $atribuicao->validade = $atb["validade"][$i] ? $atb["validade"][$i] : "0";
                         $atribuicao->obrigatorio = $atb["obrigatorio"][$i] == "Sim" ? 1 : 0;
                         $atribuicao->save();
                         break;
@@ -217,5 +253,27 @@ class ControllerKX extends Controller {
                 if (in_array($operacao, ["C", "D"])) $this->log_inserir($operacao, "atribuicoes", $atribuicao->id);
             }
         }
+    }
+
+    protected function supervisor_consultar(Request $request) {
+        $consulta = DB::table("funcionarios")
+                        ->where("cpf", $request->cpf)
+                        ->where("senha", $request->senha)
+                        ->where("supervisor", 1)
+                        ->where("lixeira", 0)
+                        ->get();
+        return sizeof($consulta) ? $consulta[0]->id : 0;
+    }
+
+    protected function retirada_consultar($id_atribuicao, $qtd) {
+        $atribuicao = Atribuicoes::find($id_atribuicao);
+        $ja_retirados = DB::table("retiradas")
+                            ->selectRaw("IFNULL(SUM(retiradas.qtd), 0) AS qtd")
+                            ->join("atribuicoes", "atribuicoes.id", "retiradas.id_atribuicao")
+                            ->whereRaw("DATE_ADD(retiradas.data, INTERVAL atribuicoes.validade DAY) >= CURDATE()")
+                            ->where("atribuicoes.id", $id_atribuicao)
+                            ->get();
+        if (floatval($atribuicao->qtd) < (floatval($qtd) + (sizeof($ja_retirados) ? floatval($ja_retirados[0]->qtd) : 0))) return 0;
+        return 1;
     }
 }

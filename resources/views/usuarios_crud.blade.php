@@ -12,17 +12,21 @@
     </nav>
     <h2 class = "titulo">Usuário</h2>
     <form class = "formulario p-5 custom-scrollbar">
-        <div class="d-flex justify-content-center align-items-top">
-            <div class = "mb-3 " style = "width:12rem;height:12rem;border:2px solid var(--fonte);border-radius:50%;display:flex;justify-content: center; align-items: center;">
-                <img class = "user-photo" src = "@if ($usuario !== null) {{ $usuario->foto }} @endif" onerror = "this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')" />
-                <i class = "fas fa-user" style = "font-size:60px"></i>
+        <div class = "d-flex justify-content-center align-items-top">
+            <div class = "mb-3" style = "width:12rem;height:12rem;border:2px solid var(--fonte);border-radius:50%;display:flex;justify-content:center;align-items:center;position:relative">
+                <img
+                    class = "w-100 user-photo" src = "@if ($usuario !== null) {{ $usuario->foto }} @endif" 
+                    onerror = "this.style.display='none';this.nextElementSibling.style.display='block'" 
+                    style = "height:auto;border-radius:50%;object-fit:cover"
+                />
+                <i class = "fallback-icon fas fa-user" style = "display:none;font-size:4rem;position:absolute" aria-hidden = "true"></i>
             </div>
             <div>
                 <button type = "button" class = "adicionar-foto" onclick = "$(this).next().trigger('click')">
                     <i class = "fa-solid fa-camera"></i>
                 </button>
-                <input type = "file" id = "foto" class = "d-none">
-            </div>
+                 <input type = "file" id = "foto" class = "d-none">
+              </div>
         </div>
         <div class = "row">
             <div class = "col-md-6 mb-3">
@@ -31,7 +35,7 @@
                 <small class = "text-muted"></small>
             </div>
             <div class = "col-md-6 mb-3">
-                <label for = "administrador" class="form-label">Administrador:</label>
+                <label for = "administrador" class = "form-label">Administrador:</label>
                 <select class = "form-control @if ($usuario !== null) @if ($usuario->id == Auth::user()->id) readonly @endif @endif" id = "admin">
                     <option value = "opt-1">Não</option>
                     <option value = "opt-2" @if ($usuario !== null) @if (intval($usuario->admin)) selected @endif @endif>Sim</option>
@@ -55,7 +59,7 @@
         <div class = "row px-3 py-4 border-top">
             <h5>Empresas</h5>
         </div>
-        <div class="row">
+        <div class = "row">
             <div class = "col-md-9 mb-3">
                 <label for = "empresa" class = "form-label">Empresa:</label>
                 <div class = "d-flex align-items-center">
@@ -113,14 +117,12 @@
         let id_empresas = new Array();
         let id_empresas_ant = new Array();
         let empresas = new Array();
-
-        @if ($usuario !== null)
-            @foreach ($empresas as $empresa)
-                empresas.push("{{ $empresa->nome_fantasia }}");
-                id_empresas.push("{{ $empresa->id }}");
-                id_empresas_ant.push("{{ $empresa->id }}");
-            @endforeach
-        @endif
+        
+        @foreach ($empresas as $empresa)
+            empresas.push("{{ $empresa->nome_fantasia }}");
+            id_empresas.push("{{ $empresa->id }}");
+            id_empresas_ant.push("{{ $empresa->id }}");
+        @endforeach
 
         function mostrarEmpresas() {
             let resultado = "";
@@ -140,21 +142,21 @@
         }
 
         function salvarEmpresa() {
-            let empresa = document.getElementById("empresa");
-            const id_empresa = document.getElementById("id_empresa");
+            let _empresa = document.getElementById("empresa");
+            let _id_empresa = document.getElementById("id_empresa");
             $.get(URL + "/empresas/consultar2", {
-                id : id_empresa.value,
-                nome_fantasia : empresa.value
+                id_empresa : _id_empresa.value,
+                empresa : _empresa.value
             }, function(data) {
                 if (!parseInt(data)) {
-                    id_empresas.push(id_empresa.value);
-                    empresas.push(empresa.value);
-                    id_empresa.value = "";
-                    empresa.value = "";
+                    id_empresas.push(_id_empresa.value);
+                    empresas.push(_empresa.value);
+                    _id_empresa.value = "";
+                    _empresa.value = "";
                     mostrarEmpresas();
                 } else {
                     s_alert("Empresa não encontrada");
-                    empresa.classList.add("invalido");
+                    _empresa.classList.add("invalido");
                 }
             });
         }

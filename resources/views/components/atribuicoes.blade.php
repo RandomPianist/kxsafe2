@@ -23,7 +23,7 @@
                 class = "nav-link @if ($aba->id == 'produto') active @endif"
                 role = "tab"
                 data-bs-toggle = "tab"
-                data-bs-target = "#por-{{ $aba-id }}"
+                data-bs-target = "#por-{{ $aba->id }}"
                 aria-controls = "por-{{ $aba->id }}"
                 aria-selected = "@if ($aba->id == 'produto') true @else false @endif"
             >Por {{ $aba->nome }}</button>
@@ -33,10 +33,10 @@
 <div class = "container-atribuicoes p-3">
     <div class = "tab-content">
         @foreach ($abas as $aba)
-            <div class = "tab-pane fade show active" id = "por-{{ $aba->id }}" role = "tabpanel" aria-labelledby = "{{ $aba->id }}-tab">
+            <div class = "tab-pane fade @if ($aba->id == 'produto') show active @endif" id = "por-{{ $aba->id }}" role = "tabpanel" aria-labelledby = "{{ $aba->id }}-tab">
                 <div class = "row mt-3">
                     <div class = "col-md-3 mb-3">
-                        <label for = "atb-{{ $aba->abv }}-descr" class = "form-label">Produto:</label>
+                        <label for = "atb-{{ $aba->abv }}-descr" class = "form-label">{{ ucfirst($aba->nome) }}:</label>
                         <div class = "d-flex align-items-center">
                             <input
                                 id = "atb-{{ $aba->abv }}-descr"
@@ -61,11 +61,11 @@
                     </div>
                     <div class = "col-md-2 mb-3">
                         <label for = "atb-{{ $aba->abv }}-qtd" class = "form-label">Quantidade:</label>
-                        <input type = "number" class = "form-control" id = "atb-{{ $aba->abv }}-qtd" />
+                        <input type = "number" class = "form-control text-right" id = "atb-{{ $aba->abv }}-qtd" onkeyup = "$(this).trigger('change')" onchange = "limitar(this)" />
                     </div>
                     <div class = "col-md-2 mb-3">
-                        <label for = "atb-{{ $aba->abv }}-validade" class = "form-label">Validade:</label>
-                        <input type = "text" class = "form-control" id = "atb-{{ $aba->abv }}-validade" />
+                        <label for = "atb-{{ $aba->abv }}-validade" class = "form-label">Validade em dias:</label>
+                        <input type = "text" class = "form-control text-right" id = "atb-{{ $aba->abv }}-validade" />
                     </div>
                     <div class = "col-md-2 mb-3">
                         <label for = "atb-{{ $aba->abv }}-obrigatorio" class = "form-label">Obrigatório:</label>
@@ -89,7 +89,8 @@
                         </tr>
                     </thead>
                     <tbody id = "atb-{{ $aba->abv }}-tabela">
-                        @foreach ($atribuicoes as $atribuicao)
+                        @for ($i = 0; $i < sizeof($atribuicoes); $i++)
+                            $atribuicao = $atribuicoes[$i];
                             @if ($atribuicao->produto_ou_referencia_chave == strtoupper(substr($aba->id, 0, 1)))
                                 <tr>
                                     <td>{{ $atribuicao->descr }}</td>
@@ -97,19 +98,24 @@
                                     <td class = "text-right">{{ $atribuicao->validade }}</td>
                                     <td>@if ($atribuicao->obrigatorio) Sim @else Não @endif</td>
                                     <td class = "text-center">
-                                        <i class = "my-icon far fa-hand-holding-box" title = "Retirar"></i>
-                                        <i class = "my-icon far fa-trash-alt" title = "Excluir"></i>
+                                        @if ($funcionario_ou_setor == "F")
+                                            <i class = "my-icon far fa-hand-holding-box" title = "Retirar" onclick = "retirar({{ $atribuicao->id }})"></i>
+                                        @endif
+                                        <i class = "my-icon far fa-trash-alt" title = "Excluir" onclick = "excluirAtribuicao{{ ucfirst($aba->abv) }}({{ $i }})"></i>
                                     </td>
                                 </tr>
                             @endif
-                        @endforeach
+                        @endfor
                     </tbody>
                 </table>
             </div>
         @endforeach
     </div>
 </div>
+
 <script type = "text/javascript" language = "JavaScript">
+    const funcionarioOuSetor = "{{ $funcionario_ou_setor }}";
+
     @foreach ($abas as $aba)
         @foreach ($sufixosJS as $sufixo)
             let atb{{ ucfirst($aba->abv) }}Id{{ $sufixo }} = new Array();

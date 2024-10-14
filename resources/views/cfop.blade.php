@@ -14,7 +14,7 @@
         <h2 class = "titulo">Cfop</h2>
         <div class = "d-flex">
             <input type = "text" class = "caixa-pesquisa form-control" placeholder = "Pesquisar..." aria-label = "Pesquisar" id = "filtro">
-            <button class = "botao-target botao-pesquisa ml-1" type = "button" onclick = "listar()">
+            <button class = "botao-target botao-pesquisa ml-1" type = "button" onclick = "listar(true)">
                 <i class = "fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
@@ -60,12 +60,13 @@
             location.href = URL + "/cfop/crud/" + id;
         }
 
-        function listar() {
+        function listar(manterPesquisa) {
             $.get(URL + "/cfop/listar", {
                 filtro : document.getElementById("filtro").value
             }, function(data) {
                 data = $.parseJSON(data);
                 if (data.length) {
+                    forcarExibicao();
                     let resultado = "";
                     data.forEach((cfop) => {
                         resultado += "<tr>" +
@@ -80,7 +81,7 @@
                     });
                     document.getElementById("table-dados").innerHTML = resultado;
                     ordenar(0);
-                } else mostrarImagemErro();
+                } else mostrarImagemErro(manterPesquisa);
             });
         }
     </script>

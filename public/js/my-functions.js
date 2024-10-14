@@ -156,7 +156,7 @@ window.onload = function () {
     let filtro = document.getElementById("filtro");
     if (filtro !== null) {
         document.getElementById("filtro").onkeyup = function(e) {
-            if (e.keyCode == 13) listar();
+            if (e.keyCode == 13) listar(true);
         }
     }
 
@@ -223,8 +223,14 @@ window.onload = function () {
     ["crud", "franqueadoras", "franquias", "clientes", "fornecedores"].forEach((pagina) => {
         if (location.href.indexOf(pagina) > -1) carrega_lista = false;
     });
-    if (carrega_lista) listar();
+    if (carrega_lista) listar(false);
     carregado = true;
+
+    $("#estoqueModal").on("hide.bs.modal", function() {
+        Array.from(document.getElementsByClassName("remove-produto")).forEach((el) => {
+            $(el).trigger("click");
+        });
+    });
 }
 
 function ordenar(coluna) {
@@ -279,7 +285,7 @@ function autocomplete(_this) {
         if (typeof data == "string") data = $.parseJSON(data);
         div_result.empty();
         data.forEach((item) => {
-            div_result.append("<div class = 'autocomplete-line' data-id = '" + item.id + "'>" + item[_column] + "</div>");
+            div_result.append("<div class = 'autocomplete-line' data-id = '" + item.id + "'>" + item[_column.trim()] + "</div>");
         });
         let retiraChars = function(texto) {
             let html = texto;
@@ -513,13 +519,22 @@ function excluir(_id, prefixo, e) {
     });
 }
 
-function mostrarImagemErro() {
+function mostrarImagemErro(manterPesquisa) {
     let imagem = document.getElementById("nao-encontrado");
     let caixaPesquisa = document.querySelectorAll(".caixa-pesquisa")[1].parentElement;
     imagem.classList.remove("d-none");
     imagem.previousElementSibling.classList.add("d-none");
     caixaPesquisa.classList.add("d-none");
-    caixaPesquisa.classList.remove("d-flex");
+    if (!manterPesquisa) caixaPesquisa.classList.remove("d-flex");
+}
+
+function forcarExibicao() {
+    let imagem = document.getElementById("nao-encontrado");
+    let caixaPesquisa = document.querySelectorAll(".caixa-pesquisa")[1].parentElement;
+    imagem.classList.add("d-none");
+    imagem.previousElementSibling.classList.remove("d-none");
+    caixaPesquisa.classList.remove("d-none");
+    caixaPesquisa.classList.add("d-flex");
 }
 
 function preencherValidade(idProd, idValidade) {
@@ -548,7 +563,7 @@ function mostrarAtribuicoes() {
                 "<td class = 'text-right'>" + atbProdValidade[i] + "</td>" +
                 "<td>" + atbProdObrigatorio[i] + "</td>" +
                 "<td class = 'text-center'>" +
-                    (atbProdOperacao[i] == "N" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar'></i>" : "") +
+                    (atbProdOperacao[i] == "N" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar' onclick = 'retirar(" + atbReferId[i] + ")'></i>" : "") +
                     "<i class = 'my-icon far fa-trash-alt' title = 'Excluir onclick = 'excluirAtribuicaoProd(" + i + ")'></i>"
                 "</td>" +
             "</tr>";
@@ -564,7 +579,7 @@ function mostrarAtribuicoes() {
                 "<td class = 'text-right'>" + atbReferValidade[i] + "</td>" +
                 "<td>" + atbReferObrigatorio[i] + "</td>" +
                 "<td class = 'text-center'>" +
-                    (atbReferOperacao[i] == "N" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar'></i>" : "") +
+                    (atbReferOperacao[i] == "N" && funcionarioOuSetor == "F" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar' onclick = 'retirar(" + atbReferId[i] + ")'></i>" : "") +
                     "<i class = 'my-icon far fa-trash-alt' title = 'Excluir onclick = 'excluirAtribuicaoRefer(" + i + ")'></i>"
                 "</td>" +
             "</tr>";
@@ -577,7 +592,7 @@ function salvarAtribuicao(chave) {
     limparInvalido();
     let el = document.getElementById("atb-" + (chave == "P" ? "prod" : "refer") + "-descr");
     let erro = verificaVazios([el.id]).erro;
-    $.get(URL + "/consultar-atribuicoes", {
+    $.get(URL + "/atribuicoes/consultar", {
         id : document.getElementById("atb-" + (chave == "P" ? "prod" : "refer") + "-id").value,
         coluna : chave == "P" ? "descr" : "referencia",
         valor : el.value
@@ -593,7 +608,7 @@ function salvarAtribuicao(chave) {
                 atbProdValidade.push(document.getElementById("atb-prod-validade").value);
                 atbProdObrigatorio.push(document.getElementById("atb-prod-obrigatorio").value == "S" ? "Sim" : "Não");
                 atbProdValor.push(document.getElementById("atb-prod-id").value);
-                atbReferDescr.push(document.getElementById("atb-refer-descr").value);
+                atbProdDescr.push(document.getElementById("atb-prod-descr").value);
                 atbProdOperacao.push("C");
             } else {
                 atbReferId.push(0);
@@ -605,10 +620,11 @@ function salvarAtribuicao(chave) {
                 atbReferOperacao.push("C");
             }
             const pai = "#por-" + (chave == "P" ? "produto" : "referencia");
-            Array.from(document.querySelectorAll(pai + " input, " + pai + " select")).forEach((el) => {
+            Array.from(document.querySelectorAll(pai + " input")).forEach((el) => {
                 el.value = "";
             });
             document.querySelector(pai + " input").focus();
+            document.querySelector(pai + " select").value = "N";
             mostrarAtribuicoes();
         } else s_alert(erro);
     });
@@ -645,52 +661,20 @@ function modal(nome, id, callback) {
     if (id) document.getElementById(nome == "pessoasModal" ? "pessoa-id" : "id").value = id;
     Array.from(document.querySelectorAll("#" + nome + " input, #" + nome + " textarea")).forEach((el) => {
         if (!id && el.name != "_token") el.value = "";
-        if (!$(el).hasClass("autocomplete")) $(el).trigger("keyup");
+        if (!$(el).hasClass("autocomplete")) $(el).trigger("oninput");
         anteriores[el.id] = el.value;
     });
-    var myModal = new bootstrap.Modal(document.getElementById(nome));
-myModal.show();
+    let myModal = new bootstrap.Modal(document.getElementById(nome));
+    myModal.show();
     callback();
 }
 
 function modal2(nome, limpar) {    
     limparInvalido();
+    console.log(limpar);
     limpar.forEach((id) => {
         document.getElementById(id).value = "";
     });
-    var myModal = new bootstrap.Modal(document.getElementById(nome));
-myModal.show();
-    console.log(nome);
-}
-
-// mover as funções abaixo para arquivo específico depois
-function formatarCPF(el) {
-    el.classList.remove("invalido");
-    let cpf = el.value;
-    let num = cpf.replace(/[^\d]/g, '');
-    let len = num.length;
-    if (len <= 6) cpf = num.replace(/(\d{3})(\d{1,3})/g, '$1.$2');
-    else if (len <= 9) cpf = num.replace(/(\d{3})(\d{3})(\d{1,3})/g, '$1.$2.$3');
-    else {
-        cpf = num.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/g, "$1.$2.$3-$4");
-        cpf = cpf.substring(0, 14);
-    }
-    el.value = cpf;
-}
-
-function validarCPF(cpf) {
-    cpf = cpf.replace(/\D/g, "");
-    if (cpf == "00000000000") return false;
-    if (cpf.length != 11) return false;
-    let soma = 0;
-    for (let i = 1; i <= 9; i++) soma = soma + (parseInt(cpf.substring(i - 1, i)) * (11 - i));
-    let resto = (soma * 10) % 11;
-    if ((resto == 10) || (resto == 11)) resto = 0;
-    if (resto != parseInt(cpf.substring(9, 10))) return false;
-    soma = 0;
-    for (i = 1; i <= 10; i++) soma = soma + (parseInt(cpf.substring(i - 1, i)) * (12 - i));
-    resto = (soma * 10) % 11;
-    if ((resto == 10) || (resto == 11)) resto = 0;
-    if (resto != parseInt(cpf.substring(10, 11))) return false;
-    return true;
+    let myModal = new bootstrap.Modal(document.getElementById(nome));
+    myModal.show();
 }

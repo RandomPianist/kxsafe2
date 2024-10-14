@@ -11,10 +11,10 @@
         </ol>
     </nav>
     <h2 class = "titulo">Itens</h2>
-    <form class = "formulario p-5 custom-scrollbar">
+    <form class = "formulario p-5 custom-scrollbar" enctype = "multipart/form-data" method = "POST" action = "{{ config('app.root_url') }}/itens/salvar">
         <div class="d-flex justify-content-center align-items-top">
             <div class = "mb-4" style = " width:15rem;height:15rem;border:2px solid var(--fonte);border-radius:50%;display:flex;justify-content: center; align-items: center;">
-                <img class = "user-photo" src = "{{ $resultado->usuario->foto }}" onerror = "this.onerror=null;this.classList.add('d-none');this.nextSiblingElement.classList.remove('d-none')" />
+                <img class = "user-photo" src = "@if ($item !== null) {{ $item->foto }} @endif" onerror = "this.onerror=null;this.classList.add('d-none');this.nextSiblingElement.classList.remove('d-none')" />
                 <i class = "fas fa-box" style = "font-size:60px"></i>
             </div>
             <div>
@@ -143,7 +143,7 @@
             limparInvalido();
             let elementos = obterElementos(["fornecedor", "categoria", "referencia", "preco", "detalhes", "tamanho"]);
 
-            const aux = verificaVazios(["descr", "ca", "validade", "categoria", "tamanho", "validade_ca"]);
+            const aux = verificaVazios(["descr", "ca", "validade", "tamanho", "validade_ca"]);
             let erro = aux.erro;
             let alterou = aux.alterou;
             if (!erro && parseInt(elementos.preco.value.replace(/\D/g, "")) <= 0) {
@@ -158,7 +158,7 @@
 
             let consulta = obterElementosValor(elementos, ["categoria", "fornecedor", "referencia"]);
             consulta.id = @if ($item !== null) {{ $item->id }} @else 0 @endif;
-            $.get(URL + "/produtos/consultar/", consulta, function(data) {
+            $.get(URL + "/itens/consultar/", consulta, function(data) {
                 if (!erro && data != "0" && data != "aviso") {
                     erro = data + " não encontrad" + (data == "Categoria" ?  "a" : "o");
                     elementos[data.toLowerCase()].classList.add("invalido");

@@ -274,14 +274,7 @@ class EmpresasController extends ControllerKX {
     }
 
     public function consultar2(Request $request) {
-        if (!sizeof(
-            DB::table("empresas")
-                ->where("lixeira", 0)
-                ->where("id", $request->id)
-                ->where("nome_fantasia", $request->nome_fantasia)
-                ->get()
-        )) return "1";
-        return "0";
+        return $this->empresas_consultar($request) ? "1" : "0"; // ControllerKX.php
     }
 
     public function aviso($id) {

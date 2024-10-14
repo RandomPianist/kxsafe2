@@ -133,6 +133,7 @@ class UsuariosController extends ControllerKX {
                     ->orderby("id", "DESC")
                     ->value("id");
             if ($foto) DB::statement("UPDATE users SET ".str_replace(",", "", $foto)." WHERE id = ".$id);
+            DB::statement("UPDATE users SET id_aux = id");
             $this->log_inserir("C", "users", $id); // ControllerKX.php
         } else {
             $id = $request->id;

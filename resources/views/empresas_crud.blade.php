@@ -122,7 +122,7 @@
                         data-filter_col = "tipo,id_matriz"
                         data-filter = "{{ $tipo }},0"
                         type = "text"
-                        value = "@if ($empresa !== null) {{ $empresa->matriz }} @elseif ($criando->matriz !== null) {{ $criando->matriz->descr }} @endif"
+                        value = "@if ($empresa !== null) {{ $empresa->matriz }} @elseif ($criando->matriz !== null) {{ $criando->matriz->nome_fantasia }} @endif"
                         autocomplete = "off"
                     />
                     <input
@@ -546,6 +546,7 @@
                     ]);
                     enviar.id = id;
                     enviar.tipo_contribuicao = enviar.tipo_contribuicao.replace("tipo-", "");
+                    enviar.telefone = enviar.telefone.replace(/\D/g, "");
                     enviar.royalties = parseInt(enviar.royalties.replace(/\D/g, "")) / 100;
                     enviar.cnpj = enviar.cnpj.replace(/\D/g, "");
                     enviar._token = $("meta[name='csrf-token']").attr("content");

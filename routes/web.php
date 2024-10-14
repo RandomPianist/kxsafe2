@@ -14,7 +14,9 @@ use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\BancosController;
 use App\Http\Controllers\CfopController;
 use App\Http\Controllers\ItensController;
+use App\Http\Controllers\FuncionariosController;
 use App\Http\Controllers\AtribuicoesController;
+use App\Http\Controllers\RetiradasController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,11 +31,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware("auth")->group(function () {
-    Route::get("/",                      [HomeController::class,        "index"]);
-    Route::get("/autocomplete",          [HomeController::class,        "autocomplete"]);
-    Route::get("/menu",                  [HomeController::class,        "menu"]);
-    Route::get("/home",                  [EmpresasController::class,    "home"]);
-    Route::get("/consultar-atribuicoes", [AtribuicoesController::class, "consultar"]);
+    Route::get("/",             [HomeController::class,     "index"]);
+    Route::get("/autocomplete", [HomeController::class,     "autocomplete"]);
+    Route::get("/menu",         [HomeController::class,     "menu"]);
+    Route::get("/home",         [EmpresasController::class, "home"]);
 
     $empresas = ["franqueadoras", "franquias", "clientes", "fornecedores"];
     foreach ($empresas as $empresa) {
@@ -84,7 +85,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/consultar",  [SetoresController::class, "consultar"]);
         Route::get ("/crud/{id}",  [SetoresController::class, "crud"]);
         Route::get ("/aviso/{id}", [SetoresController::class, "aviso"]);
-        Route::post("/salvar",     [SetoresController::class, "salvar"]);
+        Route::get ("/salvar",     [SetoresController::class, "salvar"]);
         Route::post("/excluir",    [SetoresController::class, "excluir"]);
     });
 
@@ -168,6 +169,27 @@ Route::middleware("auth")->group(function () {
         Route::post("/salvar",      [EmpresasController::class, "salvar"]);
         Route::post("/excluir",     [EmpresasController::class, "excluir"]);
         Route::post("/selecionar",  [EmpresasController::class, "selecionar"]);
+    });
+
+    Route::group(["prefix" => "funcionarios"], function() {
+        Route::get ("/",           [FuncionariosController::class, "ver"]);
+        Route::get ("/listar",     [FuncionariosController::class, "listar"]);
+        Route::get ("/consultar",  [FuncionariosController::class, "consultar"]);
+        Route::get ("/crud/{id}",  [FuncionariosController::class, "crud"]);
+        Route::get ("/aviso/{id}", [FuncionariosController::class, "aviso"]);
+        Route::post("/salvar",     [FuncionariosController::class, "salvar"]);
+        Route::post("/excluir",    [FuncionariosController::class, "excluir"]);
+        Route::post("/supervisor", [FuncionariosController::class, "supervisor"]);
+    });
+
+    Route::group(["prefix" => "atribuicoes"], function() {
+        Route::get("/consultar",     [AtribuicoesController::class, "consultar"]);
+        Route::get("/produtos/{id}", [AtribuicoesController::class, "produtos"]);
+    });
+
+    Route::group(["prefix" => "retiradas"], function() {
+        Route::get ("/consultar", [RetiradasController::class, "consultar"]);
+        Route::post("/salvar",    [RetiradasController::class, "salvar"]);
     });
 });
 

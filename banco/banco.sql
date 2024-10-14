@@ -179,6 +179,7 @@ CREATE TABLE funcionarios (
 	email VARCHAR(32),
 	pis VARCHAR(16),
 	supervisor TINYINT DEFAULT 0,
+    rosto TEXT,
     lixeira TINYINT DEFAULT 0,
 	id_empresa INT,
     id_setor INT,

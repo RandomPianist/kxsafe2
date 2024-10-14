@@ -64,36 +64,9 @@ class SetoresController extends ControllerKX {
                         )
                         ->where("id", $id)
                         ->first();
-        $atribuicoes = DB::table("atribuicoes")
-                            ->select(
-                                DB::raw("
-                                    CASE
-                                        WHEN produto_ou_referencia_chave = 'P' THEN produtos.descr
-                                        ELSE produtos.referencia
-                                    END AS descr
-                                "),
-                                "atribuicoes.id",
-                                "qtd",
-                                "atribuicoes.validade",
-                                "obrigatorio",
-                                "produto_ou_referencia_chave",
-                                "produto_ou_referencia_valor"
-                            )
-                            ->join("itens", function($join) {
-                                $join->on(function($sql) {
-                                    $sql->on("produto_ou_referencia_valor", "cod_ou_id")
-                                        ->where("produto_ou_referencia_chave", "P");
-                                })->orOn(function($sql) {
-                                    $sql->on("produto_ou_referencia_valor", "referencia")
-                                        ->where("produto_ou_referencia_chave", "R");
-                                });
-                            })
-                            ->where("pessoa_ou_setor_chave", "S")
-                            ->where("pessoa_ou_setor_valor", $id)
-                            ->where("atribuicoes.lixeira", 0)
-                            ->where("itens.lixeira", 0)
-                            ->get();
-        return view("setores_crud", compact("breadcrumb", "setor", "atribuicoes"));
+        $atribuicoes = $this->atribuicoes("S", $id); // ControllerKX.php
+        $funcionario_ou_setor = "S";
+        return view("setores_crud", compact("breadcrumb", "setor", "atribuicoes", "funcionario_ou_setor"));
     }
 
     public function aviso($id) {
@@ -106,9 +79,10 @@ class SetoresController extends ControllerKX {
     public function salvar(Request $request) {
         $linha = Setores::firstOrNew(["id" => $request->id]);
         $linha->descr = $request->descr;
+        $linha->id_empresa = $request->id_empresa;
         $linha->save();
         $this->log_inserir($request->id ? "E" : "C", "setores", $linha->id); // ControllerKX.php
-        $this->atribuicoes_salvar($request, "S", $linha->id);
+        $this->atribuicoes_salvar($request, "S", $linha->id); // ControllerKX.php
     }
 
     public function excluir(Request $request) {

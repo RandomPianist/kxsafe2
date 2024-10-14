@@ -14,7 +14,7 @@
         <h2 class = "titulo">Usuários</h2>
         <div class = "d-flex">
             <input type = "text" class = "caixa-pesquisa form-control" placeholder = "Pesquisar..." aria-label = "Pesquisar" id = "filtro">
-            <button class = "botao-target botao-pesquisa ml-1" type = "button" onclick = "listar()">
+            <button class = "botao-target botao-pesquisa ml-1" type = "button" onclick = "listar(true)">
                 <i class = "fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
@@ -48,6 +48,12 @@
         </div>
         <span class = "ultima-atualizacao">{{ $ultima_atualizacao }}</span>
     </div>
+    <div class = "d-none" id = "nao-encontrado">
+        <div class = "d-flex flex-column align-items-center justify-content-center">
+            <img class = "imagem-erro" src = "{{ asset('img/not-found-error.png')}}"></img>
+            <h1>Dados não encontrados</h1>
+        </div>
+    </div>
     <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
         <i class = "fa-solid fa-plus"></i>
     </button>
@@ -57,30 +63,32 @@
             location.href = URL + "/usuarios/crud/" + id;
         }
 
-        function listar() {
+        function listar(manterPesquisa) {
             $.get(URL + "/usuarios/listar", {
                 filtro : document.getElementById("filtro").value
             }, function(data) {
                 data = $.parseJSON(data);
-                let resultado = "";
-                data.forEach((usuario) => {
-                    console.log(usuario);
+                if(data.length) {
+                    forcarExibicao();
+                    let resultado = "";
+                    data.forEach((usuario) => {
                     resultado += "<tr>" +
                         "<td width = '10%' class = 'text-center'>" +
                             "<img class = 'user-photo-sm' src = '" + usuario.foto + "' onerror = 'erroImg(this)' />" +
                             "<i class = 'fas fa-user d-none'></i>" +
-                        "</td>" +
-                        "<td width = '30%'>" + usuario.name + "</td>" +
-                        "<td width = '30%'>" + usuario.email + "</td>" +
-                        "<td width = '15%'>" + (usuario.admin ? "Sim" : "Não") + "</td>" +
-                        "<td class = 'text-center' width = '15%'>" +
-                            "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + usuario.id + ")'></i>" +
-                            "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + usuario.id + ", " + '"/usuarios"' + ", event)'></i>" +
-                        "</td>" +
-                    "</tr>";
-                });
-                document.getElementById("table-dados").innerHTML = resultado;
-                ordenar(1);
+                            "</td>" +
+                            "<td width = '30%'>" + usuario.name + "</td>" +
+                            "<td width = '30%'>" + usuario.email + "</td>" +
+                            "<td width = '15%'>" + (usuario.admin ? "Sim" : "Não") + "</td>" +
+                            "<td class = 'text-center' width = '15%'>" +
+                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + usuario.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + usuario.id + ", " + '"/usuarios"' + ", event)'></i>" +
+                            "</td>" +
+                        "</tr>";
+                    });
+                    document.getElementById("table-dados").innerHTML = resultado;
+                    ordenar(1);
+                } else mostrarImagemErro(manterPesquisa);
             });
         }
     </script>

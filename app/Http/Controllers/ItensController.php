@@ -43,7 +43,17 @@ class ItensController extends ControllerKX {
             if (sizeof($busca) < 3) $busca = $this->busca("itens.descr LIKE '%".$filtro."%'");
             if (sizeof($busca) < 3) $busca = $this->busca("(itens.descr LIKE '%".implode("%' AND itens.descr LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
         } else $busca = $this->busca();
-        return json_encode($busca);
+        $resultado = array();
+        foreach ($busca as $item) {
+            $aux = new \stdClass;
+            $aux->cod_ou_id = $item->cod_ou_id;
+            $aux->descr = $item->descr;
+            $aux->categoria = $item->categoria;
+            $aux->preco = $item->preco;
+            $aux->foto = $item->foto ? asset("storage/".$item->foto) : "";
+            array_push($resultado, $aux);
+        }
+        return json_encode($resultado);
     }
 
     public function consultar(Request $request) {
@@ -52,12 +62,14 @@ class ItensController extends ControllerKX {
                 ->where("lixeira", 0)
                 ->where("id", $request->id_fornecedor)
                 ->where("nome_fantasia", $request->fornecedor)
+                ->get()
         )) return "Fornecedor";
         if (!sizeof(
             DB::table("categorias")
                 ->where("lixeira", 0)
                 ->where("id", $request->id_categoria)
                 ->where("nome_fantasia", $request->categoria)
+                ->get()
         )) return "Categoria";
         if (
             $this->atribuicoes_na_referencia(Itens::find($request->id)->referencia) == 1 && // ControllerKX.php
@@ -81,7 +93,7 @@ class ItensController extends ControllerKX {
                         )
                         ->leftjoin("categorias", "categorias.id", "itens.id_categoria")
                         ->leftjoin("empresas", "empresas.id", "itens.id_fornecedor")
-                        ->where("id", $id)
+                        ->where("itens.id", $id)
                         ->first();
         if ($item !== null) {
             $item->foto = asset("storage/".$item->foto);
@@ -118,8 +130,8 @@ class ItensController extends ControllerKX {
         $linha->save();
         $linha->cod_ou_id = $linha->id;
         $linha->save();
-        $this->atribuicoes_atualizar($request->id, $linha->cod_externo, $linha->id, "NULL", "P");
-        $this->log_inserir($request->id ? "E" : "C", "itens", $linha->id);
+        $this->atribuicoes_atualizar($request->id, $linha->cod_externo, $linha->id, "NULL", "P"); // ControllerKX.php
+        $this->log_inserir($request->id ? "E" : "C", "itens", $linha->id); // ControllerKX.php
         // $this->mov_estoque($linha->id, false);
         return redirect("/itens");
     }
