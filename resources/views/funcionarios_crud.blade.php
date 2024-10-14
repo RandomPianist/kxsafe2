@@ -13,13 +13,12 @@
     <h2 class = "titulo">Funcionário</h2>
     <form class = "formulario p-5 custom-scrollbar">
         <div class = "d-flex justify-content-center align-items-top">
-        <div class = "mb-3" style = "width:12rem;height:12rem;border:2px solid var(--fonte);border-radius:50%;display:flex;justify-content:center;align-items:center;position:relative">
+        <div class = "mb-3 user-photo">
             <img
-                class = "w-100 user-photo" src = "if ($funcionario != null) {{ $funcionario->foto }} @endif" 
-                onerror = "this.style.display='none';this.nextElementSibling.style.display='block'" 
-                style = "height:auto;border-radius:50%;object-fit:cover"
+                class = "w-100 user-photo" src = "{{ $funcionario->foto }}" 
+                onerror = "this.style.display='none';this.nextElementSibling.style.display='block'"
             />
-            <i class = "fallback-icon fas fa-user" style = "display:none;font-size:4rem;position:absolute" aria-hidden = "true"></i>
+            <i class = "fallback-icon fas fa-user" aria-hidden = "true"></i>
         </div>
         <div>
             <button type = "button" class = "adicionar-foto" onclick = "$(this).next().trigger('click')">
@@ -149,28 +148,114 @@
 
         function validar() {
             limparInvalido();
-            const aux = verificaVazios(["descr"]);
+            let elementos = obterElementos([
+                "nome",
+                "cpf",
+                "email",
+                "telefone",
+                "pis",
+                "empresa",
+                "setor",
+                "funcao",
+                "admissao",
+                "senha",
+                "supervisor"
+            ]);
+
+            let verificacao = ["nome", "empresa", "funcao", "admissao", "cpf"];
+            if (!_id) verificacao.push("senha");
+            const aux = verificaVazios(verificacao);
             let erro = aux.erro;
             let alterou = aux.alterou || alterouAtribuicoes();
-            if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
-            if (!erro) {
-                $.post(URL + "/setores/salvar", {
-                    id : _id,
-                    descr : document.getElementById("descr").value,
-                    atb_prod_id : atbProdId.join("|"),
-                    atb_prod_valor : atbProdValor.join("|"),
-                    atb_prod_qtd : atbProdQtd.join("|"),
-                    atb_prod_obrigatorio : atbProdObrigatorio.join("|"),
-                    atb_prod_operacao : atbProdOperacao.join("|"),
-                    atb_refer_id : atbReferId.join("|"),
-                    atb_refer_valor : atbReferValor.join("|"),
-                    atb_refer_qtd : atbReferQtd.join("|"),
-                    atb_refer_obrigatorio : atbReferObrigatorio.join("|"),
-                    atb_refer_operacao : atbReferOperacao.join("|")
-                }, function() {
-                    location.href = URL + "/setores";
-                });
-            } else s_alert(erro);
+            const verifica_alteracao = [
+                "cpf",
+                "email",
+                "telefone",
+                "pis",
+                "setor",
+                "senha",
+                "supervisor"
+            ];
+            verifica_alteracao.forEach((id) {
+                if (elementos[id].value != anteriores[id]) alterou = true;
+            })
+
+            if (!validarCPF(elementos.cpf.value)) {
+                erro = "CPF inválido";
+                elementos.cpf.classList.add("invalido");
+            }
+            if (!erro && elementos.senha.value.length != 4) {
+                erro = "A senha precisa ter quatro dígitos";
+                elementos.senha.classList.add("invalido");
+            }
+            if (!erro && parseInt(elementos.senha.value) != elementos.senha.value) {
+                erro = "A senha precisa ser numérica";
+                elementos.senha.classList.add("invalido");
+            }
+
+            let consulta = obterElementosValor(elementos, ["empresa", "setor"]);
+            consulta.cpf = elementos.cpf.value.replace(/[^\d]/g, '');
+            consulta.email = elementos.email.value;
+            
+            $.get(URL + "/funcionarios/consultar", consulta, function(data) {
+                data = $.parseJSON(data);
+                if (!erro && data.tipo == "invalido") {
+                    elementos[data.dado.toLowerCase()].classList.add("invalido");
+                    erro = data.dado + " não encontrad";
+                    erro += data.dado == "Empresa" ? "a" : "o";
+                }
+                if (!erro && data.tipo == "duplicado" && !_id) {
+                    erro = "Já existe um registro com esse " + data.dado;
+                    elementos[data.dado == "CPF" ? "cpf" : "email"].classList.add("invalido");
+                }
+                if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
+                if (!erro) {
+                    const lista = [
+                        "nome",
+                        "telefone",
+                        "pis",
+                        "id_empresa",
+                        "id_setor",
+                        "funcao",
+                        "senha"
+                    ];
+
+                    let formData = new FormData();
+                    formData.append("_token", $("meta[name='csrf-token']").attr("content"));
+                    formData.append("foto", $("#foto")[0].files[0]);
+                    formData.append("id", _id);
+                    formData.append("cpf", consulta.cpf);
+                    formData.append("email", consulta.email);
+                    lista.forEach((id) => {
+                        formData.append(id, elementos[id].value);
+                    });
+                    formData.append("supervisor", elementos.supervisor.value == "S" ? 1 : 0);
+                    formData.append("atb_prod_id", atbProdId.join("|"));
+                    formData.append("atb_prod_valor", atbProdValor.join("|"));
+                    formData.append("atb_prod_qtd", atbProdQtd.join("|"));
+                    formData.append("atb_prod_obrigatorio", atbProdObrigatorio.join("|"));
+                    formData.append("atb_prod_operacao", atbProdOperacao.join("|"));
+                    formData.append("atb_refer_id", atbReferId.join("|"));
+                    formData.append("atb_refer_valor", atbReferValor.join("|"));
+                    formData.append("atb_refer_qtd", atbReferQtd.join("|"));
+                    formData.append("atb_refer_obrigatorio", atbReferObrigatorio.join("|"));
+                    formData.append("atb_refer_operacao", atbReferOperacao.join("|"));
+                    $.ajax({
+                        url : URL + "/funcionarios/salvar",
+                        type : "POST",
+                        data : formData,
+                        contentType : false,
+                        processData : false,
+                        success : function(response) {
+                            location.href = URL + "/funcionarios";
+                        },
+                        error : function(xhr, status, error) {
+                            console.log(status);
+                            console.log(error);
+                        }
+                    });
+                } else s_alert(erro);
+            });
         }
 
         function formatarCPF(el) {

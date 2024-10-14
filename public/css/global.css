@@ -29,8 +29,8 @@ button:focus {
     box-shadow: none !important
 }
 
-.user-photo,
-.user-photo-sm {
+img.user-photo,
+img.user-photo-sm {
     background: #f1f1f1;
     border-radius: 50%;
     height: 12rem;
@@ -39,9 +39,32 @@ button:focus {
     object-fit: cover
 }
 
-.user-photo-sm {
+img.user-photo-sm {
     height: 30px;
     width: 30px
+}
+
+div.user-photo {
+    width: 12rem;
+    height: 12rem;
+    border: 2px solid var(--fonte);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative
+}
+
+div.user-photo img {
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover
+}
+
+div.user-photo i {
+    display: none;
+    font-size: 4rem;
+    position: absolute
 }
 
 .toggle-senha {

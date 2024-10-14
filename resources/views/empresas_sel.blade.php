@@ -30,13 +30,12 @@
                 <div class="col-md-2"></div>
                 <div class = "col-md-8">
                     <div class = "d-flex flex-column align-items-center mb-4 shadow-sm p-3" style = "background-color:var(--cards);border-radius:15px">
-                        <div class = "mb-3" style = "width:12rem;height:12rem;border:2px solid var(--fonte);border-radius:50%;display:flex;justify-content:center;align-items:center;position:relative">
+                        <div class = "mb-3 user-photo">
                             <img
                                 class = "w-100 user-photo" src = "{{ $resultado->usuario->foto }}" 
-                                onerror = "this.style.display='none';this.nextElementSibling.style.display='block'" 
-                                style = "height:auto;border-radius:50%;object-fit:cover"
+                                onerror = "this.style.display='none';this.nextElementSibling.style.display='block'"
                             />
-                            <i class = "fallback-icon fas fa-user" style = "display:none;font-size:4rem;position:absolute" aria-hidden = "true"></i>
+                            <i class = "fallback-icon fas fa-user" aria-hidden = "true"></i>
                         </div>
                         <h3>Bem-vindo(a), {{ $resultado->usuario->name }}</h3>
                         <p>Selecione a empresa que deseja gerenciar:</p>

@@ -13,20 +13,19 @@
     <h2 class = "titulo">Usuário</h2>
     <form class = "formulario p-5 custom-scrollbar">
         <div class = "d-flex justify-content-center align-items-top">
-            <div class = "mb-3" style = "width:12rem;height:12rem;border:2px solid var(--fonte);border-radius:50%;display:flex;justify-content:center;align-items:center;position:relative">
+            <div class = "mb-3 user-photo">
                 <img
                     class = "w-100 user-photo" src = "@if ($usuario !== null) {{ $usuario->foto }} @endif" 
-                    onerror = "this.style.display='none';this.nextElementSibling.style.display='block'" 
-                    style = "height:auto;border-radius:50%;object-fit:cover"
+                    onerror = "this.style.display='none';this.nextElementSibling.style.display='block'"
                 />
-                <i class = "fallback-icon fas fa-user" style = "display:none;font-size:4rem;position:absolute" aria-hidden = "true"></i>
+                <i class = "fallback-icon fas fa-user" aria-hidden = "true"></i>
             </div>
             <div>
                 <button type = "button" class = "adicionar-foto" onclick = "$(this).next().trigger('click')">
                     <i class = "fa-solid fa-camera"></i>
                 </button>
                  <input type = "file" id = "foto" class = "d-none">
-              </div>
+            </div>
         </div>
         <div class = "row">
             <div class = "col-md-6 mb-3">
