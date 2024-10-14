@@ -83,7 +83,7 @@ INSERT INTO empresas (razao_social, nome_fantasia, cnpj, tipo, id_criadora, id_m
 INSERT INTO empresas (razao_social, nome_fantasia, cnpj, tipo, id_criadora) (
     SELECT
         razao_social,
-        nome_fantasia,
+        CONCAT(nome_fantasia, ' (CLIENTE)'),
         cnpj,
         3,
         2
