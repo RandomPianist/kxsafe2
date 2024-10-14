@@ -11,7 +11,7 @@
         </ol>
     </nav>
     <div class = "d-flex justify-content-between align-items-center">
-        <h2 class = "titulo">Naturezas de pagamento</h2>
+        <h2 class = "titulo">Naturezas do documento</h2>
         <div class = "d-flex">
             <input type = "text" class = "caixa-pesquisa form-control" placeholder = "Pesquisar..." aria-label = "Pesquisar" id = "filtro">
             <button class = "botao-target botao-pesquisa ml-1" type = "button" onclick = "listar()">
@@ -48,9 +48,9 @@
             <h1>Dados não encontrados</h1>
         </div>
     </div>
-    <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
+    <!-- <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
         <i class = "fa-solid fa-plus"></i>
-    </button>
+    </button> -->
 
     <script type = "text/javascript" language = "JavaScript">
         function ir(id) {

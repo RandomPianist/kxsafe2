@@ -97,6 +97,10 @@ class ItensController extends ControllerKX {
         return json_encode($resultado);
     }
 
+    public function validade($id) {
+        return Itens::find($id)->validade;
+    }
+
     public function salvar(Request $request) {
         $linha = Itens::firstOrNew(["id" => $request->id]);
         $this->atribuicoes_atualizar($request->id, $linha->referencia, $request->referencia, "NULL", "R");

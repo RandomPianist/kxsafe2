@@ -7,6 +7,8 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Models\Log;
 use App\Models\Empresas;
+use App\Models\Atribuicoes;
+use App\Models\Itens;
 
 class ControllerKX extends Controller {
     public function retorna_empresa_logada() {
@@ -165,6 +167,54 @@ class ControllerKX extends Controller {
                     WHERE ".$where
                 );
                 $this->log_inserir2("D", "atribuicoes", $where, $nome, $api);
+            }
+        }
+    }
+
+    protected function atribuicoes_salvar(Request $request, $funcionario_ou_setor_chave, $funcionario_ou_setor_valor) {
+        foreach (array("prod" => array(
+            "id" => $request->atb_prod_id,
+            "valor" => $request->atb_prod_valor,
+            "qtd" => $request->atb_prod_qtd,
+            "validade" => $request->atb_prod_validade,
+            "obrigatorio" => $request->atb_prod_obrigatorio,
+            "operacao" => $request->atb_prod_operacao
+        ), "refer" => array(
+            "id" => $request->atb_refer_id,
+            "valor" => $request->atb_refer_valor,
+            "qtd" => $request->atb_refer_qtd,
+            "validade" => $request->atb_refer_validade,
+            "obrigatorio" => $request->atb_refer_obrigatorio,
+            "operacao" => $request->atb_refer_operacao
+        )) as $tipo => $atb) {
+            foreach ($atb as &$parte) $parte = explode("|", $parte);
+            foreach ($atb["operacao"] as $i => $operacao) {
+                $atribuicao = null;
+                switch ($operacao) {
+                    case "C":
+                        $item = Itens::find($atb["valor"][$i]);
+                        if ($tipo == "prod") {    
+                            $item->cod_ou_id = $atb["valor"][$i];
+                            $item->save();
+                            $this->log_inserir("E", "itens", $atb["valor"][$i]);
+                        }
+                        $atribuicao = new Atribuicoes;
+                        $atribuicao->funcionario_ou_setor_chave = $funcionario_ou_setor_chave;
+                        $atribuicao->funcionario_ou_setor_valor = $funcionario_ou_setor_valor;
+                        $atribuicao->produto_ou_referencia_chave = $tipo == "prod" ? "P" : "R";
+                        $atribuicao->produto_ou_referencia_valor = $tipo == "prod" ? $atb["valor"][$i] : $item->referencia;
+                        $atribuicao->qtd = $atb["qtd"][$i];
+                        $atribuicao->validade = $atb["validade"][$i];
+                        $atribuicao->obrigatorio = $atb["obrigatorio"][$i] == "Sim" ? 1 : 0;
+                        $atribuicao->save();
+                        break;
+                    case "D":
+                        $atribuicao = Atribuicoes::find($atb["id"][$i]);
+                        $atribuicao->lixeira = 1;
+                        $atribuicao->save();
+                        break;
+                }
+                if (in_array($operacao, ["C", "D"])) $this->log_inserir($operacao, "atribuicoes", $atribuicao->id);
             }
         }
     }

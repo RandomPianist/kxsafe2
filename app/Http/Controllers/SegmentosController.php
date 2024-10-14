@@ -15,7 +15,7 @@ class SegmentosController extends ControllerKX {
                         "descr"
                     )
                     ->whereRaw($param)
-                    ->whereIn("id_empresa", $this->empresas_acessiveis) // ControllerKX.php
+                    ->whereIn("id_empresa", $this->empresas_acessiveis()) // ControllerKX.php
                     ->where("lixeira", 0)
                     ->get();
     }

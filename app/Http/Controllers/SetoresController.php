@@ -76,7 +76,8 @@ class SetoresController extends ControllerKX {
                                 "qtd",
                                 "atribuicoes.validade",
                                 "obrigatorio",
-                                "produto_ou_referencia_chave"
+                                "produto_ou_referencia_chave",
+                                "produto_ou_referencia_valor"
                             )
                             ->join("itens", function($join) {
                                 $join->on(function($sql) {
@@ -107,6 +108,7 @@ class SetoresController extends ControllerKX {
         $linha->descr = $request->descr;
         $linha->save();
         $this->log_inserir($request->id ? "E" : "C", "setores", $linha->id); // ControllerKX.php
+        $this->atribuicoes_salvar($request, "S", $linha->id);
     }
 
     public function excluir(Request $request) {
@@ -115,7 +117,7 @@ class SetoresController extends ControllerKX {
         $linha->save();
         $this->log_inserir("D", "setores", $linha->id); // ControllerKX.php
 
-        $where = "pessoa_ou_setor_chave = 'S' AND pessoa_ou_setor_valor = '".$linha->id."'";
+        $where = "funcionario_ou_setor_chave = 'S' AND funcionario_ou_setor_valor = '".$linha->id."'";
         DB::statement("
             UPDATE atribuicoes
             SET lixeira = 1

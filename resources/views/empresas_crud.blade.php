@@ -320,7 +320,6 @@
                 else $($(this)[0]).addClass("readonly");
                 $($(this)[0]).trigger("oninput");
             });
-            if (ativar) document.querySelector(".btn-secondary").disabled = false;
         }
 
         function preventPipe(el, max) {
@@ -349,6 +348,7 @@
                             document.getElementById("bairro").value = data.cep.bairro;
                             document.getElementById("cidade").value = data.cep.cidade,
                             document.getElementById("uf").value = data.cep.uf;
+                            document.querySelector(".btn-secondary").disabled = false;
                         } else {
                             $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
                                 if (!("erro" in dados)) {
@@ -369,8 +369,12 @@
                                         uf : dados.uf
                                     }, function(data) {
                                         main();
+                                        document.querySelector(".btn-secondary").disabled = false;
                                     })
-                                } else enableEndereco(true);
+                                } else {
+                                    enableEndereco(true);
+                                    document.querySelector(".btn-secondary").disabled = false;
+                                }
                             });
                         }
                     });

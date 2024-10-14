@@ -52,6 +52,7 @@
                             <input
                                 id = "atb-{{ $aba->abv }}-id"
                                 type = "hidden"
+                                onchange = "preencherValidade(this.value, 'atb-{{ $aba->abv }}-validade')"
                             />
                             <a href = "{{ config('app.root_url') }}/itens" title = "Cadastro de produtos" target = "_blank">
                                 <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
@@ -110,24 +111,26 @@
 </div>
 <script type = "text/javascript" language = "JavaScript">
     @foreach ($abas as $aba)
-        let atb{{ ucfirst($aba->abv) }}PermiteRetirar = new Array();
         @foreach ($sufixosJS as $sufixo)
             let atb{{ ucfirst($aba->abv) }}Id{{ $sufixo }} = new Array();
             let atb{{ ucfirst($aba->abv) }}Descr{{ $sufixo }} = new Array();
+            let atb{{ ucfirst($aba->abv) }}Valor{{ $sufixo }} = new Array();
             let atb{{ ucfirst($aba->abv) }}Qtd{{ $sufixo }} = new Array();
             let atb{{ ucfirst($aba->abv) }}Validade{{ $sufixo }} = new Array();
             let atb{{ ucfirst($aba->abv) }}Obrigatorio{{ $sufixo }} = new Array();
-        @endforeach
+            let atb{{ ucfirst($aba->abv) }}Operacao{{ $sufixo }} = new Array();
 
-        @foreach ($atribuicoes as $atribuicao)
-            @if ($atribuicao->produto_ou_referencia_chave == strtoupper(substr($aba->id, 0, 1)))
-                atb{{ ucfirst($aba->abv) }}Id.push("{{ $atribuicao->id }}");
-                atb{{ ucfirst($aba->abv) }}Descr.push("{{ $atribuicao->descr }}");
-                atb{{ ucfirst($aba->abv) }}Qtd.push("{{ $atribuicao->qtd }}");
-                atb{{ ucfirst($aba->abv) }}Validade.push("{{ $atribuicao->validade }}");
-                atb{{ ucfirst($aba->abv) }}Obrigatorio.push("@if ($atribuicao->obrigatorio) 'Sim' @else 'Não' @endif");
-                atb{{ ucfirst($aba->abv) }}PermiteRetirar.push(1);
-            @endif
+            @foreach ($atribuicoes as $atribuicao)
+                @if ($atribuicao->produto_ou_referencia_chave == strtoupper(substr($aba->id, 0, 1)))
+                    atb{{ ucfirst($aba->abv) }}Id{{ $sufixo }}.push("{{ $atribuicao->id }}");
+                    atb{{ ucfirst($aba->abv) }}Descr{{ $sufixo }}.push("{{ $atribuicao->descr }}");
+                    atb{{ ucfirst($aba->abv) }}Valor{{ $sufixo }}.push("{{ $atribuicao->produto_ou_referencia_valor }}");
+                    atb{{ ucfirst($aba->abv) }}Qtd{{ $sufixo }}.push("{{ $atribuicao->qtd }}");
+                    atb{{ ucfirst($aba->abv) }}Validade{{ $sufixo }}.push("{{ $atribuicao->validade }}");
+                    atb{{ ucfirst($aba->abv) }}Obrigatorio{{ $sufixo }}.push("@if ($atribuicao->obrigatorio) 'Sim' @else 'Não' @endif");
+                    atb{{ ucfirst($aba->abv) }}Operacao{{ $sufixo }}.push("N");
+                @endif
+            @endforeach
         @endforeach
     @endforeach
 </script>

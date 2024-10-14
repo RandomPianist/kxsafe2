@@ -522,57 +522,145 @@ function mostrarImagemErro() {
     caixaPesquisa.classList.remove("d-flex");
 }
 
+function preencherValidade(idProd, idValidade) {
+    $.get(URL + "/itens/validade/" + idProd, function(data) {
+        document.getElementById(idValidade).value = data;
+    });
+}
+
+function excluirAtribuicaoProd(indice) {
+    atbProdOperacao[indice] = "D";
+    mostrarAtribuicoes();
+}
+
+function excluirAtribuicaoRefer(indice) {
+    atbReferOperacao[indice] = "D";
+    mostrarAtribuicoes();
+}
+
 function mostrarAtribuicoes() {
     let resultado = "";
     for (let i = 0; i < atbProdId.length; i++) {
-        resultado += "<tr>" +
-            "<td>" + atbProdDescr[i] + "</td>" +
-            "<td class = 'text-right'>" + atbProdQtd[i] + "</td>" +
-            "<td class = 'text-right'>" + atbProdValidade[i] + "</td>" +
-            "<td>" + atbProdObrigatorio[i] + "</td>" +
-            "<td class = 'text-center'>" +
-                "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar'></i>" +
-                (atbProdPermiteRetirar[i] ? "<i class = 'my-icon far fa-trash-alt' title = 'Excluir'></i>" : "") +
-            "</td>" +
-        "</tr>";
+        if (atbProdOperacao[i] != "D") {
+            resultado += "<tr>" +
+                "<td>" + atbProdDescr[i] + "</td>" +
+                "<td class = 'text-right'>" + atbProdQtd[i] + "</td>" +
+                "<td class = 'text-right'>" + atbProdValidade[i] + "</td>" +
+                "<td>" + atbProdObrigatorio[i] + "</td>" +
+                "<td class = 'text-center'>" +
+                    (atbProdOperacao[i] == "N" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar'></i>" : "") +
+                    "<i class = 'my-icon far fa-trash-alt' title = 'Excluir onclick = 'excluirAtribuicaoProd(" + i + ")'></i>"
+                "</td>" +
+            "</tr>";
+        }
     }
     document.getElementById("atb-prod-tabela").innerHTML = resultado;
     resultado = "";
     for (let i = 0; i < atbReferId.length; i++) {
-        resultado += "<tr>" +
-            "<td>" + atbReferDescr[i] + "</td>" +
-            "<td class = 'text-right'>" + atbReferQtd[i] + "</td>" +
-            "<td class = 'text-right'>" + atbReferValidade[i] + "</td>" +
-            "<td>" + atbReferObrigatorio[i] + "</td>" +
-            "<td class = 'text-center'>" +
-                "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar'></i>" +
-                (atbReferPermiteRetirar[i] ? "<i class = 'my-icon far fa-trash-alt' title = 'Excluir'></i>" : "") +
-            "</td>" +
-        "</tr>";
+        if (atbReferOperacao[i] != "D") {
+            resultado += "<tr>" +
+                "<td>" + atbReferDescr[i] + "</td>" +
+                "<td class = 'text-right'>" + atbReferQtd[i] + "</td>" +
+                "<td class = 'text-right'>" + atbReferValidade[i] + "</td>" +
+                "<td>" + atbReferObrigatorio[i] + "</td>" +
+                "<td class = 'text-center'>" +
+                    (atbReferOperacao[i] == "N" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar'></i>" : "") +
+                    "<i class = 'my-icon far fa-trash-alt' title = 'Excluir onclick = 'excluirAtribuicaoRefer(" + i + ")'></i>"
+                "</td>" +
+            "</tr>";
+        }
     }
     document.getElementById("atb-refer-tabela").innerHTML = resultado;
 }
 
 function salvarAtribuicao(chave) {
-    if (chave == "P") {
-        atbProdId.push(0);
-        atbProdQtd.push(document.getElementById("atb-prod-qtd").value);
-        atbProdValidade.push(document.getElementById("atb-prod-validade").value);
-        atbProdObrigatorio.push(document.getElementById("atb-prod-obrigatorio").value == "S" ? "Sim" : "Não");
-        atbProdPermiteRetirar.push(0);
-    } else {
-        atbReferId.push(0);
-        atbReferQtd.push(document.getElementById("atb-refer-qtd").value);
-        atbReferValidade.push(document.getElementById("atb-refer-validade").value);
-        atbReferObrigatorio.push(document.getElementById("atb-refer-obrigatorio").value == "S" ? "Sim" : "Não");
-        atbReferPermiteRetirar.push(0);
-    }
-    const pai = "#por-" + (chave == "P" ? "produto" : "referencia");
-    Array.from(document.querySelectorAll(pai + " input, " + pai + " select")).forEach((el) => {
-        el.value = "";
+    limparInvalido();
+    let el = document.getElementById("atb-" + (chave == "P" ? "prod" : "refer") + "-descr");
+    let erro = verificaVazios([el.id]).erro;
+    $.get(URL + "/consultar-atribuicoes", {
+        id : document.getElementById("atb-" + (chave == "P" ? "prod" : "refer") + "-id").value,
+        coluna : chave == "P" ? "descr" : "referencia",
+        valor : el.value
+    }, function(data) {
+        if (!erro && parseInt(data)) {
+            erro = chave == "P" ? "Produto não encontrado" : "Referência não encontrada";
+            el.classList.add("invalido");
+        }
+        if (!erro) {
+            if (chave == "P") {
+                atbProdId.push(0);
+                atbProdQtd.push(document.getElementById("atb-prod-qtd").value);
+                atbProdValidade.push(document.getElementById("atb-prod-validade").value);
+                atbProdObrigatorio.push(document.getElementById("atb-prod-obrigatorio").value == "S" ? "Sim" : "Não");
+                atbProdValor.push(document.getElementById("atb-prod-id").value);
+                atbReferDescr.push(document.getElementById("atb-refer-descr").value);
+                atbProdOperacao.push("C");
+            } else {
+                atbReferId.push(0);
+                atbReferQtd.push(document.getElementById("atb-refer-qtd").value);
+                atbReferValidade.push(document.getElementById("atb-refer-validade").value);
+                atbReferObrigatorio.push(document.getElementById("atb-refer-obrigatorio").value == "S" ? "Sim" : "Não");
+                atbReferValor.push(document.getElementById("atb-refer-id").value);
+                atbReferDescr.push(document.getElementById("atb-refer-descr").value);
+                atbReferOperacao.push("C");
+            }
+            const pai = "#por-" + (chave == "P" ? "produto" : "referencia");
+            Array.from(document.querySelectorAll(pai + " input, " + pai + " select")).forEach((el) => {
+                el.value = "";
+            });
+            document.querySelector(pai + " input").focus();
+            mostrarAtribuicoes();
+        } else s_alert(erro);
     });
-    document.querySelector(pai + " input").focus();
-    mostrarAtribuicoes();
+}
+
+function alterouAtribuicoes() {
+    let alterou = false;
+    if (atbProdId.join("|") != atbProdId_ant.join("|")) alterou = true;
+    if (atbProdDescr.join("|") != atbProdDescr_ant.join("|")) alterou = true;
+    if (atbProdValor.join("|") != atbProdValor_ant.join("|")) alterou = true;
+    if (atbProdQtd.join("|") != atbProdQtd_ant.join("|")) alterou = true;
+    if (atbProdValidade.join("|") != atbProdValidade_ant.join("|")) alterou = true;
+    if (atbProdObrigatorio.join("|") != atbProdObrigatorio_ant.join("|")) alterou = true;
+    if (atbProdOperacao.join("|") != atbProdOperacao_ant.join("|")) alterou = true;
+    if (atbReferId.join("|") != atbReferId_ant.join("|")) alterou = true;
+    if (atbReferDescr.join("|") != atbReferDescr_ant.join("|")) alterou = true;
+    if (atbReferValor.join("|") != atbReferValor_ant.join("|")) alterou = true;
+    if (atbReferQtd.join("|") != atbReferQtd_ant.join("|")) alterou = true;
+    if (atbReferValidade.join("|") != atbReferValidade_ant.join("|")) alterou = true;
+    if (atbReferObrigatorio.join("|") != atbReferObrigatorio_ant.join("|")) alterou = true;
+    if (atbReferOperacao.join("|") != atbReferOperacao_ant.join("|")) alterou = true;
+    return alterou;
+}
+
+function limitar(el) {
+    let texto = el.value.toString();
+    if (!texto.length || parseInt(texto) < 1) el.value = 1;
+    if (texto.length > 11) el.value = "".padStart(11, "9");
+}
+
+function modal(nome, id, callback) {
+    limparInvalido();
+    if (callback === undefined) callback = function() {}
+    if (id) document.getElementById(nome == "pessoasModal" ? "pessoa-id" : "id").value = id;
+    Array.from(document.querySelectorAll("#" + nome + " input, #" + nome + " textarea")).forEach((el) => {
+        if (!id && el.name != "_token") el.value = "";
+        if (!$(el).hasClass("autocomplete")) $(el).trigger("keyup");
+        anteriores[el.id] = el.value;
+    });
+    var myModal = new bootstrap.Modal(document.getElementById(nome));
+myModal.show();
+    callback();
+}
+
+function modal2(nome, limpar) {    
+    limparInvalido();
+    limpar.forEach((id) => {
+        document.getElementById(id).value = "";
+    });
+    var myModal = new bootstrap.Modal(document.getElementById(nome));
+myModal.show();
+    console.log(nome);
 }
 
 // mover as funções abaixo para arquivo específico depois

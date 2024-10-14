@@ -50,6 +50,10 @@ class LocaisController extends ControllerKX {
         return "0";
     }
 
+    public function mostrar($id){
+        return Locais::find($id)->descr;
+    }
+
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcrumb = array(

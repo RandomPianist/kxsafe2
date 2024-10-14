@@ -48,9 +48,9 @@
             <h1>Dados não encontrados</h1>
         </div>
     </div>
-    <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
+    <!-- <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
         <i class = "fa-solid fa-plus"></i>  
-    </button>
+    </button> -->
 
     <script type = "text/javascript" language = "JavaScript">
         function ir(id) {

@@ -52,6 +52,8 @@
         <i class = "fa-solid fa-plus"></i>
     </button>
 
+    @include("modals.estoque_modal")
+
     <script type = "text/javascript" language = "JavaScript">
         function ir(id) {
             location.href = URL + "/locais/crud/" + id;
@@ -69,8 +71,10 @@
                             "<td width = '13%' class = 'text-right'>" + local.id.toString().padStart(6, "0") + "</td>" +
                             "<td width = '74%'>" + local.descr + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + local.id + ")'></i>" +
-                                "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + local.id + ", " + '"/locais"' + ", event)'></i>" +
+                                "<i class = 'my-icon far fa-boxes-stacked ' title='Estoque' onclick='estoque(" + local.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-edit ml-2'  title = 'Editar'  onclick = 'ir(" + local.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-trash-alt ml-2' title = 'Excluir' onclick = 'excluir(" + local.id + ", " + '"/locais"' + ", event)'></i>" +
+                                
                             "</td>" +
                         "</tr>";
                     });
