@@ -297,18 +297,14 @@
                         formData.append(id, elementos[id].value);
                     });
                     formData.append("supervisor", elementos.supervisor.value == "S" ? 1 : 0);
-                    formData.append("atb_prod_id", atbProdId.join("|"));
-                    formData.append("atb_prod_valor", atbProdValor.join("|"));
-                    formData.append("atb_prod_qtd", atbProdQtd.join("|"));
-                    formData.append("atb_prod_obrigatorio", atbProdObrigatorio.join("|"));
-                    formData.append("atb_prod_validade", atbProdValidade.join("|"));
-                    formData.append("atb_prod_operacao", atbProdOperacao.join("|"));
-                    formData.append("atb_refer_id", atbReferId.join("|"));
-                    formData.append("atb_refer_valor", atbReferValor.join("|"));
-                    formData.append("atb_refer_qtd", atbReferQtd.join("|"));
-                    formData.append("atb_refer_obrigatorio", atbReferObrigatorio.join("|"));
-                    formData.append("atb_refer_validade", atbReferValidade.join("|"));
-                    formData.append("atb_refer_operacao", atbReferOperacao.join("|"));
+                    @php
+                        $tipos = ["prod", "refer"];
+                        $campos = ["id", "valor", "qtd", "obrigatorio", "validade", "operacao"];
+                        $propriedades = array();
+                        foreach ($tipos as $tipo) {
+                            foreach ($campos as $campo) echo "formData.append('atb_".$tipo."_".$campo."', atb".ucfirst($tipo).ucfirst($campo).".join('|'));";
+                        }
+                    @endphp
                     $.ajax({
                         url : URL + "/funcionarios/salvar",
                         type : "POST",
@@ -359,8 +355,7 @@
                 id_produto : document.getElementById("variacoes").value.replace("prod-", ""),
                 qtd : document.getElementById("ret-qtd").value,
                 data : document.getElementById("ret-data").value
-            }, function(data) {
-                console.log(data);
+            }, function() {
                 Swal.fire({
                     icon : "success",
                     title : "Sucesso",

@@ -79,18 +79,15 @@
                         id : _id,
                         id_empresa : _id_empresa,
                         descr : document.getElementById("descr").value,
-                        atb_prod_id : atbProdId.join("|"),
-                        atb_prod_valor : atbProdValor.join("|"),
-                        atb_prod_qtd : atbProdQtd.join("|"),
-                        atb_prod_obrigatorio : atbProdObrigatorio.join("|"),
-                        atb_prod_validade : atbProdValidade.join("|"),
-                        atb_prod_operacao : atbProdOperacao.join("|"),
-                        atb_refer_id : atbReferId.join("|"),
-                        atb_refer_valor : atbReferValor.join("|"),
-                        atb_refer_qtd : atbReferQtd.join("|"),
-                        atb_refer_obrigatorio : atbReferObrigatorio.join("|"),
-                        atb_refer_validade : atbReferValidade.join("|"),
-                        atb_refer_operacao : atbReferOperacao.join("|")
+                        @php
+                            $tipos = ["prod", "refer"];
+                            $campos = ["id", "valor", "qtd", "obrigatorio", "validade", "operacao"];
+                            $propriedades = array();
+                            foreach ($tipos as $tipo) {
+                                foreach ($campos as $campo) array_push($propriedades, "atb_".$tipo."_".$campo." : atb".ucfirst($tipo).ucfirst($campo)."join('|')");
+                            }
+                            echo implode(",", $propriedades);
+                        @endphp
                     }, function() {
                         location.href = URL + "/setores";
                     });
