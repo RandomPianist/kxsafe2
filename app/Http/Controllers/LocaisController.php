@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
 use App\Models\Locais;
+use App\Models\LocaisItens;
 
 class LocaisController extends ControllerKX {
     private function busca($param = "1") {
@@ -103,6 +104,21 @@ class LocaisController extends ControllerKX {
         $linha->id_empresa = $request->id_empresa;
         $linha->save();
         $this->log_inserir($request->id ? "E" : "C", "locais", $linha->id); // ControllerKX.php
+        $itens = DB::table("itens")->pluck("id")->toArray();
+        foreach ($itens as $item) {
+            if (!sizeof(
+                DB::table("locais_itens")
+                    ->where("id_local", $linha->id)
+                    ->where("id_item", $item)
+                    ->get()
+            )) {
+                $li = new LocaisItens;
+                $li->id_local = $linha->id;
+                $li->id_item = $item;
+                $li->save();
+                $this->log_inserir("C", "locais_itens", $li->id); // ControllerKX.php
+            }
+        }
     }
 
     public function excluir(Request $request) {
@@ -110,21 +126,5 @@ class LocaisController extends ControllerKX {
         $linha->lixeira = 1;
         $linha->save();
         $this->log_inserir("D", "locais", $linha->id); // ControllerKX.php
-    }
-
-    public function estoque(Request $request) {
-        for ($i = 0; $i < sizeof($request->id_produto); $i++) {
-            $linha = new Estoque;
-            $linha->es = $request->es[$i];
-            $linha->descr = $request->obs[$i];
-            $linha->qtd = $request->qtd[$i];
-            $linha->id_mp = DB::table("maquinas_produtos")
-                                ->where("id_produto", $request->id_produto[$i])
-                                ->where("id_maquina", $request->id_maquina)
-                                ->value("id");
-            $linha->save();
-            $this->log_inserir("C", "estoque", $linha->id);
-        }
-        return redirect("/valores/maquinas");
     }
 }

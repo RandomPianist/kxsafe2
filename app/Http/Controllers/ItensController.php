@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
 use App\Models\Itens;
+use App\Models\LocaisItens;
 
 class ItensController extends ControllerKX {
     private function busca($param = "1") {
@@ -134,7 +135,21 @@ class ItensController extends ControllerKX {
         $linha->save();
         $this->atribuicoes_atualizar($request->id, $linha->cod_externo, $linha->id, "NULL", "P"); // ControllerKX.php
         $this->log_inserir($request->id ? "E" : "C", "itens", $linha->id); // ControllerKX.php
-        // $this->mov_estoque($linha->id, false);
+        $locais = DB::table("locais")->pluck("id")->toArray();
+        foreach ($local as $local) {
+            if (!sizeof(
+                DB::table("locais_itens")
+                    ->where("id_local", $local)
+                    ->where("id_item", $linha->id)
+                    ->get()
+            )) {
+                $li = new LocaisItens;
+                $li->id_item = $linha->id;
+                $li->id_local = $local;
+                $li->save();
+                $this->log_inserir("C", "locais_itens", $li->id); // ControllerKX.php
+            }
+        }
         return redirect("/itens");
     }
 

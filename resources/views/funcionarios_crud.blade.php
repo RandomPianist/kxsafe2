@@ -80,7 +80,7 @@
                 </a>
             </div>
         </div>
-        <div class = "col-md-4 mb-3 form-search2 ">
+        <div class = "col-md-4 mb-3 form-search2">
             <label for = "setor" class = "form-label">Setor:</label>
             <div class = "d-flex align-items-center">
                 <input
@@ -351,7 +351,7 @@
         }
 
         function retirarMain(_id_supervisor) {
-            $.get(URL + "/retiradas/salvar", {
+            $.post(URL + "/retiradas/salvar", {
                 _token : $("meta[name='csrf-token']").attr("content"),
                 id_supervisor : _id_supervisor,
                 id_funcionario : _id,

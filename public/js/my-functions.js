@@ -263,6 +263,8 @@ window.onload = function () {
             setTravarCliqueMenu();
         }
     });
+
+    hoje();
 }
 
 function ordenar(coluna) {
@@ -697,6 +699,7 @@ function modal(nome, id, callback) {
         if (!$(el).hasClass("autocomplete")) $(el).trigger("oninput");
         anteriores[el.id] = el.value;
     });
+    hoje();
     let myModal = new bootstrap.Modal(document.getElementById(nome));
     myModal.show();
     callback();
@@ -704,12 +707,33 @@ function modal(nome, id, callback) {
 
 function modal2(nome, limpar) {    
     limparInvalido();
-    console.log(limpar);
     limpar.forEach((id) => {
         document.getElementById(id).value = "";
     });
     let myModal = new bootstrap.Modal(document.getElementById(nome));
     myModal.show();
+    hoje();
+}
+
+function hoje() {
+    Array.from(document.querySelectorAll("input.data")).forEach((el) => {
+        el.value = new Date().toJSON().slice(0, 10).split('-').reverse().join('/');
+    });
+}
+
+function validarDatas(el_inicio, el_fim, comodato) {
+    let erro = "";
+    let aux = el_inicio.value.split("/");
+    const inicio = new Date(aux[2], aux[1] - 1, aux[0]);
+    aux = el_fim.value.split("/");
+    const fim = new Date(aux[2], aux[1] - 1, aux[0]);
+    if (inicio > fim) erro = "A data inicial não pode ser maior que a data final";
+    else if (inicio.getTime() == fim.getTime() && comodato) erro = "A locação precisa durar mais de um dia";
+    if (!comodato && erro) {
+        el_inicio.classList.add("invalido");
+        el_fim.classList.add("invalido");
+    }
+    return erro;
 }
 
 function RelatorioBilateral(_grupo) {
@@ -768,7 +792,7 @@ function RelatorioItens() {
     this.validar = function() {
         limparInvalido();
         let erro = "";
-        if (elementos.inicio.value && elementos.fim.value) erro = validar_datas(elementos.inicio, elementos.fim, false);
+        if (elementos.inicio.value && elementos.fim.value) erro = validarDatas(elementos.inicio, elementos.fim, false);
         $.get(URL + "/relatorios/extrato/consultar", obterElementosValor(elementos, ["produto", "maquina"]), function(data) {
             if (data && !erro) {
                 elementos[data].classList.add("invalido");
@@ -795,7 +819,7 @@ function RelatorioControle() {
     this.validar = function() {
         limparInvalido();
         let erro = "";
-        if (elementos.inicio.value && elementos.fim.value) erro = validar_datas(elementos.inicio, elementos.fim, false);
+        if (elementos.inicio.value && elementos.fim.value) erro = validarDatas(elementos.inicio, elementos.fim, false);
         $.get(URL + "/relatorios/controle/consultar", obterElementosValor(elementos, ["pessoa"]), function(data) {
             if (data && !erro) {
                 elementos.pessoa.classList.add("invalido");
@@ -828,7 +852,7 @@ function RelatorioRetiradas(quebra) {
     this.validar = function() {
         limparInvalido();
         let erro = "";
-        if (elementos.inicio.value && elementos.fim.value) erro = validar_datas(elementos.inicio, elementos.fim, false);
+        if (elementos.inicio.value && elementos.fim.value) erro = validarDatas(elementos.inicio, elementos.fim, false);
         $.get(
             URL + "/relatorios/retiradas/consultar",
             obterElementosValor(elementos, ["empresa", "pessoa", "setor"]),

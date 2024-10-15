@@ -8,23 +8,24 @@
                     <span aria-hidden = "true">&times;</span>
                 </button>
             </div>
-            <form action = "{{ config('app.root_url') }}/locais/estoque" method = "POST">
+            <form action = "{{ config('app.root_url') }}/estoque/salvar" method = "POST">
                 <div class = "modal-body">
                     <div class = "container" id = "campo-container">
                         @csrf
                         <input class = "id_local" name = "id_local" type = "hidden" />
-                        <div class = "row" id = "linha-1">
-                            <div class = "col-4  pr-1">
+                        <div class = "row form-search" id = "linha-1">
+                            <div class = "col-4 pr-1">
                                 <label for = "item-1" class = "custom-label-form">Item: *</label>
                                 <input id = "item-1"
-                                       class = "form-control autocomplete item"
-                                       data-input = "#id_item-1"
-                                       data-table = "itens"
-                                       data-column = "descr"
-                                       data-filter_col = ""
-                                       data-filter = ""
-                                       type = "text"
-                                       autocomplete = "off" />
+                                    class = "form-control autocomplete item"
+                                    data-input = "#id_item-1"
+                                    data-table = "itens"
+                                    data-column = "descr"
+                                    data-filter_col = ""
+                                    data-filter = ""
+                                    type = "text"
+                                    autocomplete = "off"
+                                />
                                 <input id = "id_item-1" class = "id-item" name = "id_item[]" type = "hidden" />
                             </div>
                             <div class = "col-2 p-0 px-1">
@@ -66,6 +67,41 @@
             modal("estoqueModal", 0);
         });
     }
+
+    function validar_estoque() {
+        let obter_vetor = function(classe) {
+            let resultado = new Array();
+            Array.from(document.getElementsByClassName(classe)).forEach((el) => {
+                resultado.push(el.value);
+            });
+            return resultado.join(",");
+        }
+
+        limparInvalido();
+        let lista = new Array();
+        for (let i = 1; i <= document.querySelectorAll("#estoqueModal input[type=number]").length; i++) lista.push("produto-" + i, "qtd-" + i);
+        let erro = verifica_vazios(lista).erro;
+        $.get(URL + "/estoque/consultar/", {
+            itens_descr : obter_vetor("item"),
+            itens_id : obter_vetor("id-item"),
+            quantidades : obter_vetor("qtd"),
+            es : obter_vetor("es"),
+            id_local : document.getElementsByClassName("id_local")[0].value
+        }, function(data) {
+            if (typeof data == "string") data = $.parseJSON(data);
+            if (!erro && data.texto) {
+                for (let i = 0; i < data.campos.length; i++) {
+                    let el = document.getElementById(data.campos[i]);
+                    el.value = data.valores[i];
+                    el.classList.add("invalido");
+                }
+                erro = data.texto;
+            }
+            if (!erro) document.querySelector("#estoqueModal form").submit();
+            else s_alert(erro);
+        });
+    }
+
     function adicionar_campo() {
         const container = document.getElementById("campo-container");
         const cont = container.children.length + 1; // Número da nova linha
@@ -133,8 +169,6 @@
         const novoCampoObs = document.querySelector(`#obs-${cont}`);
         contarChar(novoCampoObs, 16);
     }
-
-
 
     function removerCampo(button) {
         const linha = button.closest(".row");

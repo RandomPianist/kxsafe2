@@ -18,6 +18,7 @@ use App\Http\Controllers\FuncionariosController;
 use App\Http\Controllers\AtribuicoesController;
 use App\Http\Controllers\RetiradasController;
 use App\Http\Controllers\MaquinasController;
+use App\Http\Controllers\EstoqueController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -201,7 +202,12 @@ Route::middleware("auth")->group(function () {
 
     Route::group(["prefix" => "retiradas"], function() {
         Route::get ("/consultar", [RetiradasController::class, "consultar"]);
-        Route::get("/salvar",    [RetiradasController::class, "salvar"]);
+        Route::post("/salvar",    [RetiradasController::class, "salvar"]);
+    });
+
+    Route::group(["prefix" => "estoque"], function() {
+        Route::get ("/consultar", [EstoqueController::class, "consultar"]);
+        Route::post("/salvar",    [EstoqueController::class, "salvar"]);
     });
 });
 
