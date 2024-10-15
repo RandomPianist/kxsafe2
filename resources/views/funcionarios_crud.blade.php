@@ -351,7 +351,8 @@
                 id_funcionario : _id,
                 id_atribuicao : _id_atribuicao,
                 id_produto : document.getElementById("variacoes").value.replace("prod-", ""),
-                qtd : document.getElementById("ret-qtd").value
+                qtd : document.getElementById("ret-qtd").value,
+                data : document.getElementById("ret-data").value
             }, function() {
                 Swal.fire({
                     icon : "success",
