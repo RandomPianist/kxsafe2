@@ -1,4 +1,4 @@
-let colGlobal;
+let colGlobal, relatorio;
 let carregado = false;
 let validacaoBloqueada = false;
 let travarCliqueMenu = false;
@@ -38,12 +38,12 @@ jQuery.fn.sortElements = (function() {
 })();
 
 window.onclick = function(e) {
-    if (
+    /*if (
         carregado &&
         !travarCliqueMenu &&
         !document.querySelector("aside").contains(e.target) &&
         document.getElementById("header-esquerdo").classList.contains("active")
-    ) document.getElementById("menu-fechar").click();
+    ) document.getElementById("menu-fechar").click();*/
 }
 
 window.onload = function () {
@@ -170,8 +170,9 @@ window.onload = function () {
                 "</a>" +
                 "<ul class = 'collapse list-unstyled' id = 'modulo-" + modulo.id + "' data-bs-parent = 'aside'>"
             modulo.itens.forEach((item) => {
+                let url = item.url ? item.url.indexOf("javascript") == -1 ? URL + "/" + item.url : item.url : "#";
                 resultado += "<li>" + 
-                    "<a class = 'nav-link' href = '" + URL + "/" + item.url + "'>" + item.descr + "</a>" +
+                    "<a class = 'nav-link' href = '" + url + "'>" + item.descr + "</a>" +
                 "</li>";
             });
             resultado += "</ul></li>";
@@ -232,6 +233,36 @@ window.onload = function () {
             $(el).trigger("click");
         });
     });
+
+    $(".modal").each(function() {
+        let that = this;
+        $(this).on("shown.bs.modal", function () {
+            let cont = 0;
+            do {
+                var el = $($("#" + that.id + " input[type=text]")[cont]);
+                el.focus();
+                cont++;
+            } while ($($(el).parent()).hasClass("d-none") || $(el).attr("disabled"))
+        })
+    });
+
+    $(".form-control").each(function() {
+        $(this).keydown(function() {
+            $(this).removeClass("invalido");
+        });
+    });
+
+    $("#relatorioBilateralModal").on("hide.bs.modal", function() {
+        if (document.getElementById("rel-grupo1").value == "maquinas-por-empresa") relatorio.inverter();
+    });
+
+    setTravarCliqueMenu();
+
+    document.querySelectorAll(".my-icon, button:not(.btn-menu), #pesquisa-header, input, a").forEach((el) => {
+        el.onmousedown = function() {
+            setTravarCliqueMenu();
+        }
+    });
 }
 
 function ordenar(coluna) {
@@ -240,7 +271,7 @@ function ordenar(coluna) {
         $($(".sortable-columns").children()[coluna]).addClass("nao-inverte");
     }
     $($(".sortable-columns").children()[coluna]).trigger("click");
-    document.querySelectorAll(".my-icon, button:not(.btn-menu), #pesquisa-header, input").forEach((el) => {
+    document.querySelectorAll(".my-icon, button:not(.btn-menu), #pesquisa-header, input, a").forEach((el) => {
         el.onmousedown = function() {
             setTravarCliqueMenu();
         }
@@ -400,7 +431,8 @@ function contarChar(el, max) {
 }
 
 function gotoFuncao(valor) {
-    location.href = URL + "/" + valor;
+    if (valor.indexOf("javascript") > -1) eval(valor.replace("javascript:", ""));
+    else location.href = URL + "/" + valor;
 }
 
 function erroImg(el) {
@@ -678,4 +710,193 @@ function modal2(nome, limpar) {
     });
     let myModal = new bootstrap.Modal(document.getElementById(nome));
     myModal.show();
+}
+
+function RelatorioBilateral(_grupo) {
+    let that = this;
+    let grupo = _grupo;
+
+    this.validar = function() {
+        limparInvalido();
+        let elementos = obterElementos(["empresa1", "maquina1"], "rel-");
+        let valores = obterElementosValor(elementos, ["empresa", "maquina"]);
+        valores.prioridade = grupo == "maquinas-por-empresa" ? "empresas" : "maquinas";
+        $.get(URL + "/relatorios/bilateral/consultar", valores, function(erro) {
+            if (erro) {
+                elementos[erro].classList.add("invalido");
+                erro = erro == "empresa" ? "Empresa" : "Máquina";
+                erro += " não encontrada";
+                s_alert(erro);
+            } else document.querySelector("#relatorioBilateralModal form").submit();
+        });
+    }
+
+    this.inverter = function() {
+        const arr = [1, 0];
+        let wrapper = document.querySelectorAll("#relatorioBilateralModal .container");
+        let items = wrapper[0].children;
+        let elements = document.createDocumentFragment();
+        arr.forEach(function(idx) {
+        	elements.appendChild(items[idx].cloneNode(true));
+        });
+        wrapper[0].innerHTML = null;
+        wrapper[0].appendChild(elements);
+        Array.from(document.querySelectorAll(".modal-body .row")).forEach((el) => {
+            el.style.removeProperty("margin-top");
+            if ($(el).prev().hasClass("row")) $(el).css("margin-top", $(el).prev().find(".tam-max").length ? "-14px" : "11px");
+        });
+    }
+
+    let titulo = "Empresas por máquina";
+    if (grupo == "maquinas-por-empresa") {
+        that.inverter();
+        titulo = "Máquinas por empresa";
+    }
+    document.getElementById("relatorioBilateralModalLabel").innerHTML = titulo;
+    
+    limparInvalido();
+    setTimeout(function() {
+        modal("relatorioBilateralModal", 0, function() {
+            document.getElementById("rel-grupo1").value = grupo;
+        });
+    }, 0);
+}
+
+function RelatorioItens() {
+    let elementos = obterElementos(["inicio1", "fim1", "produto", "maquina2"], "rel-");
+    
+    this.validar = function() {
+        limparInvalido();
+        let erro = "";
+        if (elementos.inicio.value && elementos.fim.value) erro = validar_datas(elementos.inicio, elementos.fim, false);
+        $.get(URL + "/relatorios/extrato/consultar", obterElementosValor(elementos, ["produto", "maquina"]), function(data) {
+            if (data && !erro) {
+                elementos[data].classList.add("invalido");
+                erro == "maquina" ? "Máquina não encontrada" : "Produto não encontrado";
+            }
+            if (!erro) document.querySelector("#relatorioItensModal form").submit();
+            else s_alert(erro);
+        });
+    }
+    
+    limparInvalido();
+    setTimeout(function() {
+        modal("relatorioItensModal", 0, function() {
+            elementos.inicio.value = hoje();
+            elementos.fim.value = hoje();
+            document.getElementById("rel-lm").value = "N";
+        });
+    }, 0);
+}
+
+function RelatorioControle() {
+    let elementos = obterElementos(["inicio2", "fim2", "pessoa1", "consumo1"], "rel-");
+
+    this.validar = function() {
+        limparInvalido();
+        let erro = "";
+        if (elementos.inicio.value && elementos.fim.value) erro = validar_datas(elementos.inicio, elementos.fim, false);
+        $.get(URL + "/relatorios/controle/consultar", obterElementosValor(elementos, ["pessoa"]), function(data) {
+            if (data && !erro) {
+                elementos.pessoa.classList.add("invalido");
+                erro = "Colaborador não encontrado";
+            }
+            if (!erro) {
+                if (!elementos.id_pessoa.value.trim()) {
+                    $.get(URL + "/relatorios/controle/pessoas", function(data2) {
+                        if (typeof data2 == "string") data2 = $.parseJSON(data2);
+                        controleTodos(data2);
+                    });
+                } else document.querySelector("#relatorioControleModal form").submit();    
+            } else s_alert(erro);
+        });
+    }
+    
+    limparInvalido();
+    setTimeout(function() {
+        modal("relatorioControleModal", 0, function() {
+            elementos.inicio.value = hoje();
+            elementos.fim.value = hoje();
+            elementos.consumo.value = "todos";
+        });
+    }, 0);
+}
+
+function RelatorioRetiradas(quebra) {
+    let elementos = obterElementos(["inicio3", "fim3", "empresa2", "pessoa2", "setor", "consumo2", "tipo"], "rel-");
+
+    this.validar = function() {
+        limparInvalido();
+        let erro = "";
+        if (elementos.inicio.value && elementos.fim.value) erro = validar_datas(elementos.inicio, elementos.fim, false);
+        $.get(
+            URL + "/relatorios/retiradas/consultar",
+            obterElementosValor(elementos, ["empresa", "pessoa", "setor"]),
+            function(data) {
+                if (data && !erro) {
+                    elementos[data].classList.add("invalido");
+                    erro = data != "maquina" ? data.charAt(0).toUpperCase() + data.substring(1) : "Máquina";
+                    erro += " não encontrad";
+                    erro += data == "setor" ? "o" : "a";
+                }
+                if (!erro) document.querySelector("#relatorioRetiradasModal form").submit();
+                else s_alert(erro);
+            }
+        );
+    }
+    
+    limparInvalido();
+    setTimeout(function() {
+        modal("relatorioRetiradasModal", 0, function() {
+            elementos.inicio.value = hoje();
+            elementos.fim.value = hoje();
+            if (quebra == "setor") {
+                elementos.pessoa.parentElement.classList.add("d-none");
+                elementos.setor.parentElement.classList.remove("d-none");
+            } else {
+                elementos.setor.parentElement.classList.add("d-none");
+                elementos.pessoa.parentElement.classList.remove("d-none");
+            }
+            elementos.consumo.value = "todos";
+            elementos.tipo.value = "A";
+            document.getElementById("relatorioRetiradasModalLabel").innerHTML = "Consumo por " + quebra.replace("pessoa", "colaborador");
+            document.getElementById("rel-grupo2").value = quebra;
+        });
+    }, 0);
+}
+
+async function controleTodos(ids) {
+    let lista = Array.from(document.getElementsByClassName("btn-primary"));
+    let loader = document.getElementById("loader").style;
+    let modal = document.getElementById("relatorioControleModal").style;
+    let algum_existe = false;
+    let elementos = obterElementos(["pessoa1", "consumo1", "inicio2", "fim2"], "rel-");
+    lista.forEach((el) => {
+        el.style.zIndex = "0";
+    });
+    loader.display = "flex";
+    modal.zIndex = "0";
+    for (let i = 0; i < ids.length; i++) {
+        elementos.id_pessoa.value = ids[i];
+        let existe = await $.get(URL + "/relatorios/controle/existe", {
+            id_pessoa : ids[i],
+            consumo : elementos.consumo.value,
+            inicio : elementos.inicio.value,
+            fim : elementos.fim.value
+        });
+        if (parseInt(existe)) {
+            algum_existe = true;
+            document.querySelector("#relatorioControleModal form").submit();
+        }
+    }
+    lista.forEach((el) => {
+        el.style.removeProperty("z-index");
+    });
+    modal.removeProperty("z-index");
+    loader.removeProperty("display");
+    elementos.id_pessoa.value = "";
+    if (!algum_existe) {
+        elementos.pessoa.classList.add("invalido");
+        s_alert("Colaborador não encontrado");
+    }
 }

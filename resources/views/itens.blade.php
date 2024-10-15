@@ -30,10 +30,10 @@
                         <th width = "13%" class = "text-right">
                             <span>Código</span>
                         </th>
-                        <th width = "@if($pode_editar) 25.5% @else 30% @endif%">
+                        <th width = "30%">
                             <span>Descrição</span>
                         </th>
-                        <th width = "@if($pode_editar) 25.5% @else 30% @endif">
+                        <th width = "@if($pode_editar) 21% @else 30% @endif">
                             <span>Categoria</span>
                         </th>
                         <th width = "@if($pode_editar) 13% @else 17% @endif" class = "text-right">
@@ -88,15 +88,14 @@
                                 "<i class = 'fa-light fa-image d-none' style = 'font-size:20px'></i>" +
                             "</td>" +
                             "<td width = '13%' class = 'text-right'>" + item.cod_ou_id.padStart(6, "0") + "</td>" +
+                            "<td width = '30%'>" + item.descr + "</td>" +
                             (podeEditar ?
-                                "<td width = '25.5%'>" + item.descr + "</td>" +
-                                "<td width = '25.5%'>" + item.categoria + "</td>" +
+                                "<td width = '21%'>" + item.categoria + "</td>" +
                                 "<td width = '13%' class = 'dinheiro'>" + item.preco + "</td>" +
                                 "<td class = 'text-center btn-table-action' width = '13%'>" +
                                 "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + item.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + item.id + ", " + '"/produtos"' + ", event)'></i>"
                             : 
-                                "<td width = '30%'>" + item.descr + "</td>" +
                                 "<td width = '30%'>" + item.categoria + "</td>" +
                                 "<td width = '17%' class = 'dinheiro'>" + item.preco + "</td>"
                             ) +

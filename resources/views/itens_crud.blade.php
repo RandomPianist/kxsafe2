@@ -74,7 +74,7 @@
             </div>
         </div>
         <div class = "row">
-            <div class = "col-md-6 mb-4">
+            <div class = "col-md-6 mb-4 form-search">
                 <label for = "categoria" class = "form-label">Categoria:</label>
                 <div class="d-flex align-items-center">
                     <input
@@ -99,7 +99,7 @@
                     </a>
                 </div>
             </div>
-            <div class = "col-md-6 mb-4">
+            <div class = "col-md-6 mb-4 form-search">
                 <label for = "fornecedor" class = "form-label">Fornecedor:</label>
                 <div class="d-flex align-items-center">
                     <input

@@ -59,8 +59,8 @@
                 <input type = "text" class = "form-control dinheiro-editavel" id = "royalties" value = "@if ($empresa !== null) {{ str_replace('.', '', strval($empresa->royalties)) }} @endif" />
             </div>
         </div>
-        <div class = "row">
-            <div class = "col-md-4 mb-3">
+        <div class = "row mt-3">
+            <div class = "col-md-4 mb-3 form-search">
                 <label for = "grupo" class = "form-label">Grupo:</label>
                 <div class = "d-flex align-items-center">
                     <input
@@ -85,7 +85,7 @@
                     </a>
                 </div>
             </div>
-            <div class = "col-md-4 mb-3">
+            <div class = "col-md-4 mb-3 form-search">
                 <label for = "segmento" class = "form-label">Segmento:</label>
                 <div class = "d-flex align-items-center">
                     <input
@@ -110,7 +110,7 @@
                     </a>
                 </div>
             </div>
-            <div class = "col-md-4 mb-3">
+            <div class = "col-md-4 mb-3 form-search">
                 <label for = "matriz" class = "form-label">Matriz:</label>
                 <div class="d-flex align-items-center">
                     <input
@@ -140,9 +140,9 @@
             <h5>Endereços</h5>
         </div>
         <div class = "row mt-4">
-            <div class = "col-md-4 mb-3">
+            <div class = "col-md-4 mb-3 form-search2">
                 <label for = "cep" class = "form-label">CEP:</label>
-                <div class="d-flex align-items-center">
+                <div class = "d-flex align-items-center">
                     <input type = "text" class = "form-control mr-3 campo-endereco2" id = "cep" oninput = "carregarCEP()" />
                     <a href = "{{ config('app.root_url') }}/cep" title = "Cadastro de cep" target = "_blank">
                         <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>

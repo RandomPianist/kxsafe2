@@ -19,7 +19,7 @@ class RetiradasController extends ControllerKX {
         $linha->id_atribuicao = $request->id_atribuicao;
         $linha->id_produto = $request->id_produto;        
         $linha->qtd = $request->qtd;
-        $linha->data = Carbon::createFromFormat('d/m/Y', $item->validade_ca)->format('Y-m-d');
+        $linha->data = Carbon::createFromFormat('d/m/Y', $request->data)->format('Y-m-d');
         $linha->save();
         $this->log_inserir("C", "retiradas", $linha->id); // ControllerKX.php
     }

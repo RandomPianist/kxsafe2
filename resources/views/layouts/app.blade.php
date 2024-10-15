@@ -3,14 +3,34 @@
     <head>
         @include("components.header")
         <link href = "{{ asset('css/my-style.css') }}" rel = "stylesheet" />
+		<style type = "text/css">
+			.form-search::after,
+			.form-search2::after {
+                background: url("{{ config('app.root_url') }}/img/keyboard.png") no-repeat;
+                background-size: contain;
+                content: " ";
+                position: absolute;
+                height: 30px;
+                width: 30px;
+				right: 57px
+            }
+
+			.form-search::after {
+				bottom: 4px
+			}
+
+			.form-search2::after {
+				bottom: 21px
+			}
+		</style>
     </head>
     <body>
         <header class = "d-flex justify-content-between align-items-center p-2 bg-white w-100 position-fixed">
-			<div id = "header-esquerdo" class = "d-flex">
+			<div id = "header-esquerdo" class = "d-flex active">
 				<button id = "menu-abrir" class = "btn btn-custom mr-2 btn-menu">
 				    <i class = "fas fa-bars menu-icon"></i>
 				</button>
-				<div class = "input-group" id = "pesquisa-header">
+				<div class = "input-group active" id = "pesquisa-header">
 					<div class = "input-group-prepend">
 						<span class = "input-group-text">
 							<i class = "fa-solid fa-magnifying-glass"></i>
@@ -31,7 +51,7 @@
 				</div>
 			</div>
 			<div class = "d-flex">
-				<button class = "btn btn-custom me-3">
+				<button class = "btn btn-custom">
 					<i class = "fas fa-bell menu-icon"></i>
 				</button>
 				<div class = "dropdown">
@@ -55,7 +75,7 @@
 				</div>
 			</div>
 		</header>
-        <aside class = "bg-white position-fixed custom-scrollbar">
+        <aside class = "bg-white position-fixed custom-scrollbar active">
 			<button id = "menu-fechar" class = "btn btn-custom btn-menu">
 			    <i class = "fas fa-arrow-left menu-icon"></i>
 			</button>
@@ -67,9 +87,14 @@
 			</div>
 		</aside>
 
-		<main class = "content p-5">
+		<main class = "content p-5 active">
 	        @yield("content")
 		</main>
+
+		@include("modals.reports.bilateral_modal")
+		@include("modals.reports.controle_modal")
+		@include("modals.reports.itens_modal")
+		@include("modals.reports.retiradas_modal")
 
 		<footer class = "w-100 d-flex justify-content-center align-items-center">
 			<a href = "#">Sobre</a>

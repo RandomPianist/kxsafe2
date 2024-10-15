@@ -152,13 +152,12 @@ class FuncionariosController extends ControllerKX {
         $linha->cpf = $request->cpf;
         $linha->funcao = $request->funcao;
         $linha->admissao = Carbon::createFromFormat('d/m/Y', $request->admissao)->format('Y-m-d');
-        $linha->senha = $request->senha;
+        if ($request->senha) $linha->senha = $request->senha;
         if ($request->file("foto")) $linha->foto = $request->file("foto")->store("uploads", "public");
         $linha->telefone = $request->telefone;
         $linha->email = $request->email;
         $linha->pis = $request->pis;
         $linha->supervisor = $request->supervisor;
-        $linha->lixeira = $request->lixeira;
         $linha->id_empresa = $request->id_empresa;
         $linha->id_setor = $request->id_setor;
         $linha->save();

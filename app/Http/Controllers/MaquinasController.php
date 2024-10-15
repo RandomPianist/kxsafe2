@@ -12,7 +12,7 @@ class MaquinasController extends ControllerKX {
         return DB::table("maquinas")
                     ->select(
                         "maquinas.id",
-                        "descr",
+                        "maquinas.descr",
                         "locais.descr AS local"
                     )
                     ->join("locais", "locais.id", "id_local")
@@ -34,9 +34,9 @@ class MaquinasController extends ControllerKX {
     public function listar(Request $request) {
         $filtro = trim($request->filtro);
         if ($filtro) {
-            $busca = $this->busca("descr LIKE '".$filtro."%'");
-            if (sizeof($busca) < 3) $busca = $this->busca("descr LIKE '%".$filtro."%'");
-            if (sizeof($busca) < 3) $busca = $this->busca("(descr LIKE '%".implode("%' AND descr LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
+            $busca = $this->busca("maquinas.descr LIKE '".$filtro."%'");
+            if (sizeof($busca) < 3) $busca = $this->busca("maquinas.descr LIKE '%".$filtro."%'");
+            if (sizeof($busca) < 3) $busca = $this->busca("(maquinas.descr LIKE '%".implode("%' AND maquinas.descr LIKE '%", explode(" ", str_replace("  ", " ", $filtro)))."%')");
         } else $busca = $this->busca();
         return json_encode($busca);
     }
@@ -85,20 +85,13 @@ class MaquinasController extends ControllerKX {
     public function aviso($id) {
         $resultado = new \stdClass;
         $nome = Maquinas::find($id)->descr;
-        $erro = "";
-        $lista = array(
-            "maquinas_itens" => "itens associados",
-            "maquinas" => "máquinas associadas"
-        );
-        foreach ($lista as $tabela => $msg) {
-            if (sizeof(
-                DB::table($tabela)
-                    ->where("id_maquina", $id)
-                    ->get()
-            )) $erro = $msg;    
-        }
-        if ($erro) {
-            $resultado->aviso = "Não é possível excluir ".$nome." porque existem ".$erro." a esse maquina de estoque.";
+        if (sizeof(
+            DB::table("maquinas")
+                ->where("id_local", $id)
+                ->where("lixeira", 0)
+                ->get()
+        )) {
+            $resultado->aviso = "Não é possível excluir ".$nome." porque essa máquina faz parte de um processo de concessão.";
             $resultado->permitir = 0;
         } else {
             $resultado->aviso = "Tem certeza que deseja excluir ".$nome."?";

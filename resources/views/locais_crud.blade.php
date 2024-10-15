@@ -18,7 +18,7 @@
                 <input type = "text" class = "form-control" id = "descr" oninput = "contarChar(this, 32)" value = "@if ($local !== null) {{ $local->descr }} @endif" />
                 <small class = "text-muted"></small>
             </div>
-            <div class = "col-md-6 mb-4">
+            <div class = "col-md-6 mb-4 form-search">
                 <label for = "empresa" class = "form-label">Empresa:</label>
                 <div class="d-flex align-items-center">
                     <input

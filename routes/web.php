@@ -119,6 +119,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/aviso/{id}",   [LocaisController::class, "aviso"]);
         Route::post("/salvar",       [LocaisController::class, "salvar"]);
         Route::post("/excluir",      [LocaisController::class, "excluir"]);
+        Route::post("/estoque",      [LocaisController::class, "estoque"]);
     });
 
     Route::group(["prefix" => "categorias"], function() {
@@ -200,7 +201,7 @@ Route::middleware("auth")->group(function () {
 
     Route::group(["prefix" => "retiradas"], function() {
         Route::get ("/consultar", [RetiradasController::class, "consultar"]);
-        Route::post("/salvar",    [RetiradasController::class, "salvar"]);
+        Route::get("/salvar",    [RetiradasController::class, "salvar"]);
     });
 });
 

@@ -59,7 +59,7 @@
             <h5>Empresas</h5>
         </div>
         <div class = "row">
-            <div class = "col-md-9 mb-3">
+            <div class = "col-md-9 mb-3 form-search">
                 <label for = "empresa" class = "form-label">Empresa:</label>
                 <div class = "d-flex align-items-center">
                     <input

@@ -82,19 +82,13 @@ class LocaisController extends ControllerKX {
     public function aviso($id) {
         $resultado = new \stdClass;
         $nome = Locais::find($id)->descr;
-        $erro = "";
-        $lista = array(
-            "maquinas" => "máquinas associadas"
-        );
-        foreach ($lista as $tabela => $msg) {
-            if (sizeof(
-                DB::table($tabela)
-                    ->where("id_local", $id)
-                    ->get()
-            )) $erro = $msg;    
-        }
-        if ($erro) {
-            $resultado->aviso = "Não é possível excluir ".$nome." porque existem ".$erro." a esse local de estoque.";
+        if (sizeof(
+            DB::table("maquinas")
+                ->where("id_local", $id)
+                ->where("lixeira", 0)
+                ->get()
+        )) {
+            $resultado->aviso = "Não é possível excluir ".$nome." porque existem máquinas associadas a esse local de estoque.";
             $resultado->permitir = 0;
         } else {
             $resultado->aviso = "Tem certeza que deseja excluir ".$nome."?";
@@ -116,5 +110,21 @@ class LocaisController extends ControllerKX {
         $linha->lixeira = 1;
         $linha->save();
         $this->log_inserir("D", "locais", $linha->id); // ControllerKX.php
+    }
+
+    public function estoque(Request $request) {
+        for ($i = 0; $i < sizeof($request->id_produto); $i++) {
+            $linha = new Estoque;
+            $linha->es = $request->es[$i];
+            $linha->descr = $request->obs[$i];
+            $linha->qtd = $request->qtd[$i];
+            $linha->id_mp = DB::table("maquinas_produtos")
+                                ->where("id_produto", $request->id_produto[$i])
+                                ->where("id_maquina", $request->id_maquina)
+                                ->value("id");
+            $linha->save();
+            $this->log_inserir("C", "estoque", $linha->id);
+        }
+        return redirect("/valores/maquinas");
     }
 }

@@ -123,8 +123,8 @@ class HomeController extends ControllerKX {
                         ON mp.id_menu = menua.id
 
                     WHERE (url IS NOT NULL OR submenu_url IS NOT NULL)
-                    AND mp.tipo = ".$meu_tipo."
-                    AND mp.admin IN (0, ".Auth::user()->admin.")
+                      AND mp.tipo = ".$meu_tipo."
+                      AND mp.admin IN (0, ".Auth::user()->admin.")
                         
                     ORDER BY modulos.ordem, menua.ordem
                 ) AS main

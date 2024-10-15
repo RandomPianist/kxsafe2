@@ -54,8 +54,8 @@
             <small class = "text-muted"></small>
         </div>
     </div>
-    <div class = "row mt-5">
-        <div class = "col-md-4 mb-3">
+    <div class = "row">
+        <div class = "col-md-4 mb-3 form-search2">
             <label for = "empresa" class = "form-label">Empresa:</label>
             <div class = "d-flex align-items-center">
                 <input
@@ -80,7 +80,7 @@
                 </a>
             </div>
         </div>
-        <div class = "col-md-4 mb-3">
+        <div class = "col-md-4 mb-3 form-search2 ">
             <label for = "setor" class = "form-label">Setor:</label>
             <div class = "d-flex align-items-center">
                 <input
@@ -338,14 +338,20 @@
                 });
                 let variacoes = document.getElementById("variacoes");
                 variacoes.innerHTML = resultado;
-                let row = variacoes.parentElement.parentElement.classList;
-                if (data.length == 1) row.add("d-none");
-                else row.remove("d-none");
+                let row = variacoes.parentElement.classList;
+                if (data.length == 1) {
+                    row.add("d-none");
+                    row.remove("d-flex");
+                } else {
+                    row.remove("d-none");
+                    row.add("d-flex");
+                }
+                modal("retiradasModal");
             });
         }
 
         function retirarMain(_id_supervisor) {
-            $.post(URL + "/retiradas/salvar", {
+            $.get(URL + "/retiradas/salvar", {
                 _token : $("meta[name='csrf-token']").attr("content"),
                 id_supervisor : _id_supervisor,
                 id_funcionario : _id,
@@ -353,15 +359,16 @@
                 id_produto : document.getElementById("variacoes").value.replace("prod-", ""),
                 qtd : document.getElementById("ret-qtd").value,
                 data : document.getElementById("ret-data").value
-            }, function() {
+            }, function(data) {
+                console.log(data);
                 Swal.fire({
                     icon : "success",
                     title : "Sucesso",
                     confirmButtonColor : "rgb(31, 41, 55)"
                 }).then((result) => {
-                    let myModal = new bootstrap.Modal(document.getElementById("supervisorModal"));
+                    let myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("supervisorModal"));
                     myModal.hide();
-                    myModal = new bootstrap.Modal(document.getElementById("retiradasModal"));
+                    myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("retiradasModal"));
                     myModal.hide();
                 });
             });
@@ -405,12 +412,15 @@
                 data.classList.add("invalido");
             }
             if (!erro) {
+                let _qtd = document.getElementById("ret-qtd").value;
                 $.get(URL + "/retiradas/consultar", {
                     atribuicao : _id_atribuicao,
-                    qtd : document.getElementById("ret-qtd").value
+                    qtd : _qtd
                 }, function(resp) {
-                    if (parseInt(resp)) modal2("supervisorModal", ["ret-cpf", "ret-senha"]);
-                    else retirarMain(0);
+                    if (!parseInt(resp)) {
+                        document.getElementById("retiradaSupervisorLabel").innerHTML = document.querySelector("option[value=" + document.getElementById("variacoes").value + "]").innerHTML + " (" + _qtd + ")";
+                        modal2("supervisorModal", ["ret-cpf", "ret-senha"]);
+                    } else retirarMain(0);
                 });
             } else s_alert(erro);            
         }

@@ -14,7 +14,7 @@
                         @csrf
                         <input class = "id_local" name = "id_local" type = "hidden" />
                         <div class = "row" id = "linha-1">
-                            <div class = "col-4 form-search pr-1">
+                            <div class = "col-4  pr-1">
                                 <label for = "item-1" class = "custom-label-form">Item: *</label>
                                 <input id = "item-1"
                                        class = "form-control autocomplete item"
@@ -77,7 +77,7 @@
 
         // Coluna para o item
         const colItem = document.createElement("div");
-        colItem.classList.add("col-4", "form-search", "pr-1");
+        colItem.classList.add("col-4", "form-search ", "pr-1");
         colItem.innerHTML = `
             <label for = "item-${cont}" class = "custom-label-form">Item: *</label>
             <input id = "item-${cont}" class = "form-control autocomplete item" data-input = "#id_item-${cont}" type = "text" autocomplete = "off" />
