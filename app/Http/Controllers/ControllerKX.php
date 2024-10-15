@@ -172,6 +172,21 @@ class ControllerKX extends Controller {
                     ->where("funcionario_ou_setor_valor", $funcionario_ou_setor_valor)
                     ->where("atribuicoes.lixeira", 0)
                     ->where("itens.lixeira", 0)
+                    ->groupby(
+                        "produto_ou_referencia_chave",
+                        DB::raw("
+                            CASE
+                                WHEN produto_ou_referencia_chave = 'P' THEN descr
+                                ELSE referencia
+                            END
+                        "),
+                        "atribuicoes.id",
+                        "qtd",
+                        "atribuicoes.validade",
+                        "obrigatorio",
+                        "produto_ou_referencia_chave",
+                        "produto_ou_referencia_valor"
+                    )
                     ->get();
     }
 
@@ -240,17 +255,20 @@ class ControllerKX extends Controller {
                         $atribuicao->produto_ou_referencia_chave = $tipo == "prod" ? "P" : "R";
                         $atribuicao->produto_ou_referencia_valor = $tipo == "prod" ? $atb["valor"][$i] : $item->referencia;
                         $atribuicao->qtd = $atb["qtd"][$i];
-                        $atribuicao->validade = $atb["validade"][$i] ? $atb["validade"][$i] : "0";
+                        $atribuicao->validade = $atb["validade"][$i];
                         $atribuicao->obrigatorio = $atb["obrigatorio"][$i] == "Sim" ? 1 : 0;
                         $atribuicao->save();
+                        $this->log_inserir("C", "atribuicoes", $atribuicao->id);
                         break;
                     case "D":
-                        $atribuicao = Atribuicoes::find($atb["id"][$i]);
-                        $atribuicao->lixeira = 1;
-                        $atribuicao->save();
+                        if (intval($atb["id"][$i])) {
+                            $atribuicao = Atribuicoes::find($atb["id"][$i]);
+                            $atribuicao->lixeira = 1;
+                            $atribuicao->save();
+                            $this->log_inserir("D", "atribuicoes", $atribuicao->id);
+                        }
                         break;
                 }
-                if (in_array($operacao, ["C", "D"])) $this->log_inserir($operacao, "atribuicoes", $atribuicao->id);
             }
         }
     }

@@ -17,6 +17,7 @@ use App\Http\Controllers\ItensController;
 use App\Http\Controllers\FuncionariosController;
 use App\Http\Controllers\AtribuicoesController;
 use App\Http\Controllers\RetiradasController;
+use App\Http\Controllers\MaquinasController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -85,7 +86,7 @@ Route::middleware("auth")->group(function () {
         Route::get ("/consultar",  [SetoresController::class, "consultar"]);
         Route::get ("/crud/{id}",  [SetoresController::class, "crud"]);
         Route::get ("/aviso/{id}", [SetoresController::class, "aviso"]);
-        Route::get ("/salvar",     [SetoresController::class, "salvar"]);
+        Route::post("/salvar",     [SetoresController::class, "salvar"]);
         Route::post("/excluir",    [SetoresController::class, "excluir"]);
     });
 
@@ -180,6 +181,16 @@ Route::middleware("auth")->group(function () {
         Route::post("/salvar",     [FuncionariosController::class, "salvar"]);
         Route::post("/excluir",    [FuncionariosController::class, "excluir"]);
         Route::post("/supervisor", [FuncionariosController::class, "supervisor"]);
+    });
+
+    Route::group(["prefix" => "maquinas"], function() {
+        Route::get ("/",           [MaquinasController::class, "ver"]);
+        Route::get ("/listar",     [MaquinasController::class, "listar"]);
+        Route::get ("/consultar",  [MaquinasController::class, "consultar"]);
+        Route::get ("/crud/{id}",  [MaquinasController::class, "crud"]);
+        Route::get ("/aviso/{id}", [MaquinasController::class, "aviso"]);
+        Route::post("/salvar",     [MaquinasController::class, "salvar"]);
+        Route::post("/excluir",    [MaquinasController::class, "excluir"]);
     });
 
     Route::group(["prefix" => "atribuicoes"], function() {

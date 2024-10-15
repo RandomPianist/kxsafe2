@@ -55,11 +55,13 @@ class HomeController extends ControllerKX {
             if ($request->filter_col) {
                 $colunas = explode(",", $request->filter_col);
                 $valores = explode(",", $request->filter);
-                for ($i = 0; $i < sizeof($colunas); $i++) {
-                    $valor = $valores[$i];
-                    if (!in_array($colunas[$i], ["id_matriz", "id_grupo", "id_segmento", "id_criadora", "tipo", "tipo_contribuicao"])) $valor = "'".$valor."'";
-                    $where .= " AND ".$colunas[$i]." = ".$valor;
-                }
+                if (sizeof($colunas) == sizeof($valores)) {
+                    for ($i = 0; $i < sizeof($colunas); $i++) {
+                        $valor = $valores[$i];
+                        if (!in_array($colunas[$i], ["id_matriz", "id_grupo", "id_segmento", "id_criadora", "tipo", "tipo_contribuicao"])) $valor = "'".$valor."'";
+                        $where .= " AND ".$colunas[$i]." = ".$valor;
+                    }
+                } else $where .= " AND ".$colunas[0]." IN (".implode(",", $valores).")";
             }
         } else if ($request->filter_col) {
             $where .= $request->column != "referencia" ? " AND ".$request->filter_col." = '".$request->filter."'" : " AND referencia NOT IN (
@@ -132,7 +134,7 @@ class HomeController extends ControllerKX {
                     descr,
                     lixeira
             ) AS tab";
-        } else if ($tabela == "empresas") $where .= " AND id IN (".implode(",", $this->empresas_acessiveis()).")"; // ControllerKX.php
+        } else if (in_array($tabela, ["empresas", "locais"])) $where .= " AND id".($tabela == "locais" ? "_empresa" : "")." IN (".implode(",", $this->empresas_acessiveis()).")"; // ControllerKX.php
 
         $query = "SELECT ";
         if ($request->column == "referencia") $query .= "MIN(id) AS ";

@@ -11,7 +11,7 @@
         </ol>
     </nav>
     <div class = "d-flex justify-content-between align-items-center">
-        <h2 class = "titulo">Bancos</h2>
+        <h2 class = "titulo">Máquinas</h2>
         <div class = "d-flex">
             <input type = "text" class = "caixa-pesquisa form-control" placeholder = "Pesquisar..." aria-label = "Pesquisar" id = "filtro">
             <button class = "botao-target botao-pesquisa ml-1" type = "button" onclick = "listar(true)">
@@ -27,11 +27,11 @@
                         <th width = "13%" class = "text-right">
                             <span>Código</span>
                         </th>
-                        <th width = "59%">
+                        <th width = "50%">
                             <span>Descrição</span> 
                         </th>
-                        <th width = "15%" class = "text-right">
-                            <span>Código banco</span>
+                        <th width = "24%">
+                            <span>Local</span> 
                         </th>
                         <th width = "13%" class = "text-center nao-ordena">
                             <span>Ações</span>
@@ -51,31 +51,32 @@
             <h1>Dados não encontrados</h1>
         </div>
     </div>
-    <!-- <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
+    <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
         <i class = "fa-solid fa-plus"></i>
-    </button> -->
+    </button>
+
 
     <script type = "text/javascript" language = "JavaScript">
         function ir(id) {
-            location.href = URL + "/bancos/crud/" + id;
+            location.href = URL + "/maquinas/crud/" + id;
         }
 
         function listar(manterPesquisa) {
-            $.get(URL + "/bancos/listar", {
+            $.get(URL + "/maquinas/listar", {
                 filtro : document.getElementById("filtro").value
             }, function(data) {
                 data = $.parseJSON(data);
-                if (data.length) {
+                if (data.length) { 
                     forcarExibicao();
                     let resultado = "";
-                    data.forEach((banco) => {
+                    data.forEach((maquina) => {
                         resultado += "<tr>" +
-                            "<td width = '13%' class = 'text-right'>" + banco.id.toString().padStart(6, "0") + "</td>" +
-                            "<td width = '59%'>" + banco.descr + "</td>" +
-                            "<td width = '15%' class = 'text-right'>" + banco.cod + "</td>" +
+                            "<td width = '13%' class = 'text-right'>" + maquina.id.toString().padStart(6, "0") + "</td>" +
+                            "<td width = '50%'>" + maquina.descr + "</td>" +
+                            "<td width = '24%'>" + maquina.local + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + banco.id + ")'></i>" +
-                                "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + banco.id + ", " + '"/bancos"' + ", event)'></i>" +
+                                "<i class = 'my-icon far fa-edit ml-2'  title = 'Editar'  onclick = 'ir(" + maquina.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-trash-alt ml-2' title = 'Excluir' onclick = 'excluir(" + maquina.id + ", " + '"/maquinas"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";
                     });

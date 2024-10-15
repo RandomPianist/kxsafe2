@@ -15,14 +15,14 @@
                     <input id = "id" name = "id" type = "hidden" />
                     <div class = "row">
                         <div class = "col-12">
-                            <label for = "cpf" class = "custom-label-form">CPF: *</label>
-                            <input id = "cpf" class = "form-control" autocomplete = "off" type = "text" onkeyup = "formatar_cpf(this)" />
+                            <label for = "ret-cpf" class = "custom-label-form">CPF: *</label>
+                            <input id = "ret-cpf" class = "form-control" autocomplete = "off" type = "text" oninput = "formatarCPF(this)" />
                         </div>
                     </div>
                     <div class = "row">
                         <div class = "col-12">
-                            <label for = "senha" class = "custom-label-form">Senha: *</label>
-                            <input id = "senha" class = "form-control" autocomplete = "off" type = "password" />
+                            <label for = "ret-senha" class = "custom-label-form">Senha: *</label>
+                            <input id = "ret-senha" class = "form-control" autocomplete = "off" type = "password" />
                         </div>
                     </div>
                 </div>

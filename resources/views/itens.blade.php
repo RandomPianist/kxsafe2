@@ -30,18 +30,20 @@
                         <th width = "13%" class = "text-right">
                             <span>Código</span>
                         </th>
-                        <th width = "25.5%">
+                        <th width = "@if($pode_editar) 25.5% @else 30% @endif%">
                             <span>Descrição</span>
                         </th>
-                        <th width = "25.5%">
+                        <th width = "@if($pode_editar) 25.5% @else 30% @endif">
                             <span>Categoria</span>
                         </th>
-                        <th width = "13%" class = "text-right">
+                        <th width = "@if($pode_editar) 13% @else 17% @endif" class = "text-right">
                             <span>Preço</span>
                         </th>
-                        <th width = "13%" class = "text-center nao-ordena">
-                            <span>Ações</span>
-                        </th>
+                        @if ($pode_editar)
+                            <th width = "13%" class = "text-center nao-ordena">
+                                <span>Ações</span>
+                            </th>
+                        @endif
                     </tr>
                 </thead>
             </table>
@@ -57,11 +59,15 @@
             <h1>Dados não encontrados</h1>
         </div>
     </div>
-    <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
-        <i class = "fa-solid fa-plus"></i>
-    </button>
+    @if($pode_editar)
+        <button class = "botao-target botao-adicionar" type = "button" title = "Novo usuário" onclick = "ir('0')">
+            <i class = "fa-solid fa-plus"></i>
+        </button>
+    @endif
 
     <script type = "text/javascript" language = "JavaScript">
+        const podeEditar = "{{ $pode_editar }}";
+
         function ir(id) {
             location.href = URL + "/itens/crud/" + id;
         }
@@ -75,19 +81,25 @@
                 if (data.length) { 
                     forcarExibicao();
                     data.forEach((item) => {
-                        resultado += "<tr>" +
+                        resultado += 
+                        "<tr>" +
                             "<td width = '10%' class = 'text-center'>" +
                                 "<img class = 'user-photo-sm' src = '" + item.foto + "'" + ' onerror = "this.onerror=null;' + "this.classList.add('d-none');$(this).next().removeClass('d-none')" + '" />' +
                                 "<i class = 'fa-light fa-image d-none' style = 'font-size:20px'></i>" +
                             "</td>" +
                             "<td width = '13%' class = 'text-right'>" + item.cod_ou_id.padStart(6, "0") + "</td>" +
-                            "<td width = '25.5%'>" + item.descr + "</td>" +
-                            "<td width = '25.5%'>" + item.categoria + "</td>" +
-                            "<td width = '13%' class = 'dinheiro'>" + item.preco + "</td>" +
-                            "<td class = 'text-center btn-table-action' width = '13%'>" +
+                            (podeEditar ?
+                                "<td width = '25.5%'>" + item.descr + "</td>" +
+                                "<td width = '25.5%'>" + item.categoria + "</td>" +
+                                "<td width = '13%' class = 'dinheiro'>" + item.preco + "</td>" +
+                                "<td class = 'text-center btn-table-action' width = '13%'>" +
                                 "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + item.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + item.id + ", " + '"/produtos"' + ", event)'></i>"
-                            "</td>" +
+                            : 
+                                "<td width = '30%'>" + item.descr + "</td>" +
+                                "<td width = '30%'>" + item.categoria + "</td>" +
+                                "<td width = '17%' class = 'dinheiro'>" + item.preco + "</td>"
+                            ) +
                         "</tr>";
                     });
                     document.getElementById("table-dados").innerHTML = resultado;

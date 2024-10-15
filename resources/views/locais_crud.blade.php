@@ -10,12 +10,12 @@
             @endforeach
         </ol>
     </nav>
-    <h2 class = "titulo">Setor</h2>
+    <h2 class = "titulo">Local de estoque</h2>
     <form class = "formulario p-5 custom-scrollbar">
         <div class = "row">
             <div class = "col-6">
                 <label for = "descr" class = "form-label">Descrição:</label>
-                <input type = "text" class = "form-control" id = "descr" oninput = "contarChar(this, 32)" value = "@if ($setor !== null) {{ $setor->descr }} @endif" />
+                <input type = "text" class = "form-control" id = "descr" oninput = "contarChar(this, 32)" value = "@if ($local !== null) {{ $local->descr }} @endif" />
                 <small class = "text-muted"></small>
             </div>
             <div class = "col-md-6 mb-4">
@@ -27,16 +27,16 @@
                         data-input = "#id_empresa"
                         data-table = "empresas"
                         data-column = "nome_fantasia"
-                        data-filter_col = ""
-                        data-filter = ""
+                        data-filter_col = "tipo"
+                        data-filter = "1,2"
                         type = "text"
-                        value = "@if ($setor !== null) {{ $setor->empresa }} @endif"
+                        value = "@if ($local !== null) {{ $local->empresa }} @endif"
                         autocomplete = "off"
                     />
                     <input
                         id = "id_empresa"
                         type = "hidden"
-                        value = "@if ($setor !== null) {{ $setor->id_empresa }} @endif"
+                        value = "@if ($local !== null) {{ $local->id_empresa }} @endif"
                     />
                     <a href = "{{ config('app.root_url') }}/empresas" title = "Cadastro de empresas" target = "_blank">
                         <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
@@ -44,7 +44,6 @@
                 </div>
             </div>
         </div>
-        @include("components.atribuicoes")
     </form>
     <div class = "d-flex justify-content-end mt-3">
         <button class = "btn btn-primary" type = "button" onclick = "validar()">
@@ -52,50 +51,48 @@
 		</button>
     </div>
 	<script type = "text/javascript" language = "JavaScript">
-        @if ($setor !== null)
-            const _id = {{ $setor->id }};
+        @if ($local !== null)
+            const _id = {{ $local->id }};
         @else
             const _id = 0;
         @endif
 
         function validar() {
             limparInvalido();
-            const aux = verificaVazios(["descr"]);
-            let erro = aux.erro;
-            let alterou = aux.alterou || alterouAtribuicoes();
+            let _descr = document.getElementById("descr");
             const _id_empresa = document.getElementById("id_empresa").value;
             let _empresa = document.getElementById("empresa");
-            $.get(URL + "/empresas/consultar2", {
-                id_empresa : _id_empresa,
-                empresa : _empresa.value
+            const aux = verificaVazios(["descr", "empresa"]);
+            let erro = aux.erro;
+            let alterou = aux.alterou;
+            $.get(URL + "/locais/consultar", {
+                id: _id,
+                descr : _descr.value,
+                empresa: _empresa.value,
+                id_empresa: _id_empresa
             }, function(data) {
-                if (!erro && parseInt(data)) {
-                    erro = "Empresa não encontrada";
-                    empresa.classList.add("invalido");
+                if (!erro && data === "local"){ 
+                    erro = "Já existe um local com essa descrição";
+                    _descr.classList.add("invalido");
                 }
-                if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
+                if (!erro && data === "empresa"){ 
+                    erro = "Empresa não encontrada";
+                    _empresa.classList.add("invalido");
+                }
+                if (!erro && !alterou) {
+                    erro = "Altere pelo menos um campo para salvar";
+                }
                 if (!erro) {
-                    $.post(URL + "/setores/salvar", {
-                        id : _id,
-                        id_empresa : _id_empresa,
-                        descr : document.getElementById("descr").value,
-                        atb_prod_id : atbProdId.join("|"),
-                        atb_prod_valor : atbProdValor.join("|"),
-                        atb_prod_qtd : atbProdQtd.join("|"),
-                        atb_prod_obrigatorio : atbProdObrigatorio.join("|"),
-                        atb_prod_validade : atbProdValidade.join("|"),
-                        atb_prod_operacao : atbProdOperacao.join("|"),
-                        atb_refer_id : atbReferId.join("|"),
-                        atb_refer_valor : atbReferValor.join("|"),
-                        atb_refer_qtd : atbReferQtd.join("|"),
-                        atb_refer_obrigatorio : atbReferObrigatorio.join("|"),
-                        atb_refer_validade : atbReferValidade.join("|"),
-                        atb_refer_operacao : atbReferOperacao.join("|")
-                    }, function() {
-                        location.href = URL + "/setores";
-                    });
+                    $.post(URL + "/locais/salvar", {
+                        _token : $("meta[name='csrf-token']").attr("content"),
+                        id: _id,
+                        descr: _descr.value,
+                        id_empresa: _id_empresa
+                    }, function () {
+                        location.href=URL + "/locais";
+                    })
                 } else s_alert(erro);
-            });
+            })
         }
 	</script>
 @endsection

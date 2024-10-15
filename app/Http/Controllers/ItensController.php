@@ -27,13 +27,15 @@ class ItensController extends ControllerKX {
     }
 
     public function ver() {
-        if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1])) return redirect("/"); // ControllerKX.php
+        $meu_tipo = intval(Empresas::find($this->retorna_empresa_logada())->tipo);
+        if (!in_array($meu_tipo, [1, 3])) return redirect("/"); // ControllerKX.php
         $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             "Itens" => "#"
         );
+        $pode_editar = $meu_tipo == 1;
         $ultima_atualizacao = $this->log_consultar("itens"); // ControllerKX.php
-        return view("itens", compact("ultima_atualizacao", "breadcrumb"));
+        return view("itens", compact("ultima_atualizacao", "breadcrumb", "pode_editar"));
     }
     
     public function listar(Request $request) {

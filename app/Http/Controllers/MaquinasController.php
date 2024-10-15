@@ -5,21 +5,19 @@ namespace App\Http\Controllers;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
-use App\Models\Locais;
+use App\Models\Maquinas;
 
-class LocaisController extends ControllerKX {
+class MaquinasController extends ControllerKX {
     private function busca($param = "1") {
-        return DB::table("locais")
+        return DB::table("maquinas")
                     ->select(
-                        "locais.id",
+                        "maquinas.id",
                         "descr",
-                        "empresas.nome_fantasia AS empresa"
+                        "locais.descr AS local"
                     )
-                    ->join("empresas", "empresas.id", "id_empresa")
+                    ->join("locais", "locais.id", "id_local")
                     ->whereRaw($param)
-                    ->whereIn("id_empresa", $this->empresas_acessiveis()) // ControllerKX.php
-                    ->where("locais.lixeira", 0)
-                    ->where("empresas.lixeira", 0)
+                    ->where("maquinas.lixeira", 0)
                     ->get();
     }
 
@@ -27,10 +25,10 @@ class LocaisController extends ControllerKX {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
-            "Locais de estoque" => "#"
+            "Maquinas" => "#"
         );
-        $ultima_atualizacao = $this->log_consultar("locais"); // ControllerKX.php
-        return view("locais", compact("ultima_atualizacao", "breadcrumb"));
+        $ultima_atualizacao = $this->log_consultar("maquinas"); // ControllerKX.php
+        return view("maquinas", compact("ultima_atualizacao", "breadcrumb"));
     }
     
     public function listar(Request $request) {
@@ -45,56 +43,62 @@ class LocaisController extends ControllerKX {
 
     public function consultar(Request $request) {
         if (sizeof(
-            DB::table("locais")
+            DB::table("maquinas")
                 ->where("lixeira", 0)
                 ->where("descr", $request->descr)
                 ->get()
-        ) && !intval($request->id)) return "local";
-        if($this->empresas_consultar($request)) // ControllerKX.php
-            return "empresa";
+        ) && !intval($request->id)) return "maquina";
+        if(!sizeof(DB::table("locais")
+                    ->where("id", $request->id_local)
+                    ->where("descr", $request->local)
+                    ->where("lixeira", 0)
+                    ->get())) {
+            return "local";
+        }  
         return "ok";
     }
 
     public function mostrar($id){
-        return Locais::find($id)->descr;
+        return Maquinas::find($id)->descr;
     }
 
     public function crud($id) {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [1, 2])) return redirect("/"); // ControllerKX.php
         $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
-            "Locais de estoque" => config("app.root_url")."/locais",
+            "Maquinas" => config("app.root_url")."/maquinas",
             (intval($id) ? "Editar" : "Novo") => "#"
         );
-        $local = DB::table("locais")
+        $maquina = DB::table("maquinas")
                         ->select(
-                            "locais.id",
-                            "descr",
-                            "empresas.nome_fantasia AS empresa",
-                            "id_empresa"
+                            "maquinas.id",
+                            "maquinas.descr",
+                            "locais.descr AS local",
+                            "id_local"
                         )
-                        ->join("empresas", "empresas.id", "id_empresa")
-                        ->where("locais.id", $id)
+                        ->join("locais", "locais.id", "id_local")
+                        ->where("maquinas.id", $id)
                         ->first();
-        return view("locais_crud", compact("breadcrumb", "local"));
+        return view("maquinas_crud", compact("breadcrumb", "maquina"));
     }
 
     public function aviso($id) {
         $resultado = new \stdClass;
-        $nome = Locais::find($id)->descr;
+        $nome = Maquinas::find($id)->descr;
         $erro = "";
         $lista = array(
+            "maquinas_itens" => "itens associados",
             "maquinas" => "máquinas associadas"
         );
         foreach ($lista as $tabela => $msg) {
             if (sizeof(
                 DB::table($tabela)
-                    ->where("id_local", $id)
+                    ->where("id_maquina", $id)
                     ->get()
             )) $erro = $msg;    
         }
         if ($erro) {
-            $resultado->aviso = "Não é possível excluir ".$nome." porque existem ".$erro." a esse local de estoque.";
+            $resultado->aviso = "Não é possível excluir ".$nome." porque existem ".$erro." a esse maquina de estoque.";
             $resultado->permitir = 0;
         } else {
             $resultado->aviso = "Tem certeza que deseja excluir ".$nome."?";
@@ -104,17 +108,18 @@ class LocaisController extends ControllerKX {
     }
 
     public function salvar(Request $request) {
-        $linha = Locais::firstOrNew(["id" => $request->id]);
+        $linha = Maquinas::firstOrNew(["id" => $request->id]);
         $linha->descr = $request->descr;
-        $linha->id_empresa = $request->id_empresa;
+        $linha->id_local = $request->id_local;
         $linha->save();
-        $this->log_inserir($request->id ? "E" : "C", "locais", $linha->id); // ControllerKX.php
+        $this->log_inserir($request->id ? "E" : "C", "maquinas", $linha->id); // ControllerKX.php
     }
 
     public function excluir(Request $request) {
-        $linha = Locais::find($request->id);
+        $linha = Maquinas::find($request->id);
         $linha->lixeira = 1;
         $linha->save();
-        $this->log_inserir("D", "locais", $linha->id); // ControllerKX.php
+        $this->log_inserir("D", "maquinas", $linha->id); // ControllerKX.php
     }
+    
 }

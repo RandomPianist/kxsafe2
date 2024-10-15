@@ -18,9 +18,9 @@ class AtribuicoesController extends ControllerKX {
 
     public function produtos($id) {
         return json_encode(
-            DB::table("produtos")
+            DB::table("itens")
                 ->select(
-                    "produtos.id",
+                    "itens.id",
                     DB::raw("
                         CASE
                             WHEN produto_ou_referencia_chave = 'R' THEN CONCAT(descr, ' ', tamanho)
@@ -30,21 +30,21 @@ class AtribuicoesController extends ControllerKX {
                     DB::raw("
                         CASE
                             WHEN produto_ou_referencia_chave = 'R' THEN referencia
-                            ELSE produtos.descr
+                            ELSE descr
                         END AS titulo
                     ")
                 )
                 ->join("atribuicoes", function($join) {
                     $join->on(function($sql) {
-                        $sql->on("atribuicoes.produto_ou_referencia_valor", "produtos.cod_externo")
-                            ->where("atribuicoes.produto_ou_referencia_chave", "P");
+                        $sql->on("produto_ou_referencia_valor", "cod_ou_id")
+                            ->where("produto_ou_referencia_chave", "P");
                     })->orOn(function($sql) {
-                        $sql->on("atribuicoes.produto_ou_referencia_valor", "produtos.referencia")
-                            ->where("atribuicoes.produto_ou_referencia_chave", "R");
+                        $sql->on("produto_ou_referencia_valor", "referencia")
+                            ->where("produto_ou_referencia_chave", "R");
                     });
                 })
                 ->where("atribuicoes.id", $id)
-                ->where("produtos.lixeira", 0)
+                ->where("itens.lixeira", 0)
                 ->where("atribuicoes.lixeira", 0)
                 ->orderby("descr")
                 ->get()

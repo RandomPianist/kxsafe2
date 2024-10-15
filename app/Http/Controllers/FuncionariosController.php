@@ -106,7 +106,7 @@ class FuncionariosController extends ControllerKX {
         if (!in_array(intval(Empresas::find($this->retorna_empresa_logada())->tipo), [3])) return redirect("/"); // ControllerKX.php
         $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
-            "Funcionários" => config("app.root_url")."/funcionario",
+            "Funcionários" => config("app.root_url")."/funcionarios",
             (intval($id) ? "Editar" : "Novo") => "#"
         );
         $funcionario = DB::table("funcionarios")
@@ -128,7 +128,7 @@ class FuncionariosController extends ControllerKX {
                             )
                             ->leftjoin("setores", "setores.id", "funcionarios.id_setor")
                             ->leftjoin("empresas", "empresas.id", "funcionarios.id_empresa")
-                            ->where("id", $id)
+                            ->where("funcionarios.id", $id)
                             ->first();
         if ($funcionario !== null) {
             $funcionario->foto = asset("storage/".$funcionario->foto);

@@ -63,7 +63,7 @@
 
     <script type = "text/javascript" language = "JavaScript">
         function ir(id) {
-            location.href = URL + "/funcionário/crud/" + id;
+            location.href = URL + "/funcionarios/crud/" + id;
         }
 
         function listar(manterPesquisa) {

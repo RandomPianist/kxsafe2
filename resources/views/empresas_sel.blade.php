@@ -12,6 +12,10 @@
                 transform: translateY(-5px);
             }
 
+            .card-title {
+                min-height: 72px
+            }
+
             #botao-sair {
                 top: 2rem;
                 right: 2rem;

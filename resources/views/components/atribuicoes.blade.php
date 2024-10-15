@@ -90,16 +90,16 @@
                     </thead>
                     <tbody id = "atb-{{ $aba->abv }}-tabela">
                         @for ($i = 0; $i < sizeof($atribuicoes); $i++)
-                            $atribuicao = $atribuicoes[$i];
+                            @php $atribuicao = $atribuicoes[$i]; @endphp
                             @if ($atribuicao->produto_ou_referencia_chave == strtoupper(substr($aba->id, 0, 1)))
                                 <tr>
                                     <td>{{ $atribuicao->descr }}</td>
-                                    <td class = "text-right">{{ $atribuicao->qtd }}</td>
+                                    <td class = "text-right">{{ number_format($atribuicao->qtd, 0) }}</td>
                                     <td class = "text-right">{{ $atribuicao->validade }}</td>
                                     <td>@if ($atribuicao->obrigatorio) Sim @else Não @endif</td>
                                     <td class = "text-center">
                                         @if ($funcionario_ou_setor == "F")
-                                            <i class = "my-icon far fa-hand-holding-box" title = "Retirar" onclick = "retirar({{ $atribuicao->id }})"></i>
+                                            <i class = "my-icon far fa-hand-holding-box" title = "Retirar" onclick = "retirarModal({{ $atribuicao->id }})"></i>
                                         @endif
                                         <i class = "my-icon far fa-trash-alt" title = "Excluir" onclick = "excluirAtribuicao{{ ucfirst($aba->abv) }}({{ $i }})"></i>
                                     </td>
@@ -131,9 +131,9 @@
                     atb{{ ucfirst($aba->abv) }}Id{{ $sufixo }}.push("{{ $atribuicao->id }}");
                     atb{{ ucfirst($aba->abv) }}Descr{{ $sufixo }}.push("{{ $atribuicao->descr }}");
                     atb{{ ucfirst($aba->abv) }}Valor{{ $sufixo }}.push("{{ $atribuicao->produto_ou_referencia_valor }}");
-                    atb{{ ucfirst($aba->abv) }}Qtd{{ $sufixo }}.push("{{ $atribuicao->qtd }}");
+                    atb{{ ucfirst($aba->abv) }}Qtd{{ $sufixo }}.push("{{ number_format($atribuicao->qtd, 0) }}");
                     atb{{ ucfirst($aba->abv) }}Validade{{ $sufixo }}.push("{{ $atribuicao->validade }}");
-                    atb{{ ucfirst($aba->abv) }}Obrigatorio{{ $sufixo }}.push("@if ($atribuicao->obrigatorio) 'Sim' @else 'Não' @endif");
+                    atb{{ ucfirst($aba->abv) }}Obrigatorio{{ $sufixo }}.push("@if ($atribuicao->obrigatorio) Sim @else Não @endif");
                     atb{{ ucfirst($aba->abv) }}Operacao{{ $sufixo }}.push("N");
                 @endif
             @endforeach

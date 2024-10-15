@@ -212,6 +212,7 @@ window.onload = function () {
     Array.from(document.getElementsByTagName("input")).forEach((el) => {
         $(el).trigger("oninput");
         $(el).trigger("keyup");
+        el.value = el.value.trim();
     });
 
     document.querySelectorAll("input, select").forEach((el) => {
@@ -563,8 +564,8 @@ function mostrarAtribuicoes() {
                 "<td class = 'text-right'>" + atbProdValidade[i] + "</td>" +
                 "<td>" + atbProdObrigatorio[i] + "</td>" +
                 "<td class = 'text-center'>" +
-                    (atbProdOperacao[i] == "N" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar' onclick = 'retirar(" + atbReferId[i] + ")'></i>" : "") +
-                    "<i class = 'my-icon far fa-trash-alt' title = 'Excluir onclick = 'excluirAtribuicaoProd(" + i + ")'></i>"
+                    (atbProdOperacao[i] == "N" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar' onclick = 'retirarModal(" + atbProdId[i] + ")'></i>" : "") +
+                    "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluirAtribuicaoProd(" + i + ")'></i>" +
                 "</td>" +
             "</tr>";
         }
@@ -579,8 +580,8 @@ function mostrarAtribuicoes() {
                 "<td class = 'text-right'>" + atbReferValidade[i] + "</td>" +
                 "<td>" + atbReferObrigatorio[i] + "</td>" +
                 "<td class = 'text-center'>" +
-                    (atbReferOperacao[i] == "N" && funcionarioOuSetor == "F" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar' onclick = 'retirar(" + atbReferId[i] + ")'></i>" : "") +
-                    "<i class = 'my-icon far fa-trash-alt' title = 'Excluir onclick = 'excluirAtribuicaoRefer(" + i + ")'></i>"
+                    (atbReferOperacao[i] == "N" && funcionarioOuSetor == "F" ? "<i class = 'my-icon far fa-hand-holding-box' title = 'Retirar' onclick = 'retirarModal(" + atbReferId[i] + ")'></i>" : "") +
+                    "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluirAtribuicaoRefer(" + i + ")'></i>" +
                 "</td>" +
             "</tr>";
         }

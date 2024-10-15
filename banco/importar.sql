@@ -128,30 +128,20 @@ INSERT INTO empresas_usuarios (id_empresa, id_usuario) (
 
 INSERT INTO empresas_usuarios (id_empresa, id_usuario) (
     SELECT
-        (
-            SELECT id
-            FROM empresas
-            WHERE cnpj = '20610392000118'
-        ) AS id_empresa,
-        (
-            SELECT id_aux
-            FROM users
-            WHERE email = 'eliszangela@rcplast.com.br' 
-        ) AS id_usuario
-);
+        tab_empresas.id AS id_empresa,
+        tab_usuarios.id AS id_usuario
 
-INSERT INTO empresas_usuarios (id_empresa, id_usuario) (
-    SELECT
-        (
-            SELECT id
-            FROM empresas
-            WHERE cnpj = '29009794000136'
-        ) AS id_empresa,
-        (
-            SELECT id_aux
-            FROM users
-            WHERE email = 'eliszangela@rcplast.com.br' 
-        ) AS id_usuario
+    FROM (
+        SELECT id_aux AS id
+        FROM users
+        WHERE email = 'eliszangela@rcplast.com.br' 
+    ) AS tab_usuarios
+
+    CROSS JOIN (
+        SELECT id
+        FROM empresas
+        WHERE cnpj IN ('20610392000118', '29009794000136')
+    ) AS tab_empresas
 );
 
 DELETE FROM empresas_usuarios WHERE id IN (
@@ -223,7 +213,7 @@ INSERT INTO categorias (id_ant, descr, lixeira) (
 
 INSERT INTO itens (descr, preco, referencia, tamanho, validade, ca, validade_ca, detalhes, foto, cod_externo, cod_ou_id, consumo, lixeira, id_categoria) (
     SELECT
-        descr,
+        produtos.descr,
         preco,
         referencia,
         tamanho,
@@ -235,10 +225,10 @@ INSERT INTO itens (descr, preco, referencia, tamanho, validade, ca, validade_ca,
         cod_externo,
         CASE
             WHEN (cod_externo IS NOT NULL AND TRIM(cod_externo) <> '') THEN cod_externo
-            ELSE CONVERT(VARCHAR, id)
+            ELSE CAST(produtos.id AS CHAR)
         END,
         consumo,
-        lixeira,
+        produtos.lixeira,
         categorias.id
 
     FROM `kxsafe`.produtos
@@ -264,10 +254,64 @@ INSERT INTO atribuicoes (funcionario_ou_setor_chave, funcionario_ou_setor_valor,
         qtd,
         validade,
         obrigatorio,
-        lixeira
+        atribuicoes.lixeira
     FROM `kxsafe`.atribuicoes
     LEFT JOIN funcionarios
-        ON funcionarios.id_ant = funcionario_ou_setor_valor AND pessoa_ou_setor_chave = 'P'
+        ON funcionarios.id_ant = pessoa_ou_setor_valor AND pessoa_ou_setor_chave = 'P'
 );
 
 ALTER TABLE funcionarios DROP COLUMN id_ant;
+
+DELETE FROM empresas_usuarios WHERE id_usuario IS NULL;
+
+INSERT INTO empresas_usuarios (id_empresa, id_usuario) (
+    SELECT
+        id,
+        1
+    FROM empresas
+    WHERE cnpj = '04503163000148' OR id IN (
+        SELECT id_matriz
+        FROM empresas
+        WHERE cnpj = '04503163000148'
+    ) OR id IN (
+        SELECT id_criadora
+        FROM empresas
+        WHERE cnpj = '04503163000148'
+    )
+);
+
+DELETE FROM empresas_usuarios WHERE id_usuario IN (7,8);
+
+INSERT INTO empresas_usuarios (id_empresa, id_usuario) (
+    SELECT
+        id,
+        7
+    FROM empresas
+    WHERE (cnpj = '29009794000136' OR id IN (
+        SELECT id_matriz
+        FROM empresas
+        WHERE cnpj = '29009794000136'
+    ) OR id IN (
+        SELECT id_criadora
+        FROM empresas
+        WHERE cnpj = '29009794000136'
+    )) AND id NOT IN (1,2)
+);
+
+INSERT INTO empresas_usuarios (id_empresa, id_usuario) (
+    SELECT
+        id,
+        8
+    FROM empresas
+    WHERE (cnpj = '29009794000136' OR id IN (
+        SELECT id_matriz
+        FROM empresas
+        WHERE cnpj = '29009794000136'
+    ) OR id IN (
+        SELECT id_criadora
+        FROM empresas
+        WHERE cnpj = '29009794000136'
+    )) AND id NOT IN (1,2)
+);
+
+UPDATE empresas SET id_matriz = 0 WHERE id_matriz IS NULL;

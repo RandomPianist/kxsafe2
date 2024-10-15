@@ -15,7 +15,7 @@
         <div class = "d-flex justify-content-center align-items-top">
         <div class = "mb-3 user-photo">
             <img
-                class = "w-100 user-photo" src = "{{ $funcionario->foto }}" 
+                class = "w-100 user-photo" src = "@if ($funcionario !== null) {{ $funcionario->foto }} @endif" 
                 onerror = "this.style.display='none';this.nextElementSibling.style.display='block'"
             />
             <i class = "fallback-icon fas fa-user" aria-hidden = "true"></i>
@@ -24,33 +24,33 @@
             <button type = "button" class = "adicionar-foto" onclick = "$(this).next().trigger('click')">
                 <i class = "fa-solid fa-camera"></i>
             </button>
-            <input type = "file" class = "d-none" />
+            <input type = "file" class = "d-none" id = "foto" />
         </div>
     </div>
     <div class = "row">
         <div class = "col-md-4 mb-3">
             <label for = "nome" class = "form-label">Nome:</label>
-            <input type = "text" class = "form-control" id = "nome" oninput = "contarChar(this, 64)" value = "if ($funcionario != null) {{ $funcionario->nome }} @endif" />
+            <input type = "text" class = "form-control" id = "nome" oninput = "contarChar(this, 64)" value = "@if ($funcionario != null) {{ $funcionario->nome }} @endif" />
             <small class = "text-muted"></small>
         </div>
         <div class = "col-md-4 mb-3">
             <label for = "cpf" class = "form-label">CPF:</label>
-            <input type = "text" class = "form-control" id = "cpf" oninput = "formatarCPF(this)" value = "if ($funcionario != null) {{ $funcionario->cpf }} @endif" />
+            <input type = "text" class = "form-control" id = "cpf" oninput = "formatarCPF(this)" value = "@if ($funcionario != null) {{ $funcionario->cpf }} @endif" />
         </div>
         <div class = "col-md-4 mb-3">
             <label for = "email" class = "form-label">Email:</label>
-            <input type = "text" class = "form-control" id = "email" oninput = "contarChar(this, 32)" value = "if ($funcionario != null) {{ $funcionario->email }} @endif" />
+            <input type = "text" class = "form-control" id = "email" oninput = "contarChar(this, 32)" value = "@if ($funcionario != null) {{ $funcionario->email }} @endif" />
             <small class = "text-muted"></small>
         </div>
     </div>
     <div class = "row">
         <div class = "col-md-4 mb-3">
             <label for = "telefone" class = "form-label">Telefone:</label>
-            <input type = "telefone" class = "form-control" id = "telefone" oninput = "formatarFone(this)" value = "if ($funcionario != null) {{ $funcionario->telefone }} @endif" />
+            <input type = "telefone" class = "form-control" id = "telefone" oninput = "formatarFone(this)" value = "@if ($funcionario != null) {{ $funcionario->telefone }} @endif" />
         </div>
         <div class = "col-md-4 mb-3">
             <label for = "pis" class = "form-label">PIS:</label>
-            <input type = "text" class = "form-control" id = "pis" oninput = "contarChar(this, 32)" value = "if ($funcionario != null) {{ $funcionario->pis }} @endif" />
+            <input type = "text" class = "form-control" id = "pis" oninput = "contarChar(this, 32)" value = "@if ($funcionario != null) {{ $funcionario->pis }} @endif" />
             <small class = "text-muted"></small>
         </div>
     </div>
@@ -63,7 +63,7 @@
                     class = "form-control autocomplete mr-3"
                     data-input = "#id_empresa"
                     data-table = "empresas"
-                    data-column = "descr"
+                    data-column = "nome_fantasia"
                     data-filter_col = ""
                     data-filter = ""
                     type = "text"
@@ -107,14 +107,14 @@
         </div>
         <div class = "col-md-4 mb-3">
             <label for = "funcao" class = "form-label">Função:</label>
-            <input type = "funcao" class = "form-control" id = "funcao" oninput = "contarChar(this, 64)" value = "if ($funcionario != null) {{ $funcionario->funcao }} @endif" />
+            <input type = "funcao" class = "form-control" id = "funcao" oninput = "contarChar(this, 64)" value = "@if ($funcionario != null) {{ $funcionario->funcao }} @endif" />
             <small class = "text-muted"></small>
         </div>
     </div>
     <div class = "row">
         <div class = "col-md-4 mb-3">
             <label for = "admissao" class = "form-label">Data de admissão:</label>
-            <input type = "text" class = "form-control data" id = "admissao" value = "if ($funcionario != null) {{ $funcionario->admissao }} @endif" />
+            <input type = "text" class = "form-control data" id = "admissao" value = "@if ($funcionario != null) {{ $funcionario->admissao }} @endif" />
         </div>
         <div class = "col-md-4 mb-3">
             <label for = "senha" class = "form-label">Senha:</label>
@@ -123,9 +123,9 @@
         </div>
         <div class = "col-md-4 mb-3">
             <label for = "supervisor" class = "form-label">Supervisor:</label>
-            <select class = "form-control readonly" id = "supervisor">
+            <select class = "form-control" id = "supervisor">
                 <option value = "N">Não</option>
-                <option value = "S" @if ($funcionario !== null) if ($funcionario->supervisor) selected @endif @endif>Sim</option>
+                <option value = "S" @if ($funcionario !== null) @if ($funcionario->supervisor) selected @endif @endif>Sim</option>
             </select>
         </div>	
     </div>
@@ -146,116 +146,13 @@
             const _id = 0;
         @endif
 
-        function validar() {
-            limparInvalido();
-            let elementos = obterElementos([
-                "nome",
-                "cpf",
-                "email",
-                "telefone",
-                "pis",
-                "empresa",
-                "setor",
-                "funcao",
-                "admissao",
-                "senha",
-                "supervisor"
-            ]);
+        let _id_atribuicao;
 
-            let verificacao = ["nome", "empresa", "funcao", "admissao", "cpf"];
-            if (!_id) verificacao.push("senha");
-            const aux = verificaVazios(verificacao);
-            let erro = aux.erro;
-            let alterou = aux.alterou || alterouAtribuicoes();
-            const verifica_alteracao = [
-                "cpf",
-                "email",
-                "telefone",
-                "pis",
-                "setor",
-                "senha",
-                "supervisor"
-            ];
-            verifica_alteracao.forEach((id) {
-                if (elementos[id].value != anteriores[id]) alterou = true;
-            })
-
-            if (!validarCPF(elementos.cpf.value)) {
-                erro = "CPF inválido";
-                elementos.cpf.classList.add("invalido");
-            }
-            if (!erro && elementos.senha.value.length != 4) {
-                erro = "A senha precisa ter quatro dígitos";
-                elementos.senha.classList.add("invalido");
-            }
-            if (!erro && parseInt(elementos.senha.value) != elementos.senha.value) {
-                erro = "A senha precisa ser numérica";
-                elementos.senha.classList.add("invalido");
-            }
-
-            let consulta = obterElementosValor(elementos, ["empresa", "setor"]);
-            consulta.cpf = elementos.cpf.value.replace(/[^\d]/g, '');
-            consulta.email = elementos.email.value;
-            
-            $.get(URL + "/funcionarios/consultar", consulta, function(data) {
-                data = $.parseJSON(data);
-                if (!erro && data.tipo == "invalido") {
-                    elementos[data.dado.toLowerCase()].classList.add("invalido");
-                    erro = data.dado + " não encontrad";
-                    erro += data.dado == "Empresa" ? "a" : "o";
-                }
-                if (!erro && data.tipo == "duplicado" && !_id) {
-                    erro = "Já existe um registro com esse " + data.dado;
-                    elementos[data.dado == "CPF" ? "cpf" : "email"].classList.add("invalido");
-                }
-                if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
-                if (!erro) {
-                    const lista = [
-                        "nome",
-                        "telefone",
-                        "pis",
-                        "id_empresa",
-                        "id_setor",
-                        "funcao",
-                        "senha"
-                    ];
-
-                    let formData = new FormData();
-                    formData.append("_token", $("meta[name='csrf-token']").attr("content"));
-                    formData.append("foto", $("#foto")[0].files[0]);
-                    formData.append("id", _id);
-                    formData.append("cpf", consulta.cpf);
-                    formData.append("email", consulta.email);
-                    lista.forEach((id) => {
-                        formData.append(id, elementos[id].value);
-                    });
-                    formData.append("supervisor", elementos.supervisor.value == "S" ? 1 : 0);
-                    formData.append("atb_prod_id", atbProdId.join("|"));
-                    formData.append("atb_prod_valor", atbProdValor.join("|"));
-                    formData.append("atb_prod_qtd", atbProdQtd.join("|"));
-                    formData.append("atb_prod_obrigatorio", atbProdObrigatorio.join("|"));
-                    formData.append("atb_prod_operacao", atbProdOperacao.join("|"));
-                    formData.append("atb_refer_id", atbReferId.join("|"));
-                    formData.append("atb_refer_valor", atbReferValor.join("|"));
-                    formData.append("atb_refer_qtd", atbReferQtd.join("|"));
-                    formData.append("atb_refer_obrigatorio", atbReferObrigatorio.join("|"));
-                    formData.append("atb_refer_operacao", atbReferOperacao.join("|"));
-                    $.ajax({
-                        url : URL + "/funcionarios/salvar",
-                        type : "POST",
-                        data : formData,
-                        contentType : false,
-                        processData : false,
-                        success : function(response) {
-                            location.href = URL + "/funcionarios";
-                        },
-                        error : function(xhr, status, error) {
-                            console.log(status);
-                            console.log(error);
-                        }
-                    });
-                } else s_alert(erro);
-            });
+        function eFuturo(data) {
+            data = data.split("/");
+            const hj = new Date();
+            const comp = new Date(data[2], data[1] - 1, data[0]);
+            return comp > hj;
         }
 
         function formatarCPF(el) {
@@ -289,114 +186,232 @@
             return true;
         }
 
-        function atualizaQtd() {
-            document.getElementById("qtd-label").innerHTML = document.getElementById("qtd").value;
+        function validarEmail(email) {
+            email = email.trim();
+            if ((email == null) || (email.length < 4)) return false;
+            let partes = email.split("@");
+            if (partes.length != 2) return false;
+            let pre = partes[0];
+            if (!pre.length) return false;
+            if (!/^[a-zA-Z0-9_.-/+]+$/.test(pre)) return false;
+            let partesDoDominio = partes[1].split(".");
+            if (partesDoDominio.length < 2) return false;
+            let valido = true;
+            partesDoDominio.forEach((parteDoDominio) => {
+                if (!parteDoDominio.length) valido = false;
+                if (!/^[a-zA-Z0-9-]+$/.test(parteDoDominio)) valido = false;
+            })
+            return valido;
         }
 
-        function retirar(id) {
-            document.getElementById("qtd").value = 1;
-            atualizaQtd();
-            $.get(URL + "/atribuicoes/produtos/" + id, function(data) {
-                let el = document.getElementById("variacao");
-                let pai = el.parentElement.parentElement.classList;
-                let resultado = "";
+        function validar() {
+            limparInvalido();
+            let elementos = obterElementos([
+                "nome",
+                "cpf",
+                "email",
+                "telefone",
+                "pis",
+                "empresa",
+                "setor",
+                "funcao",
+                "admissao",
+                "senha",
+                "supervisor"
+            ]);
+
+            let verificacao = ["nome", "empresa", "funcao", "admissao", "cpf"];
+            if (!_id) verificacao.push("senha");
+            const aux = verificaVazios(verificacao);
+            let erro = aux.erro;
+            let alterou = aux.alterou || alterouAtribuicoes();
+            const verifica_alteracao = [
+                "cpf",
+                "email",
+                "telefone",
+                "pis",
+                "setor",
+                "senha",
+                "supervisor"
+            ];
+            verifica_alteracao.forEach((id) => {
+                if (elementos[id].value != anteriores[id]) alterou = true;
+            })
+
+            if (!erro && !validarCPF(elementos.cpf.value)) {
+                erro = "CPF inválido";
+                elementos.cpf.classList.add("invalido");
+            }
+            if (!erro && !validarEmail(elementos.email.value)) {
+                erro = "Email inválido";
+                elementos.email.classList.add("invalido");
+            }
+            if (!erro && eFuturo(elementos.admissao.value)) {
+                erro = "A admissão não pode ser no futuro";
+                elementos.admissao.classList.add("invalido");
+            }
+            if (!erro && elementos.senha.value.length != 4 && elementos.senha.value) {
+                erro = "A senha precisa ter quatro dígitos";
+                elementos.senha.classList.add("invalido");
+            }
+            if (!erro && parseInt(elementos.senha.value) != elementos.senha.value && elementos.senha.value) {
+                erro = "A senha precisa ser numérica";
+                elementos.senha.classList.add("invalido");
+            }
+
+            let consulta = obterElementosValor(elementos, ["empresa", "setor"]);
+            consulta.cpf = elementos.cpf.value.replace(/[^\d]/g, '');
+            consulta.email = elementos.email.value.trim();
+            
+            $.get(URL + "/funcionarios/consultar", consulta, function(data) {
                 data = $.parseJSON(data);
+                if (!erro && data.tipo == "invalido") {
+                    elementos[data.dado.toLowerCase()].classList.add("invalido");
+                    erro = data.dado + " não encontrad";
+                    erro += data.dado == "Empresa" ? "a" : "o";
+                }
+                if (!erro && data.tipo == "duplicado" && !_id) {
+                    erro = "Já existe um registro com esse " + data.dado;
+                    elementos[data.dado == "CPF" ? "cpf" : "email"].classList.add("invalido");
+                }
+                if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
+                if (!erro) {
+                    const lista = [
+                        "nome",
+                        "admissao",
+                        "telefone",
+                        "pis",
+                        "id_empresa",
+                        "id_setor",
+                        "funcao",
+                        "senha"
+                    ];
+
+                    let formData = new FormData();
+                    formData.append("_token", $("meta[name='csrf-token']").attr("content"));
+                    formData.append("foto", $("#foto")[0].files[0]);
+                    formData.append("id", _id);
+                    formData.append("cpf", consulta.cpf);
+                    formData.append("email", consulta.email);
+                    lista.forEach((id) => {
+                        formData.append(id, elementos[id].value);
+                    });
+                    formData.append("supervisor", elementos.supervisor.value == "S" ? 1 : 0);
+                    formData.append("atb_prod_id", atbProdId.join("|"));
+                    formData.append("atb_prod_valor", atbProdValor.join("|"));
+                    formData.append("atb_prod_qtd", atbProdQtd.join("|"));
+                    formData.append("atb_prod_obrigatorio", atbProdObrigatorio.join("|"));
+                    formData.append("atb_prod_validade", atbProdValidade.join("|"));
+                    formData.append("atb_prod_operacao", atbProdOperacao.join("|"));
+                    formData.append("atb_refer_id", atbReferId.join("|"));
+                    formData.append("atb_refer_valor", atbReferValor.join("|"));
+                    formData.append("atb_refer_qtd", atbReferQtd.join("|"));
+                    formData.append("atb_refer_obrigatorio", atbReferObrigatorio.join("|"));
+                    formData.append("atb_refer_validade", atbReferValidade.join("|"));
+                    formData.append("atb_refer_operacao", atbReferOperacao.join("|"));
+                    $.ajax({
+                        url : URL + "/funcionarios/salvar",
+                        type : "POST",
+                        data : formData,
+                        contentType : false,
+                        processData : false,
+                        success : function(response) {
+                            location.href = URL + "/funcionarios";
+                        },
+                        error : function(xhr, status, error) {
+                            console.log(status);
+                            console.log(error);
+                        }
+                    });
+                } else s_alert(erro);
+            });
+        }
+
+        function retirarModal(id) {
+            _id_atribuicao = id;
+            $.get(URL + "/atribuicoes/produtos/" + id, function(data) {
+                data = $.parseJSON(data);
+                document.getElementById("retiradasModalLabel").innerHTML = data[0].titulo;
+                let resultado = "";
                 data.forEach((variacao) => {
                     resultado += "<option value = 'prod-" + variacao.id + "'>" + variacao.descr + "</option>";
                 });
-                el.innerHTML = resultado;
-                pai.remove("d-none");
-                if (data.length < 2) pai.add("d-none");
-                el = document.getElementById("qtd");
-                pai = el.parentElement.parentElement.parentElement.classList;
-                pai.add("d-none")
-                if (parseInt(el.max) > 1) pai.remove("d-none");
-                document.getElementById("btn-retirada").onclick = function() {
-                    let erro = "";
-                    let data_ret = document.getElementById("data-ret");
-                    
-                    if (!data_ret.value) erro = "Preencha o campo";
-                    else if (eFuturo(data_ret.value)) erro = "A retirada não pode ser no futuro";
-                    
-                    if (!erro) {
-                        $.get(URL + "/retiradas/consultar", {
-                            atribuicao : id,
-                            qtd : document.getElementById("qtd").value
-                        }, function(ok) {
-                            if (!parseInt(ok)) modal2("supervisorModal", ["cpf", "senha"]);
-                            else retirarMain(id);
-                        });
-                    } else {
-                        data_ret.classList.add("invalido");
-                        s_alert(erro);
-                    }
-                }
-                let titulo = "Retirada retroativa - " + data[0].titulo;
-                if (titulo.length > 46) titulo = titulo.substring(0, 46).trim() + "...";
-                document.getElementById("retiradasModalLabel").innerHTML = titulo;
-                document.getElementById("qtd").value = 1;
-                atualizaQtd();
-                document.getElementById("data-ret").value = "";
-                let myModal = new bootstrap.Modal(document.getElementById("retiradasModal"));
-                myModal.show();
+                let variacoes = document.getElementById("variacoes");
+                variacoes.innerHTML = resultado;
+                let row = variacoes.parentElement.parentElement.classList;
+                if (data.length == 1) row.add("d-none");
+                else row.remove("d-none");
+            });
+        }
+
+        function retirarMain(_id_supervisor) {
+            $.post(URL + "/retiradas/salvar", {
+                _token : $("meta[name='csrf-token']").attr("content"),
+                id_supervisor : _id_supervisor,
+                id_funcionario : _id,
+                id_atribuicao : _id_atribuicao,
+                id_produto : document.getElementById("variacoes").value.replace("prod-", ""),
+                qtd : document.getElementById("ret-qtd").value
+            }, function() {
+                Swal.fire({
+                    icon : "success",
+                    title : "Sucesso",
+                    confirmButtonColor : "rgb(31, 41, 55)"
+                }).then((result) => {
+                    let myModal = new bootstrap.Modal(document.getElementById("supervisorModal"));
+                    myModal.hide();
+                    myModal = new bootstrap.Modal(document.getElementById("retiradasModal"));
+                    myModal.hide();
+                });
             });
         }
 
         function validarSupervisor() {
-            limparInvalido();
-            let erro = "";
-            let _cpf = document.getElementById("cpf");
-            let _senha = document.getElementById("senha");
-
-            if (!_cpf.value) {
-                erro = "Preencha o campo";
-                _cpf.classList.add("invalido");
-            }
-
-            if (!_senha.value) {
-                if (!erro) erro = "Preencha o campo";
-                else erro = "Preencha os campos";
-                _senha.classList.add("invalido");
-            }
-
-            if (!erro && !validarCPF(_cpf.value)) {
+            let erro = verificaVazios(["ret-cpf", "ret-senha"]).erro;
+            let elementos = obterElementos(["cpf", "senha"], "ret-");
+            
+            if (!erro && !validarCPF(elementos.cpf.value)) {
                 erro = "CPF inválido";
-                _cpf.classList.add("invalido");
+                elementos.cpf.classList.add("invalido");
+            }
+            if (!erro && elementos.senha.value.length != 4 && elementos.senha.value) {
+                erro = "A senha precisa ter quatro dígitos";
+                elementos.senha.classList.add("invalido");
+            }
+            if (!erro && parseInt(elementos.senha.value) != elementos.senha.value && elementos.senha.value) {
+                erro = "A senha precisa ser numérica";
+                elementos.senha.classList.add("invalido");
             }
 
             if (!erro) {
                 $.post(URL + "/funcionarios/supervisor", {
                     _token : $("meta[name='csrf-token']").attr("content"),
-                    cpf : _cpf.value.replace(/\D/g, ""),
-                    senha : _senha.value
-                }, function(ok) {
-                    if (parseInt(ok)) retirarMain(id, ok);
-                    else s_alert("Supervisor inválido");
+                    cpf : elementos.cpf.value.replace(/\D/g, ""),
+                    senha : elementos.senha.value
+                }, function(data) {
+                    data = parseInt(data);
+                    if (!data) s_alert("Supervisor inválido");
+                    else retirarMain(data);
                 });
-            } else s_alert(erro);
+            } else s_alert(erro);            
         }
 
-        function retirarMain(id, _supervisor) {
-            if (_supervisor === undefined) _supervisor = 0;
-            $.post(URL + "/retiradas/salvar", {
-                _token : $("meta[name='csrf-token']").attr("content"),
-                supervisor : _supervisor,
-                atribuicao : id,
-                pessoa : pessoa_atribuindo,
-                produto : document.getElementById("variacao").value.replace("prod-", ""),
-                data : document.getElementById("data-ret").value,
-                quantidade : document.getElementById("qtd").value
-            }, function() {
-                let myModal = new bootstrap.Modal(document.getElementById("retiradasModal"));
-                myModal.hide();
-                myModal = new bootstrap.Modal(document.getElementById("supervisorModal"));
-                myModal.hide();
-                Swal.fire({
-                    icon : "success",
-                    title : "Sucesso",
-                    confirmButtonColor : "rgb(31, 41, 55)"
+        function retirar() {
+            let erro = verificaVazios(["ret-data"]).erro;
+            let data = document.getElementById("ret-data");
+            if (!erro && eFuturo(data.value)) {
+                erro = "A retirada não pode ser no futuro";
+                data.classList.add("invalido");
+            }
+            if (!erro) {
+                $.get(URL + "/retiradas/consultar", {
+                    atribuicao : _id_atribuicao,
+                    qtd : document.getElementById("ret-qtd").value
+                }, function(resp) {
+                    if (parseInt(resp)) modal2("supervisorModal", ["ret-cpf", "ret-senha"]);
+                    else retirarMain(0);
                 });
-            });
+            } else s_alert(erro);            
         }
 	</script>
 @endsection

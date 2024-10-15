@@ -59,10 +59,13 @@ class SetoresController extends ControllerKX {
         );
         $setor = DB::table("setores")
                         ->select(
-                            "id",
-                            "descr"
+                            "setores.id",
+                            "descr",
+                            "id_empresa",
+                            "empresas.nome_fantasia AS empresa"
                         )
-                        ->where("id", $id)
+                        ->leftjoin("empresas", "empresas.id", "id_empresa")
+                        ->where("setores.id", $id)
                         ->first();
         $atribuicoes = $this->atribuicoes("S", $id); // ControllerKX.php
         $funcionario_ou_setor = "S";
