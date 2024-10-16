@@ -30,10 +30,10 @@
                         <th width = "13%" class = "text-right">
                             <span>Código</span>
                         </th>
-                        <th width = "30%">
+                        <th width = "23.5%">
                             <span>Nome</span> 
                         </th>
-                        <th width = "17%">
+                        <th width = "23.5%">
                             <span>Empresa</span>
                         </th>
                         <th width = "17%">
@@ -71,18 +71,18 @@
                 filtro : document.getElementById("filtro").value
             }, function(data) {
                 data = $.parseJSON(data);
-                if(data.length) {
+                if (data.length) {
                     forcarExibicao();
                     let resultado = "";
                     data.forEach((funcionario) => {
                     resultado += "<tr>" +
-                        "<td width = '10%' class = 'text-center'>" +
-                            "<img class = 'user-photo-sm' src = '" + funcionario.foto + "' onerror = 'erroImg(this)' />" +
-                            "<i class = 'fas fa-user d-none'></i>" +
+                            "<td width = '10%' class = 'text-center'>" +
+                                "<img class = 'user-photo-sm' src = '" + funcionario.foto + "' onerror = 'erroImg(this)' />" +
+                                "<i class = 'fas fa-user d-none'></i>" +
                             "</td>" +
                             "<td width = '13%' class = 'text-right'>" + funcionario.id + "</td>" +
-                            "<td width = '30%'>" + funcionario.nome + "</td>" +
-                            "<td width = '17%'>" + funcionario.empresa + "</td>" +
+                            "<td width = '23.5%'>" + funcionario.nome + "</td>" +
+                            "<td width = '23.5%'>" + funcionario.empresa + "</td>" +
                             "<td width = '17%'>" + funcionario.setor + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
                                 "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + funcionario.id + ")'></i>" +

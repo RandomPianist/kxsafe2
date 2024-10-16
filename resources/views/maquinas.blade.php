@@ -55,10 +55,19 @@
         <i class = "fa-solid fa-plus"></i>
     </button>
 
+    @include("modals.concessoes_modal")
 
     <script type = "text/javascript" language = "JavaScript">
+        let id_maquina;
+
         function ir(id) {
             location.href = URL + "/maquinas/crud/" + id;
+        }
+
+        function concessaoModal(id){
+            modal("concessoesModal", 0, function () {
+                id_maquina = id;
+            });
         }
 
         function listar(manterPesquisa) {
@@ -75,7 +84,13 @@
                             "<td width = '50%'>" + maquina.descr + "</td>" +
                             "<td width = '24%'>" + maquina.local + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit ml-2'  title = 'Editar'  onclick = 'ir(" + maquina.id + ")'></i>" +
+                                (!maquina.possui_concessoes ?
+                                    "<i class = 'my-icon far fa-handshake'  title = 'Conceder'  onclick = 'concessaoModal(" + maquina.id + ")'></i>" 
+                                    :
+                                    "<i class = 'my-icon fa-duotone fa-handshake-slash'  title = 'Encerrar concessão'  onclick = 'encerrar(" + maquina.id + ")'></i>" 
+                                )
+                                +
+                                "<i class = 'my-icon far fa-edit ml-2'  title = 'Editar' onclick = 'ir(" + maquina.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt ml-2' title = 'Excluir' onclick = 'excluir(" + maquina.id + ", " + '"/maquinas"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";
@@ -84,6 +99,10 @@
                     ordenar(0);
                 } else mostrarImagemErro(manterPesquisa);
             });
+        }
+
+        function conceder() {
+            
         }
     </script>
 @endsection

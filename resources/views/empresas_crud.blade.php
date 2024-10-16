@@ -161,7 +161,7 @@
             </div>
         </div>
         <div class = "row">
-            <div class = "col-md-5 mb-3">
+            <div class = "col-md-4 mb-3">
                 <label for = "bairro" class = "form-label">Bairro:</label>
                 <input type = "text" class = "form-control campo-endereco campo-endereco2" id = "bairro" oninput = "contarChar(this, 32)" />
                 <small class = "text-muted"></small>
@@ -171,7 +171,7 @@
                 <input type = "text" class = "form-control campo-endereco campo-endereco2" id = "cidade" oninput = "contarChar(this, 32)" />
                 <small class = "text-muted"></small>
             </div>
-            <div class = "col-md-3 mb-3">
+            <div class = "col-md-4 mb-3">
 				<label for = "uf" class = "form-label">UF:</label>
 				<select id = "uf" class = "form-control campo-endereco campo-endereco2">
 					<option value = "E0">Selecione...</option>
@@ -234,7 +234,7 @@
 			</div>
 		</div>
 	</form>
-	<div class = "d-flex justify-content-end mt-3">
+	<div class = "botao-salvar-crud">
 		<button class = "btn btn-primary" type = "button" onclick = "validar()">
 			Salvar
 		</button>

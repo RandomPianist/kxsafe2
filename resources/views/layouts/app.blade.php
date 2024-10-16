@@ -5,15 +5,20 @@
         <link href = "{{ asset('css/my-style.css') }}" rel = "stylesheet" />
 		<style type = "text/css">
 			.form-search::after,
-			.form-search2::after {
+			.form-search2::after,
+			.form-search3::after {
                 background: url("{{ config('app.root_url') }}/img/keyboard.png") no-repeat;
                 background-size: contain;
                 content: " ";
                 position: absolute;
                 height: 30px;
-                width: 30px;
-				right: 57px
+                width: 30px
             }
+
+			.form-search::after,
+			.form-search2::after {
+				right: 57px
+			}
 
 			.form-search::after {
 				bottom: 4px
@@ -22,10 +27,19 @@
 			.form-search2::after {
 				bottom: 21px
 			}
+
+			.form-search3::after {
+				bottom: 25px;
+				right: 14px
+			}
+
+			.relatorio .form-search::after {
+				right: 25px
+			}
 		</style>
     </head>
     <body>
-        <header class = "d-flex justify-content-between align-items-center p-2 bg-white w-100 position-fixed">
+        <header class = "d-flex justify-content-between align-items-center p-2 bg-white w-100 position-fixed shadow-sm">
 			<div id = "header-esquerdo" class = "d-flex active">
 				<button id = "menu-abrir" class = "btn btn-custom mr-2 btn-menu">
 				    <i class = "fas fa-bars menu-icon"></i>
@@ -75,7 +89,7 @@
 				</div>
 			</div>
 		</header>
-        <aside class = "bg-white position-fixed custom-scrollbar active">
+        <aside class = "bg-white position-fixed custom-scrollbar active border">
 			<button id = "menu-fechar" class = "btn btn-custom btn-menu">
 			    <i class = "fas fa-arrow-left menu-icon"></i>
 			</button>
@@ -96,10 +110,10 @@
 		@include("modals.reports.itens_modal")
 		@include("modals.reports.retiradas_modal")
 
-		<footer class = "w-100 d-flex justify-content-center align-items-center">
+		<!-- <footer class = "w-100 d-flex justify-content-center align-items-center">
 			<a href = "#">Sobre</a>
 			<a href = "#">Suporte</a>
-		</footer>
+		</footer> -->
 
 		@include("components.js")
         <script type = "text/javascript" language = "JavaScript" src = "{{ asset('js/my-functions.js') }}"></script>

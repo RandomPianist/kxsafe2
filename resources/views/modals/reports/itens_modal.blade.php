@@ -1,10 +1,10 @@
 <!-- Modal -->
-<div class = "modal fade" id = "relatorioItensModal" aria-hidden = "true">
+<div class = "modal fade relatorio" id = "relatorioItensModal" aria-hidden = "true">
     <div class = "modal-dialog modal-lg" role = "document">
         <div class = "modal-content">
-            <div class = "modal-header">
-                <h6 class = "modal-title header-color">Extrato de itens</h6>
-                <button type = "button" class = "close" data-dismiss = "modal" aria-label = "Close">
+            <div class = "modal-header d-flex align-items-center">
+                <h5 class = "titulo">Extrato de itens</h5>
+                <button type = "button" class = "btn" data-bs-dismiss = "modal" aria-label = "Close">
                     <span aria-hidden = "true">&times;</span>
                 </button>
             </div>
@@ -28,9 +28,9 @@
                                 <input id = "rel-id_maquina2" name = "id_maquina" type = "hidden" />
                             </div>
                         </div>
-                        <div class = "row">
+                        <div class = "row mt-3">
                             <div class = "col-12 form-search">
-                                <label for = "rel-produto" class = "custom-label-form">Produto:</label>
+                                <label for = "rel-produto" class = "custom-label-form">Item:</label>
                                 <input id = "rel-produto"
                                     name = "produto"
                                     class = "form-control autocomplete"
@@ -45,7 +45,7 @@
                                 <input id = "rel-id_produto" name = "id_produto" type = "hidden" />
                             </div>
                         </div>
-                        <div class = "row">
+                        <div class = "row mt-3">
                             <div class = "col-6">
                                 <label for = "rel-inicio1" class = "custom-label-form">Início:</label>
                                 <input id = "rel-inicio1" name = "inicio" class = "form-control data" autocomplete = "off" type = "text" />
@@ -55,7 +55,7 @@
                                 <input id = "rel-fim1" name = "fim" class = "form-control data" autocomplete = "off" type = "text" />
                             </div>
                         </div>
-                        <div class = "row" style = "padding-top:5px">
+                        <div class = "row mt-3">
                             <div class = "col-12">
                                 <div class = "custom-control custom-switch">
                                     <input id = "rel-lm" name = "lm" type = "hidden" />
@@ -66,8 +66,8 @@
                         </div>
                     </div>
                 </div>
-                <div class = "d-flex">
-                    <button type = "button" class = "btn btn-target mx-auto mb-4 my-4 px-5" onclick = "relatorio.validar()">Visualizar</button>
+                <div class = "d-flex justify-content-center my-3">
+                    <button type = "button" class = "btn btn-primary" onclick = "relatorio.validar()">Gerar relatório</button>
                 </div>
             </form>
         </div>

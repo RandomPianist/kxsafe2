@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Empresas;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,8 +29,13 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             // Exemplo de função no controller que deseja tornar visível
             $kx = new \App\Http\Controllers\ControllerKX;
-            $empresa_logada = $kx->retorna_empresa_logada();
-            $view->with('empresa_logada', $empresa_logada);
+            $view->with([
+                'empresa_logada' => $kx->retorna_empresa_logada(),
+                'legenda' => function($tipo) use($kx) {
+                    $aux = explode(" ", $kx->empresas_legenda($tipo));
+                    return ucfirst($aux[1]);
+                }
+            ]);
         });
     }
 }

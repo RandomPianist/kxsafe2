@@ -13,10 +13,28 @@ class LocaisController extends ControllerKX {
         return DB::table("locais")
                     ->select(
                         "locais.id",
-                        "descr",
-                        "empresas.nome_fantasia AS empresa"
+                        "locais.descr",
+                        "empresas.nome_fantasia AS empresa",
+                        DB::raw("
+                            CASE
+                                WHEN estq.id_local IS NOT NULL THEN 1
+                                ELSE 0
+                            END AS possui_estoque
+                        ")
                     )
-                    ->join("empresas", "empresas.id", "id_empresa")
+                    ->join("empresas", "empresas.id", "locais.id_empresa")
+                    ->leftjoinsub(
+                        DB::table("locais")
+                            ->select("id AS id_local")
+                            ->joinsub(
+                                DB::table("estoque")
+                                    ->select("id_local")
+                                    ->join("locais_itens AS li", "li.id", "estoque.id_li"),
+                                "aux", "aux.id_local", "locais.id"
+                            )
+                            ->groupby("id"),
+                        "estq", "estq.id_local", "locais.id"
+                    )
                     ->whereRaw($param)
                     ->whereIn("id_empresa", $this->empresas_acessiveis()) // ControllerKX.php
                     ->where("locais.lixeira", 0)
@@ -51,8 +69,7 @@ class LocaisController extends ControllerKX {
                 ->where("descr", $request->descr)
                 ->get()
         ) && !intval($request->id)) return "local";
-        if($this->empresas_consultar($request)) // ControllerKX.php
-            return "empresa";
+        if ($this->empresas_consultar($request)) return "empresa"; // ControllerKX.php
         return "ok";
     }
 

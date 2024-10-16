@@ -131,7 +131,7 @@
     </div>
         @include("components.atribuicoes")
     </form>
-    <div class = "d-flex justify-content-end mt-3">
+    <div class = "botao-salvar-crud">
         <button class = "btn btn-primary" type = "button" onclick = "validar()">
 			Salvar
 		</button>
@@ -334,13 +334,15 @@
                 });
                 let variacoes = document.getElementById("variacoes");
                 variacoes.innerHTML = resultado;
-                let row = variacoes.parentElement.classList;
+                let row = variacoes.parentElement;
                 if (data.length == 1) {
-                    row.add("d-none");
-                    row.remove("d-flex");
+                    row.classList.add("d-none");
+                    row.classList.remove("d-flex");
+                    row.parentElement.parentElement.classList.remove("m-3");
                 } else {
-                    row.remove("d-none");
-                    row.add("d-flex");
+                    row.classList.remove("d-none");
+                    row.classList.add("d-flex");
+                    row.parentElement.parentElement.classList.add("m-3");
                 }
                 modal("retiradasModal");
             });

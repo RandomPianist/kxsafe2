@@ -27,13 +27,13 @@
                         <th width = "10%" class = "text-center nao-ordena">
                             <span>&nbsp;</span>
                         </th>
-                        <th width = "30%">
+                        <th width = "29%">
                             <span>Nome</span> 
                         </th>
-                        <th width = "30%">
+                        <th width = "29%">
                             <span>E-mail</span>
                         </th>
-                        <th width = "15%">
+                        <th width = "17%">
                             <span>Administrador</span>
                         </th>
                         <th width = "15%" class = "text-center nao-ordena">
@@ -77,9 +77,9 @@
                             "<img class = 'user-photo-sm' src = '" + usuario.foto + "' onerror = 'erroImg(this)' />" +
                             "<i class = 'fas fa-user d-none'></i>" +
                             "</td>" +
-                            "<td width = '30%'>" + usuario.name + "</td>" +
-                            "<td width = '30%'>" + usuario.email + "</td>" +
-                            "<td width = '15%'>" + (usuario.admin ? "Sim" : "Não") + "</td>" +
+                            "<td width = '29%'>" + usuario.name + "</td>" +
+                            "<td width = '29%'>" + usuario.email + "</td>" +
+                            "<td width = '17%'>" + (usuario.admin ? "Sim" : "Não") + "</td>" +
                             "<td class = 'text-center' width = '15%'>" +
                                 "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + usuario.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + usuario.id + ", " + '"/usuarios"' + ", event)'></i>" +

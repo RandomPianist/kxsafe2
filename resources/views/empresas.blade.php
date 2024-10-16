@@ -78,18 +78,13 @@
         }
 
         .empresa-matriz {
-            border-radius: 8px;
+            border-radius: .75rem;
             background-color: var(--cards);
             margin-bottom: 10px
         }
 
         .toggle-icon {
             width: 7px
-        }
-
-        .nome-matriz,
-        .toggle-icon {
-            color: var(--icone-secundario)
         }
 
         .filiais-lista {

@@ -20,6 +20,25 @@ class ControllerKX extends Controller {
         return 0;
     }
 
+    public function empresas_legenda($tipo) {
+        $legenda = "";
+        switch($tipo) {
+            case 1:
+                $legenda = "Nova franqueadora";
+                break;
+            case 2:
+                $legenda = "Nova franquia";
+                break;
+            case 3:
+                $legenda = "Novo cliente";
+                break;
+            case 4:
+                $legenda = "Novo fornecedor";
+                break;
+        }
+        return $legenda;
+    }
+
     protected function log_consultar($tabela, $tipo = 0) {
         $query = "
             SELECT
@@ -283,6 +302,12 @@ class ControllerKX extends Controller {
         return sizeof($consulta) ? $consulta[0]->id : 0;
     }
 
+    protected function concessoes_excluir($where) {
+        DB::statement("UPDATE concessoes SET fim = CURDATE() WHERE ".$where." AND CURDATE() >= inicio");
+        DB::statement("UPDATE concessoes SET lixeira = 1     WHERE ".$where." AND CURDATE() <  inicio");
+        // log
+    }
+
     protected function retirada_consultar($id_atribuicao, $qtd) {
         $atribuicao = Atribuicoes::find($id_atribuicao);
         $ja_retirados = DB::table("retiradas")
@@ -293,5 +318,26 @@ class ControllerKX extends Controller {
                             ->get();
         if (floatval($atribuicao->qtd) < (floatval($qtd) + (sizeof($ja_retirados) ? floatval($ja_retirados[0]->qtd) : 0))) return 0;
         return 1;
+    }
+
+    protected function retirada_salvar($json) {
+        $linha = new Retiradas;
+        if (isset($json["obs"])) $linha->obs = $json["obs"];
+        if (isset($json["id_supervisor"])) {
+            if (intval($json["id_supervisor"])) $linha->id_supervisor = $json["id_supervisor"];
+        }
+        $linha->id_funcionario = $json["id_funcionario"];
+        $linha->id_atribuicao = $json["id_atribuicao"];
+        $linha->id_produto = $json["id_produto"];
+        $linha->id_maquina = $json["id_maquina"];
+        $linha->qtd = $json["qtd"];
+        $linha->data = $json["data"];
+        $linha->save();
+        $api = $json["id_maquina"] > 0;
+        $modelo = $this->log_inserir("C", "retiradas", $linha->id, $api);
+        if ($api) {
+            $modelo->nome = "APP";
+            $modelo->save();
+        }
     }
 }

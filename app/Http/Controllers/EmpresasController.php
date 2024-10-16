@@ -81,21 +81,7 @@ class EmpresasController extends ControllerKX {
             array_push($empresas, $matriz);
         }
         $grupos = $this->grupos_buscar()->orderby("descr")->get();
-        $novo = "";
-        switch($tipo) {
-            case 1:
-                $novo = "Nova franqueadora";
-                break;
-            case 2:
-                $novo = "Nova franquia";
-                break;
-            case 3:
-                $novo = "Novo cliente";
-                break;
-            case 4:
-                $novo = "Novo fornecedor";
-                break;
-        }
+        $novo = $this->empresas_legenda($tipo); // ControllerKX.php
         return view("empresas", compact("ultima_atualizacao", "titulo", "breadcrumb", "empresas", "grupos", "id_grupo", "pode_criar", "novo"));
     }
 
@@ -302,7 +288,10 @@ class EmpresasController extends ControllerKX {
             $resultado->permitir = 0;
         } else if (sizeof(
             DB::table("concessoes")
-                ->whereRaw($id." IN (id_franquia, id_franqueadora)")
+                ->whereRaw($id." IN (id_de, id_para)")
+                ->whereRaw("CURDATE() >= inicio")
+                ->whereNull("fim")
+                ->where("lixeira", 0)
                 ->get()
         )) {
             $resultado->aviso = "Não é possível excluir ".$nome." porque ess".$tipo." faz parte de um processo de concessão.";
@@ -359,5 +348,6 @@ class EmpresasController extends ControllerKX {
         $this->log_inserir("D", "empresas", $linha->id); // ControllerKX.php
         $this->log_inserir2("D", "enderecos", "id_empresa = ".$linha->id, "NULL"); // ControllerKX.php
         DB::statement("DELETE FROM enderecos WHERE id_empresa = ".$linha->id);
+        $this->concessoes_excluir($linha->id." IN (id_de, id_para)"); // ControllerKX.php
     }
 }

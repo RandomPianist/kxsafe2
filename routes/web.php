@@ -19,6 +19,7 @@ use App\Http\Controllers\AtribuicoesController;
 use App\Http\Controllers\RetiradasController;
 use App\Http\Controllers\MaquinasController;
 use App\Http\Controllers\EstoqueController;
+use App\Http\Controllers\RelatoriosController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -193,6 +194,8 @@ Route::middleware("auth")->group(function () {
         Route::get ("/aviso/{id}", [MaquinasController::class, "aviso"]);
         Route::post("/salvar",     [MaquinasController::class, "salvar"]);
         Route::post("/excluir",    [MaquinasController::class, "excluir"]);
+        Route::post("/conceder",   [MaquinasController::class, "conceder"]);
+        Route::post("/encerrar",   [MaquinasController::class, "encerrar"]);
     });
 
     Route::group(["prefix" => "atribuicoes"], function() {
@@ -208,6 +211,28 @@ Route::middleware("auth")->group(function () {
     Route::group(["prefix" => "estoque"], function() {
         Route::get ("/consultar", [EstoqueController::class, "consultar"]);
         Route::post("/salvar",    [EstoqueController::class, "salvar"]);
+    });
+
+    Route::group(["prefix" => "relatorios"], function() {
+        Route::get("/comodatos", [RelatoriosController::class, "comodatos"]);
+        Route::group(["prefix" => "bilateral"], function() {
+            Route::get("/",          [RelatoriosController::class, "bilateral"]);
+            Route::get("/consultar", [RelatoriosController::class, "bilateral_consultar"]);
+        });
+        Route::group(["prefix" => "controle"], function() {
+            Route::get("/",          [RelatoriosController::class, "controle"]);
+            Route::get("/consultar", [RelatoriosController::class, "controle_consultar"]);
+            Route::get("/existe",    [RelatoriosController::class, "controle_existe"]);
+            Route::get("/pessoas",   [RelatoriosController::class, "controle_pessoas"]);
+        });
+        Route::group(["prefix" => "extrato"], function() {
+            Route::get("/",          [RelatoriosController::class, "extrato"]);
+            Route::get("/consultar", [RelatoriosController::class, "extrato_consultar"]);
+        });
+        Route::group(["prefix" => "retiradas"], function() {
+            Route::get("/",          [RelatoriosController::class, "retiradas"]);
+            Route::get("/consultar", [RelatoriosController::class, "retiradas_consultar"]);
+        });
     });
 });
 

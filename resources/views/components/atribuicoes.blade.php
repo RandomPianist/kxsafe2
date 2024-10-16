@@ -35,7 +35,7 @@
         @foreach ($abas as $aba)
             <div class = "tab-pane fade @if ($aba->id == 'produto') show active @endif" id = "por-{{ $aba->id }}" role = "tabpanel" aria-labelledby = "{{ $aba->id }}-tab">
                 <div class = "row mt-3">
-                    <div class = "col-md-3 mb-3">
+                    <div class = "col-md-12 mb-3">
                         <label for = "atb-{{ $aba->abv }}-descr" class = "form-label">{{ ucfirst($aba->nome) }}:</label>
                         <div class = "d-flex align-items-center">
                             <input
@@ -59,11 +59,13 @@
                             </a>
                         </div>
                     </div>
+                </div>
+                <div class = "row">
                     <div class = "col-md-2 mb-3">
                         <label for = "atb-{{ $aba->abv }}-qtd" class = "form-label">Quantidade:</label>
                         <input type = "number" class = "form-control text-right" id = "atb-{{ $aba->abv }}-qtd" onkeyup = "$(this).trigger('change')" onchange = "limitar(this)" />
                     </div>
-                    <div class = "col-md-2 mb-3">
+                    <div class = "col-md-3 mb-3">
                         <label for = "atb-{{ $aba->abv }}-validade" class = "form-label">Validade em dias:</label>
                         <input type = "text" class = "form-control text-right" id = "atb-{{ $aba->abv }}-validade" />
                     </div>
@@ -74,7 +76,7 @@
                             <option value = "S">Sim</option>
                         </select>
                     </div>
-                    <div class = "col-md-3 mb-3">
+                    <div class = "col-md-5 mb-3">
                         <button type = "button" class = "margem-compensa-label btn btn-primary w-100" onclick = "salvarAtribuicao('{{ strtoupper(substr($aba->id, 0, 1)) }}')">Adicionar atribuição</button>
                     </div>
                 </div>
@@ -82,7 +84,7 @@
                     <thead>
                         <tr>
                             <th scope = "col" class = "col-produto">Produto</th>
-                            <th scope = "col" class = "text-right col-quantidade">Quantidade</th>
+                            <th scope = "col" class = "text-right col-quantidade">Qtd.</th>
                             <th scope = "col" class = "text-right col-validade">Validade em dias</th>
                             <th scope = "col" class = "col-obrigatorio">Obrigatório</th>
                             <th scope = "col" class = "text-center col-acoes">Ações</th>

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $telefone
  * @property string $email
  * @property string $pis
+ * @property string $rosto
  * @property Date   $admissao
  */
 class Funcionarios extends Model
@@ -44,7 +45,7 @@ class Funcionarios extends Model
      * @var array
      */
     protected $fillable = [
-        'nome', 'cpf', 'funcao', 'admissao', 'senha', 'foto', 'telefone', 'email', 'pis', 'supervisor', 'lixeira', 'id_empresa', 'id_setor', 'created_at', 'updated_at'
+        'nome', 'cpf', 'funcao', 'admissao', 'senha', 'foto', 'telefone', 'email', 'pis', 'supervisor', 'rosto', 'lixeira', 'id_empresa', 'id_setor', 'created_at', 'updated_at'
     ];
 
     /**
@@ -62,7 +63,7 @@ class Funcionarios extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'nome' => 'string', 'cpf' => 'string', 'funcao' => 'string', 'admissao' => 'date', 'senha' => 'int', 'foto' => 'string', 'telefone' => 'string', 'email' => 'string', 'pis' => 'string', 'supervisor' => 'int', 'lixeira' => 'int', 'id_empresa' => 'int', 'id_setor' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'id' => 'int', 'nome' => 'string', 'cpf' => 'string', 'funcao' => 'string', 'admissao' => 'date', 'senha' => 'int', 'foto' => 'string', 'telefone' => 'string', 'email' => 'string', 'pis' => 'string', 'supervisor' => 'int', 'rosto' => 'string', 'lixeira' => 'int', 'id_empresa' => 'int', 'id_setor' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
     ];
 
     /**

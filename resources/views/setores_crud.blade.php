@@ -46,7 +46,7 @@
         </div>
         @include("components.atribuicoes")
     </form>
-    <div class = "d-flex justify-content-end mt-3">
+    <div class = "botao-salvar-crud">
         <button class = "btn btn-primary" type = "button" onclick = "validar()">
 			Salvar
 		</button>

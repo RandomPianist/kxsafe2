@@ -16,7 +16,6 @@ aside {
 
 aside.active {
 	left: 0;
-	border-right: 1px solid var(--header-tabela)
 }
 
 .nav > li {
@@ -337,8 +336,6 @@ footer a {
     background-color: var(--cards);
     border-radius: .75rem;
     margin-top: 1rem;
-    height: calc(100% - 95px);
-    overflow-y: auto
 }
 
 .formulario h5 {
@@ -455,11 +452,11 @@ label {
 }
 
 .col-produto {
-    width: 40%
+    width: 45%
 }
 
 .col-quantidade {
-    width: 10%
+    width: 5%
 }
 
 .col-validade {
@@ -472,4 +469,19 @@ label {
 
 .col-acoes {
     width: 15%
+}
+
+.botao-salvar-crud {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	padding: 2rem 0;
+}
+
+.modal-header span {
+	font-size: 20pt;
+}
+
+.modal-header .titulo {
+	margin-bottom: 0;
 }

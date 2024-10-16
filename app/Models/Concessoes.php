@@ -5,13 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int $id
- * @property int $id_franqueadora
- * @property int $id_franquia
- * @property int $id_maquina
- * @property int $id_nota
- * @property int $created_at
- * @property int $updated_at
+ * @property int  $id
+ * @property int  $lixeira
+ * @property int  $id_de
+ * @property int  $id_para
+ * @property int  $id_maquina
+ * @property int  $id_nota
+ * @property int  $created_at
+ * @property int  $updated_at
+ * @property Date $inicio
+ * @property Date $fim
  */
 class Concessoes extends Model
 {
@@ -35,7 +38,7 @@ class Concessoes extends Model
      * @var array
      */
     protected $fillable = [
-        'inicio', 'id_franqueadora', 'id_franquia', 'id_maquina', 'id_nota', 'created_at', 'updated_at'
+        'taxa_inicial', 'inicio', 'fim', 'lixeira', 'id_de', 'id_para', 'id_maquina', 'id_nota', 'created_at', 'updated_at'
     ];
 
     /**
@@ -53,7 +56,7 @@ class Concessoes extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'id_franqueadora' => 'int', 'id_franquia' => 'int', 'id_maquina' => 'int', 'id_nota' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'id' => 'int', 'inicio' => 'date', 'fim' => 'date', 'lixeira' => 'int', 'id_de' => 'int', 'id_para' => 'int', 'id_maquina' => 'int', 'id_nota' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
     ];
 
     /**
@@ -62,7 +65,7 @@ class Concessoes extends Model
      * @var array
      */
     protected $dates = [
-        'created_at', 'updated_at'
+        'inicio', 'fim', 'created_at', 'updated_at'
     ];
 
     /**

@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int  $id
- * @property int  $id_local
- * @property int  $id_maquina
- * @property int  $id_produto
- * @property int  $id_atribuicao
- * @property int  $id_nota
- * @property int  $id_funcionario
- * @property int  $id_supervisor
- * @property int  $created_at
- * @property int  $updated_at
- * @property Date $data
+ * @property int    $id
+ * @property int    $id_local
+ * @property int    $id_maquina
+ * @property int    $id_produto
+ * @property int    $id_atribuicao
+ * @property int    $id_nota
+ * @property int    $id_funcionario
+ * @property int    $id_supervisor
+ * @property int    $created_at
+ * @property int    $updated_at
+ * @property Date   $data
+ * @property string $observacao
  */
 class Retiradas extends Model
 {
@@ -39,7 +40,7 @@ class Retiradas extends Model
      * @var array
      */
     protected $fillable = [
-        'qtd', 'data', 'id_local', 'id_maquina', 'id_produto', 'id_atribuicao', 'id_nota', 'id_funcionario', 'id_supervisor', 'created_at', 'updated_at'
+        'qtd', 'data', 'observacao', 'id_local', 'id_maquina', 'id_produto', 'id_atribuicao', 'id_nota', 'id_funcionario', 'id_supervisor', 'created_at', 'updated_at'
     ];
 
     /**
@@ -57,7 +58,7 @@ class Retiradas extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'data' => 'date', 'id_local' => 'int', 'id_maquina' => 'int', 'id_produto' => 'int', 'id_atribuicao' => 'int', 'id_nota' => 'int', 'id_funcionario' => 'int', 'id_supervisor' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'id' => 'int', 'data' => 'date', 'observacao' => 'string', 'id_local' => 'int', 'id_maquina' => 'int', 'id_produto' => 'int', 'id_atribuicao' => 'int', 'id_nota' => 'int', 'id_funcionario' => 'int', 'id_supervisor' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
     ];
 
     /**

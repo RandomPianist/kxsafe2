@@ -468,6 +468,7 @@ CREATE TABLE retiradas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     qtd NUMERIC(10,5),
 	data DATE,
+    observacao TEXT,
     id_local INT,
 	id_maquina INT,
     id_produto INT,
@@ -495,9 +496,12 @@ CREATE TABLE estoque (
 
 CREATE TABLE concessoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    inicio NUMERIC(8,2),
-    id_franqueadora INT,
-    id_franquia INT,
+    taxa_inicial NUMERIC(8,2),
+    inicio DATE,
+    fim DATE,
+    lixeira TINYINT DEFAULT 0,
+    id_de INT,
+    id_para INT,
     id_maquina INT,
     id_nota INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

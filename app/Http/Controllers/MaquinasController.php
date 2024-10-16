@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
 use App\Models\Maquinas;
+use App\Models\Concessoes;
 
 class MaquinasController extends ControllerKX {
     private function busca($param = "1") {
@@ -13,8 +14,39 @@ class MaquinasController extends ControllerKX {
                     ->select(
                         "maquinas.id",
                         "maquinas.descr",
-                        "locais.descr AS local"
+                        "locais.descr AS local",
+                        DB::raw("
+                            CASE
+                                WHEN conc.id_maquina IS NOT NULL THEN 1
+                                ELSE 0
+                            END AS possui_concessoes
+                        "),
+                        DB::raw("
+                            CASE
+                                WHEN conc.de IS NOT NULL THEN conc.de
+                                ELSE '---'
+                            END AS de
+                        "),
+                        DB::raw("
+                            CASE
+                                WHEN conc.para IS NOT NULL THEN conc.para
+                                ELSE '---'
+                            END AS para
+                        ")
                     )
+                    ->leftjoinsub(
+                        DB::table("concessoes")
+                            ->select(
+                                "id_maquina",
+                                "de.nome_fantasia AS de",
+                                "para.nome_fantasia AS para"
+                            )
+                            ->leftjoin("empresas AS de", "de.id", "concessoes.id_de")
+                            ->leftjoin("empresas AS para", "para.id", "concessoes.id_para")
+                            ->whereRaw("CURDATE() >= inicio")
+                            ->whereNull("fim")
+                            ->where("concessoes.lixeira", 0),
+                    "conc", "conc.id_maquina", "maquinas.id")
                     ->join("locais", "locais.id", "id_local")
                     ->whereRaw($param)
                     ->where("maquinas.lixeira", 0)
@@ -48,13 +80,13 @@ class MaquinasController extends ControllerKX {
                 ->where("descr", $request->descr)
                 ->get()
         ) && !intval($request->id)) return "maquina";
-        if(!sizeof(DB::table("locais")
-                    ->where("id", $request->id_local)
-                    ->where("descr", $request->local)
-                    ->where("lixeira", 0)
-                    ->get())) {
-            return "local";
-        }  
+        if(!sizeof(
+            DB::table("locais")
+                ->where("id", $request->id_local)
+                ->where("descr", $request->local)
+                ->where("lixeira", 0)
+                ->get())
+        ) return "local";
         return "ok";
     }
 
@@ -86,8 +118,10 @@ class MaquinasController extends ControllerKX {
         $resultado = new \stdClass;
         $nome = Maquinas::find($id)->descr;
         if (sizeof(
-            DB::table("maquinas")
-                ->where("id_local", $id)
+            DB::table("concessoes")
+                ->where("id_maquina", $id)
+                ->whereRaw("CURDATE() >= inicio")
+                ->whereNull("fim")
                 ->where("lixeira", 0)
                 ->get()
         )) {
@@ -113,6 +147,23 @@ class MaquinasController extends ControllerKX {
         $linha->lixeira = 1;
         $linha->save();
         $this->log_inserir("D", "maquinas", $linha->id); // ControllerKX.php
+        $this->concessoes_excluir("id_maquina = ".$linha->id); // ControllerKX.php
     }
-    
+
+    public function conceder(Request $request) {
+        $linha = new Concessoes;
+        $linha->taxa_inicial = $request->taxa_inicial;
+        $linha->inicio = Carbon::createFromFormat('d/m/Y', $request->inicio)->format('Y-m-d');
+        $linha->id_de = $request->id_de;
+        $linha->id_para = $request->id_para;
+        $linha->id_maquina = $request->id_maquina;
+        $linha->save();
+        $this->log_inserir("C", "concessoes", $linha->id);
+    }
+
+    public function encerrar(Request $request) {
+        $where = "id_maquina = ".$request->id_maquina;
+        DB::statement("UPDATE concessoes SET fim = CURDATE() WHERE ".$where);
+        $this->log_inserir2("E", "concessoes", $where, "NULL");
+    }
 }

@@ -696,7 +696,10 @@ function modal(nome, id, callback) {
     if (id) document.getElementById(nome == "pessoasModal" ? "pessoa-id" : "id").value = id;
     Array.from(document.querySelectorAll("#" + nome + " input, #" + nome + " textarea")).forEach((el) => {
         if (!id && el.name != "_token") el.value = "";
-        if (!$(el).hasClass("autocomplete")) $(el).trigger("oninput");
+        if (!$(el).hasClass("autocomplete")) {
+            $(el).trigger("oninput");
+            $(el).trigger("keyup");
+        }
         anteriores[el.id] = el.value;
     });
     hoje();
@@ -806,8 +809,6 @@ function RelatorioItens() {
     limparInvalido();
     setTimeout(function() {
         modal("relatorioItensModal", 0, function() {
-            elementos.inicio.value = hoje();
-            elementos.fim.value = hoje();
             document.getElementById("rel-lm").value = "N";
         });
     }, 0);
@@ -839,8 +840,6 @@ function RelatorioControle() {
     limparInvalido();
     setTimeout(function() {
         modal("relatorioControleModal", 0, function() {
-            elementos.inicio.value = hoje();
-            elementos.fim.value = hoje();
             elementos.consumo.value = "todos";
         });
     }, 0);
@@ -872,8 +871,6 @@ function RelatorioRetiradas(quebra) {
     limparInvalido();
     setTimeout(function() {
         modal("relatorioRetiradasModal", 0, function() {
-            elementos.inicio.value = hoje();
-            elementos.fim.value = hoje();
             if (quebra == "setor") {
                 elementos.pessoa.parentElement.classList.add("d-none");
                 elementos.setor.parentElement.classList.remove("d-none");
