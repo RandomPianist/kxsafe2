@@ -13,14 +13,14 @@ class RetiradasController extends ControllerKX {
     }
 
     public function salvar(Request $request) {
-        $linha = new Retiradas;
-        $linha->id_supervisor = $request->id_supervisor;
-        $linha->id_funcionario = $request->id_funcionario;
-        $linha->id_atribuicao = $request->id_atribuicao;
-        $linha->id_produto = $request->id_produto;        
-        $linha->qtd = $request->qtd;
-        $linha->data = Carbon::createFromFormat('d/m/Y', $request->data)->format('Y-m-d');
-        $linha->save();
-        $this->log_inserir("C", "retiradas", $linha->id); // ControllerKX.php
+        // ControllerKX.php
+        $this->retirada_salvar(array(
+            "id_maquina" => 0,
+            "id_supervisor" => $request->id_supervisor,
+            "id_atribuicao" => $request->id_atribuicao,
+            "id_produto" => $request->id_produto,
+            "qtd" => $request->qtd,
+            "data" => Carbon::createFromFormat('d/m/Y', $request->data)->format('Y-m-d'),
+        ));
     }
 }

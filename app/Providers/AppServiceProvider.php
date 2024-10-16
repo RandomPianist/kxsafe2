@@ -37,19 +37,7 @@ class AppServiceProvider extends ServiceProvider
                     $aux = explode(" ", $kx->empresas_legenda($tipo));
                     return ucfirst($aux[1]);
                 },
-                'legenda2' => function($tipo) {
-                    switch (intval($tipo)) {
-                        case 1:
-                            return "franqueadoras";
-                            break;
-                        case 2:
-                            return "franquias";
-                            break;
-                        case 3:
-                            return "clientes";
-                            break;
-                    }
-                },
+                'empresa_url' => $kx->empresas_url(),
                 'multiempresa' => Auth::check() ? sizeof(
                     DB::table("empresas_usuarios")
                         ->where("id_usuario", Auth::user()->id)

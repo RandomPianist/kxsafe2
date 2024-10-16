@@ -38,7 +38,7 @@
                         type = "hidden"
                         value = "@if ($setor !== null) {{ $setor->id_empresa }} @endif"
                     />
-                    <a href = "{{ config('app.root_url') }}/{{ strtolower($legenda2(App\Models\Empresas::find($empresa_logada)->tipo)) }}/grupo/0" title = "Cadastro de empresas" target = "_blank">
+                    <a href = "{{ config('app.root_url') }}/{{ $empresa_url }}" title = "Cadastro de empresas" target = "_blank">
                         <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
                     </a>
                 </div>

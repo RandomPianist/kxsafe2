@@ -39,6 +39,29 @@ class ControllerKX extends Controller {
         return $legenda;
     }
 
+    public function empresas_legenda2($tipo) {
+        $titulo = "";
+        switch($tipo) {
+            case 1:
+                $titulo = "Franqueadoras";
+                break;
+            case 2:
+                $titulo = "Franquias";
+                break;
+            case 3:
+                $titulo = "Clientes";
+                break;
+            case 4:
+                $titulo = "Fornecedores";
+                break;
+        }
+        return $titulo;
+    }
+
+    public function empresas_url() {
+        return strtolower($this->empresas_legenda2(Empresas::find($this->retorna_empresa_logada())->tipo))."/grupo/0";
+    }
+
     protected function log_consultar($tabela, $tipo = 0) {
         $query = "
             SELECT

@@ -35,31 +35,12 @@ class EmpresasController extends ControllerKX {
                     ->get();
     }
 
-    private function legenda($tipo) {
-        $titulo = "";
-        switch($tipo) {
-            case 1:
-                $titulo = "Franqueadoras";
-                break;
-            case 2:
-                $titulo = "Franquias";
-                break;
-            case 3:
-                $titulo = "Clientes";
-                break;
-            case 4:
-                $titulo = "Fornecedores";
-                break;
-        }
-        return $titulo;
-    }
-
     private function ver($tipo, $id_grupo) {
         if (!$this->permanecer($tipo)) return redirect("/");
         $tipo = intval($tipo);
         $meu_tipo = intval(Empresas::find($this->retorna_empresa_logada())->tipo); // ControllerKX.php
         $pode_criar = ($meu_tipo == 1 || ($meu_tipo == 2 && $tipo == 3));
-        $titulo = $this->legenda($tipo);
+        $titulo = $this->empresas_legenda2($tipo); // ControllerKX.php
         $ultima_atualizacao = $this->log_consultar("empresas", $tipo); // ControllerKX.php
         $breadcrumb = array(
             "Home" => $tipo != $meu_tipo ? config("app.root_url")."/home" : "#",
@@ -79,7 +60,7 @@ class EmpresasController extends ControllerKX {
     private function crud($tipo, Request $request) {
         $id = $request->id;
         if (!$this->permanecer($tipo)) return redirect("/");
-        $titulo = $this->legenda($tipo);
+        $titulo = $this->empresas_legenda2($tipo); // ControllerKX.php
         $breadcrumb = array(
             "Home" => config("app.root_url")."/home",
             $titulo => config("app.root_url")."/".strtolower($titulo)."/grupo/0",
@@ -146,12 +127,8 @@ class EmpresasController extends ControllerKX {
         return view("empresas_crud", compact("titulo", "breadcrumb", "empresa", "criando", "tipo", "enderecos"));
     }
 
-    private function url() {
-        return strtolower($this->legenda(Empresas::find($this->retorna_empresa_logada())->tipo))."/grupo/0";  // ControllerKX.php
-    }
-
     public function home() {
-        return redirect("/".$this->url());
+        return redirect("/".$this->empresas_url());
     }
 
     private function selecionarMain($empresa) {
@@ -160,7 +137,7 @@ class EmpresasController extends ControllerKX {
             SET id_empresa = ".$empresa."
             WHERE id = ".Auth::user()->id
         );
-        return $this->url();
+        return $this->empresas_url();
     }
 
     public function selecionar(Request $request) {

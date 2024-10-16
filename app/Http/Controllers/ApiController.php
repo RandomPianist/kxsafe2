@@ -25,7 +25,12 @@ class ApiController extends ControllerKX {
                 $resultado->msg = "Máquina não encontrada";
                 return json_encode($resultado);
             }
-            $concessao = DB::table("concessoes")->where("id_maquina", $retirada["id_maquina"])->get();
+            $concessao = DB::table("concessoes")
+                            ->where("id_maquina", $retirada["id_maquina"])
+                            ->whereRaw("CURDATE() >= inicio")
+                            ->whereNull("fim")
+                            ->where("lixeira", 0)
+                            ->get();
             if (!sizeof($concessao)) {
                 $resultado->code = 404;
                 $resultado->msg = "Essa máquina não está em nenhuma empresa";
@@ -62,7 +67,7 @@ class ApiController extends ControllerKX {
                 "id_pessoa" => $retirada["id_pessoa"],
                 "id_produto" => $retirada["id_produto"],
                 "id_atribuicao" => $retirada["id_atribuicao"],
-                "id_comodato" => $comodato[0]->id,
+                "id_maquina" => $retirada["id_maquina"],
                 "qtd" => $retirada["qtd"],
                 "data" => date("Y-m-d")
             );
@@ -72,17 +77,17 @@ class ApiController extends ControllerKX {
                     "obs" => $retirada["obs"]
                 ];
             }
-            $this->retirada_salvar($salvar);
-            $linha = new Estoque;
-            $linha->es = "S";
-            $linha->descr = "RETIRADA";
-            $linha->qtd = $retirada["qtd"];
-            $linha->id_mp = DB::table("maquinas_produtos")
-                                ->where("id_produto", $retirada["id_produto"])
-                                ->where("id_maquina", $maquinas[0]->id)
-                                ->value("id");
-            $linha->save();
-            $this->log_inserir("C", "estoque", $linha->id, true);
+            $this->retirada_salvar($salvar); // ControllerKX.php
+            // $linha = new Estoque;
+            // $linha->es = "S";
+            // $linha->descr = "RETIRADA";
+            // $linha->qtd = $retirada["qtd"];
+            // $linha->id_mp = DB::table("maquinas_produtos")
+            //                     ->where("id_produto", $retirada["id_produto"])
+            //                     ->where("id_maquina", $maquinas[0]->id)
+            //                     ->value("id");
+            // $linha->save();
+            // $this->log_inserir("C", "estoque", $linha->id, true);
             $cont++;
         }
         $resultado->code = 201;
@@ -109,15 +114,15 @@ class ApiController extends ControllerKX {
     }
 
     public function produtos_por_pessoa(Request $request) {
-        $consulta = DB::table("produtos")
+        $consulta = DB::table("itens")
                         ->select(
-                            "produtos.id",
-                            "produtos.referencia",
-                            "produtos.descr AS nome",
-                            "produtos.detalhes",
-                            "produtos.cod_externo AS codbar",
-                            DB::raw("IFNULL(produtos.tamanho, '') AS tamanho"),
-                            DB::raw("IFNULL(produtos.foto, '') AS foto"),
+                            "itens.id",
+                            "itens.referencia",
+                            "itens.descr AS nome",
+                            "itens.detalhes",
+                            "itens.cod_externo AS codbar",
+                            DB::raw("IFNULL(itens.tamanho, '') AS tamanho"),
+                            DB::raw("IFNULL(itens.foto, '') AS foto"),
                             "atribuicoes.id AS id_atribuicao",
                             "atribuicoes.obrigatorio",
                             DB::raw("(atribuicoes.qtd - IFNULL(ret.qtd, 0)) AS qtd"),
@@ -128,18 +133,18 @@ class ApiController extends ControllerKX {
                             
                             FROM atribuicoes
 
-                            JOIN pessoas
-                                ON (atribuicoes.pessoa_ou_setor_chave = 'P' AND atribuicoes.pessoa_ou_setor_valor = pessoas.id)
-                                    OR (atribuicoes.pessoa_ou_setor_chave = 'S' AND atribuicoes.pessoa_ou_setor_valor = pessoas.id_setor)
+                            JOIN funcionarios
+                                ON (atribuicoes.funcionario_ou_setor_chave = 'F' AND atribuicoes.funcionario_ou_setor_valor = funcionarios.id)
+                                    OR (atribuicoes.funcionario_ou_setor_chave = 'S' AND atribuicoes.funcionario_ou_setor_valor = funcionarios.id_setor)
                             
                             WHERE (
-                                (produto_ou_referencia_chave = 'P' AND produto_ou_referencia_valor = produtos.cod_externo)
-                            OR (produto_ou_referencia_chave = 'R' AND produto_ou_referencia_valor = produtos.referencia)
-                            ) AND pessoas.cpf = '".$request->cpf."'
-                              AND pessoas.lixeira = 0
+                                (produto_ou_referencia_chave = 'P' AND produto_ou_referencia_valor = itens.cod_ou_id)
+                            OR (produto_ou_referencia_chave = 'R' AND produto_ou_referencia_valor = itens.referencia)
+                            ) AND funcionarios.cpf = '".$request->cpf."'
+                              AND funcionarios.lixeira = 0
                               AND atribuicoes.lixeira = 0
 
-                            ORDER BY pessoa_ou_setor_chave
+                            ORDER BY funcionario_ou_setor_chave
 
                             LIMIT 1
                         )"))->leftjoinSub(

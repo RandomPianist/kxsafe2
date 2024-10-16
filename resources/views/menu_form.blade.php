@@ -1,4 +1,5 @@
-<form method = "GET" action = "{{ config('app.root_url') }}/menu/salvar">
+<form method = "POST" action = "{{ config('app.root_url') }}/menu/salvar">
+    @csrf
     <p>
         Descr:
         <input type = "text" name = "descr" />
@@ -47,7 +48,7 @@
     <button>Ok</button>
 </form>
 @include("components.js")
-<script>
+<script type = "text/javascript" language = "JavaScript">
     function novoModulo() {
         let modulo = prompt("Insira o nome do módulo");
         $.get("{{ config('app.root_url') }}/menu/novo-modulo", {
