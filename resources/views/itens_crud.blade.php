@@ -12,16 +12,21 @@
     </nav>
     <h2 class = "titulo">Itens</h2>
     <form class = "formulario p-5 custom-scrollbar" enctype = "multipart/form-data" method = "POST" action = "{{ config('app.root_url') }}/itens/salvar">
-        <div class="d-flex justify-content-center align-items-top">
-            <div class = "mb-4" style = " width:15rem;height:15rem;border:2px solid var(--fonte);border-radius:50%;display:flex;justify-content: center; align-items: center;">
-                <img class = "user-photo" src = "@if ($item !== null) {{ $item->foto }} @endif" onerror = "this.onerror=null;this.classList.add('d-none');this.nextSiblingElement.classList.remove('d-none')" />
-                <i class = "fas fa-box" style = "font-size:60px"></i>
+        @csrf
+        <input type = "hidden" value = "@if ($item !== null) {{ $item->id }} @endif" name = "id" />
+        <div class = "d-flex justify-content-center align-items-top">
+            <div class = "mb-3 user-photo">
+                <img
+                    class = "w-100 user-photo" src = "@if ($item !== null) {{ $item->foto }} @endif" 
+                    onerror = "this.style.display='none';this.nextElementSibling.style.display='block'"
+                />
+                <i class = "fallback-icon fas fa-box" aria-hidden = "true"></i>
             </div>
             <div>
                 <button type = "button" class = "adicionar-foto" onclick = "$(this).next().trigger('click')">
                     <i class = "fa-solid fa-camera"></i>
                 </button>
-                <input type = "file" name = "foto" class = "d-none">
+                <input type = "file" name = "foto" id = "foto" class = "d-none">
             </div>
         </div>
         <div class = "row">
@@ -52,7 +57,7 @@
             </div>
             <div class = "col-md-4 mb-3">
                 <label for = "validade" class = "form-label">Validade em dias:</label>
-                <input type = "number" class = "form-control" id = "validade" name = "validade" value = "@if ($item !== null) {{ $item->validade }} @endif" />
+                <input type = "number" class = "form-control text-right" id = "validade" name = "validade" value = @if ($item !== null) {{ $item->validade }} @endif />
             </div>
         </div>
         <div class="row">
@@ -65,7 +70,7 @@
             </div>	
             <div class = "col-md-4 mb-3">
                 <label for = "ca" class = "form-label">CA:</label>
-                <input type = "text" class = "form-control" id = "ca" name = "ca" oninput = "contarChar(this, 16)" />
+                <input type = "text" class = "form-control" id = "ca" name = "ca" oninput = "contarChar(this, 16)" value = "@if ($item !== null) {{ $item->ca }} @endif" />
                 <small class = "text-muted"></small>
             </div>
             <div class = "col-md-4 mb-3">
@@ -91,6 +96,7 @@
                     />
                     <input
                         id = "id_categoria"
+                        name = "id_categoria"
                         type = "hidden"
                         value = "@if ($item !== null) {{ $item->id_categoria }} @endif"
                     />
@@ -116,6 +122,7 @@
                     />
                     <input
                         id = "id_fornecedor"
+                        name = "id_fornecedor"
                         type = "hidden"
                         value = "@if ($item !== null) {{ $item->id_fornecedor }} @endif"
                     />
@@ -128,7 +135,7 @@
         <div class="row">
             <div class = "col-md-12 mb-3">
                 <label for = "detalhes" class = "form-label">Detalhes:</label>
-                <textarea type = "textarea" class = "form-control" id = "detalhes" name = "detalhes" rows = "6" oninput = "contarChar(this, 21845)" value = "@if ($item !== null) {{ $item->detalhes }} @endif"></textarea>
+                <textarea type = "textarea" class = "form-control" id = "detalhes" name = "detalhes" rows = "6" oninput = "contarChar(this, 21845)">@if ($item !== null) {{ $item->detalhes }} @endif</textarea>
                 <small class = "text-muted"></small>
             </div>
         </div>
@@ -153,9 +160,8 @@
             if (elementos.preco.value.trim() != dinheiro(anteriores.preco.toString())) alterou = true;
             const valores = obterElementosValor(elementos);
             for (x in valores) {
-                if (valores[x] != anteriores[x]) alterou = true;
+                if (valores[x].toString().trim() != anteriores[x].toString().trim()) alterou = true;
             }
-
             let consulta = obterElementosValor(elementos, ["categoria", "fornecedor", "referencia"]);
             consulta.id = @if ($item !== null) {{ $item->id }} @else 0 @endif;
             $.get(URL + "/itens/consultar/", consulta, function(data) {
@@ -165,9 +171,9 @@
                 }
                 if (!erro && !alterou && !document.getElementById("foto").value) erro = "Altere pelo menos um campo para salvar";
                 if (!erro) {
-                    const fn = function() {
+                    const fn = function() {       
                         elementos.preco.value = parseInt(elementos.preco.value.replace(/\D/g, "")) / 100;
-                        document.querySelector("form").submit();
+                        document.querySelector("form.formulario").submit();
                     }
                     if (data == "aviso") s_confirm("Prosseguir apagará atribuições.<br>Deseja continuar?", fn);
                     else fn();

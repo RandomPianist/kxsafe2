@@ -94,7 +94,7 @@
                                 "<td width = '13%' class = 'dinheiro'>" + item.preco + "</td>" +
                                 "<td class = 'text-center btn-table-action' width = '13%'>" +
                                 "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + item.id + ")'></i>" +
-                                "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + item.id + ", " + '"/produtos"' + ", event)'></i>"
+                                "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + item.id + ", " + '"/itens"' + ", event)'></i>"
                             : 
                                 "<td width = '30%'>" + item.categoria + "</td>" +
                                 "<td width = '17%' class = 'dinheiro'>" + item.preco + "</td>"

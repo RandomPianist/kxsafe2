@@ -49,6 +49,7 @@ class ItensController extends ControllerKX {
         $resultado = array();
         foreach ($busca as $item) {
             $aux = new \stdClass;
+            $aux->id = $item->id;
             $aux->cod_ou_id = $item->cod_ou_id;
             $aux->descr = $item->descr;
             $aux->categoria = $item->categoria;
@@ -66,18 +67,20 @@ class ItensController extends ControllerKX {
                 ->where("id", $request->id_fornecedor)
                 ->where("nome_fantasia", $request->fornecedor)
                 ->get()
-        )) return "Fornecedor";
+        ) && trim($request->fornecedor)) return "Fornecedor";
         if (!sizeof(
             DB::table("categorias")
                 ->where("lixeira", 0)
                 ->where("id", $request->id_categoria)
-                ->where("nome_fantasia", $request->categoria)
+                ->where("descr", $request->categoria)
                 ->get()
-        )) return "Categoria";
-        if (
-            $this->atribuicoes_na_referencia(Itens::find($request->id)->referencia) == 1 && // ControllerKX.php
-            !trim($request->referencia)
-        ) return "aviso";
+        ) && trim($request->categoria)) return "Categoria";
+        if (Itens::find($request->id) !== null) {
+            if (
+                $this->atribuicoes_na_referencia(Itens::find($request->id)->referencia) == 1 && // ControllerKX.php
+                !trim($request->referencia)
+            ) return "aviso";
+        }
         return "0";
     }
 
@@ -100,8 +103,7 @@ class ItensController extends ControllerKX {
                         ->first();
         if ($item !== null) {
             $item->foto = asset("storage/".$item->foto);
-            $item->validade_ca = Carbon::createFromFormat('Y-m-d', $item->validade_ca)->format('d/m/Y');
-        }
+            if ($item->validade_ca) $item->validade_ca = Carbon::createFromFormat("Y-m-d", $item->validade_ca)->format("d/m/Y");        }
         return view("itens_crud", compact("breadcrumb", "item"));
     }
 
@@ -124,6 +126,7 @@ class ItensController extends ControllerKX {
         $linha->validade = $request->validade;
         $linha->ca = $request->ca;
         $linha->id_categoria = $request->id_categoria;
+        $linha->id_fornecedor = $request->id_fornecedor;
         $linha->referencia = $request->referencia;
         $linha->tamanho = $request->tamanho;
         $linha->detalhes = $request->detalhes;
@@ -136,7 +139,7 @@ class ItensController extends ControllerKX {
         $this->atribuicoes_atualizar($request->id, $linha->cod_externo, $linha->id, "NULL", "P"); // ControllerKX.php
         $this->log_inserir($request->id ? "E" : "C", "itens", $linha->id); // ControllerKX.php
         $locais = DB::table("locais")->pluck("id")->toArray();
-        foreach ($local as $local) {
+        foreach ($locais as $local) {
             if (!sizeof(
                 DB::table("locais_itens")
                     ->where("id_local", $local)

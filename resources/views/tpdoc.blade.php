@@ -70,7 +70,7 @@
                             "<td width = '13%' class = 'text-right'>" + tpdoc.id.toString().padStart(6, "0") + "</td>" +
                             "<td width = '74%'>" + tpdoc.descr + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + tpdoc.id + ")'></i>" +
+                                // "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + tpdoc.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + tpdoc.id + ", " + '"/tpdoc"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";

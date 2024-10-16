@@ -68,8 +68,8 @@
                         data-input = "#id_empresa"
                         data-table = "empresas"
                         data-column = "nome_fantasia"
-                        data-filter_col = ""
-                        data-filter = ""
+                        data-filter_col = "tipo"
+                        data-filter = "1,2,3"
                         type = "text"
                         value = ""
                         autocomplete = "off"
@@ -79,7 +79,7 @@
                         type = "hidden"
                         value = ""
                     />
-                    <a href = "{{ config('app.root_url') }}/empresas" title = "Cadastro de empresas" target = "_blank">
+                    <a href = "{{ config('app.root_url') }}/{{ strtolower($legenda2(App\Models\Empresas::find($empresa_logada)->tipo)) }}/grupo/0" title = "Cadastro de empresas" target = "_blank">
                         <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
                     </a>
                 </div>

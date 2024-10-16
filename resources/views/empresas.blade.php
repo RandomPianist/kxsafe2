@@ -16,10 +16,10 @@
         </div>
         <div class = "d-flex">
             <div class = "px-1">
-                <select class = "form-control" style = "font-size:0.85rem" onchange = "location.href=URL+'/{{ strtolower($titulo) }}/grupo/'+this.value.replace('grupo-','')">
+                <select class = "form-control" style = "font-size:0.85rem" onchange = "irGrupo(this.value)">
                     <option value = "grupo-0">Todos os grupos</option>
                     @foreach ($grupos as $grupo)
-                        <option value = "grupo-{{ $grupo->id }}" @if ($grupo->id == $id_grupo) selected @endif >{{ $grupo->descr }}</option>
+                        <option value = "grupo-{{ $grupo->id }}" @if ($grupo->id == $id_grupo) selected @endif>{{ $grupo->descr }}</option>
                     @endforeach
                 </select>
             </div>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     @if (sizeof($empresa->filiais))
-                        <div class = "filiais-lista">
+                        <div class = "filiais-lista">    
                             @foreach ($empresa->filiais as $filial)
                                 <div class = "d-flex justify-content-between align-items-center pt-3 pb-3 pl-3 pr-2">
                                     <span class = "nome-filial">{{ $filial->nome_fantasia }}</span>
@@ -107,6 +107,10 @@
     <script type = "text/javascript" language = "JavaScript">
         function ir(id, id_matriz, id_grupo) {
             location.href = URL + "/{{ strtolower($titulo) }}/crud?id=" + id + "&id_matriz=" + id_matriz + "&id_grupo=" + id_grupo;
+        }
+
+        function irGrupo(val) {
+            location.href = URL + "/{{ strtolower($titulo) }}/grupo/" + val.replace("grupo-", "");
         }
     </script>
 @endsection

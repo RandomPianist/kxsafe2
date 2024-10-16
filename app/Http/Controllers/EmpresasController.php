@@ -17,15 +17,6 @@ class EmpresasController extends ControllerKX {
                 ($meu_tipo == 1 && ($tipo == 1 || $tipo == 4));
     }
 
-    private function busca_main($consulta, $matriz, $tipo, $id_grupo) {
-        return $consulta->where("id_matriz", $matriz)
-                        ->where("lixeira", 0)
-                        ->where("tipo", $tipo)
-                        ->where(function($sql) use($id_grupo, $tipo) {
-                            if (intval($id_grupo)) $sql->where("id_grupo", $id_grupo);
-                        });
-    }
-
     private function busca($matriz, $tipo, $id_grupo) {
         return DB::table("empresas")
                     ->select(
@@ -37,7 +28,7 @@ class EmpresasController extends ControllerKX {
                     ->where("lixeira", 0)
                     ->where("tipo", $tipo)
                     ->whereIn("id", $this->empresas_acessiveis()) // ControllerKX.php
-                    ->where(function($sql) use($id_grupo, $tipo) {
+                    ->where(function($sql) use($id_grupo) {
                         if (intval($id_grupo)) $sql->where("id_grupo", $id_grupo);
                     })
                     ->orderby("nome_fantasia")
@@ -243,18 +234,21 @@ class EmpresasController extends ControllerKX {
                 ->where("lixeira", 0)
                 ->where("id", $request->id_matriz)
                 ->where("nome_fantasia", $request->matriz)
+                ->get()
         ) && trim($request->matriz)) return "Matriz";
         if (!sizeof(
             DB::table("segmentos")
                 ->where("lixeira", 0)
                 ->where("id", $request->id_segmento)
                 ->where("descr", $request->segmento)
+                ->get()
         ) && trim($request->segmento)) return "Segmento";
         if (!sizeof(
             DB::table("grupos")
                 ->where("lixeira", 0)
                 ->where("id", $request->id_grupo)
                 ->where("descr", $request->grupo)
+                ->get()
         ) && trim($request->grupo)) return "Grupo";
         return "0";
     }

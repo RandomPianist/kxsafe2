@@ -194,8 +194,11 @@ window.onload = function () {
                 let toggleIcon = this.querySelector(".toggle-icon");
                 document.querySelectorAll(".empresa-matriz").forEach((matriz) => {
                     if (matriz !== this.parentElement) {
-                        matriz.querySelector(".filiais-lista").style.display = "none";
-                        matriz.querySelector(".toggle-icon").textContent = "+";
+                        let filiaisLista2 = matriz.querySelector(".filiais-lista");
+                        if (filiaisLista2 !== null) {
+                            filiaisLista2.style.display = "none";
+                            matriz.querySelector(".toggle-icon").textContent = "+";
+                        }
                     }
                 });
                 
@@ -210,13 +213,13 @@ window.onload = function () {
         }
     });
 
-    Array.from(document.getElementsByTagName("input")).forEach((el) => {
-        $(el).trigger("oninput");
-        $(el).trigger("keyup");
+    Array.from(document.querySelectorAll("input, textarea")).forEach((el) => {
         el.value = el.value.trim();
+        $(el).trigger("oninput");
+        $(el).trigger("keyup");        
     });
 
-    document.querySelectorAll("input, select").forEach((el) => {
+    document.querySelectorAll("input, select, textarea").forEach((el) => {
         anteriores[el.id] = el.value;
     });
 
@@ -459,7 +462,7 @@ function verificaVazios(arr, _erro) {
     let _alterou = false;
     arr.forEach((id) => {
         let el = document.getElementById(id);
-        let erro_ou_vazio = !el.value;
+        let erro_ou_vazio = !el.value.trim();
         if (!erro_ou_vazio && id.indexOf("qtd-") > -1) erro_ou_vazio = !parseInt(el.value);
         if (!erro_ou_vazio && el.tagName == "SELECT") erro_ou_vazio = el.value.indexOf("0") > -1;
         if (erro_ou_vazio) {
@@ -721,6 +724,7 @@ function modal2(nome, limpar) {
 function hoje() {
     Array.from(document.querySelectorAll("input.data")).forEach((el) => {
         el.value = new Date().toJSON().slice(0, 10).split('-').reverse().join('/');
+        anteriores[el.id] = el.value;
     });
 }
 

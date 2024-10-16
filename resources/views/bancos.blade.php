@@ -74,7 +74,7 @@
                             "<td width = '59%'>" + banco.descr + "</td>" +
                             "<td width = '15%' class = 'text-right'>" + banco.cod + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + banco.id + ")'></i>" +
+                                // "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + banco.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + banco.id + ", " + '"/bancos"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";

@@ -74,7 +74,7 @@
                             "<td width = '59%'>" + cfop.descr + "</td>" +
                             "<td width = '15%' class = 'text-right'>" + cfop.cfop + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + cfop.id + ")'></i>" +
+                                // "<i class = 'my-icon far fa-edit m-2'  title = 'Editar'  onclick = 'ir(" + cfop.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt' title = 'Excluir' onclick = 'excluir(" + cfop.id + ", " + '"/cfop"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";

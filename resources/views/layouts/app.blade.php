@@ -73,9 +73,11 @@
 						{{ Auth::user()->name }} - {{ App\Models\Empresas::find($empresa_logada)->nome_fantasia }}
 					</button>
 					<ul class = "dropdown-menu dropdown-menu-end" aria-labelledby = "userDropdown">
-						<li>
-							<a class = "dropdown-item" href = "{{ config('app.root_url') }}">Trocar empresa</a>
-						</li>
+						@if ($multiempresa)
+							<li>
+								<a class = "dropdown-item" href = "{{ config('app.root_url') }}">Trocar empresa</a>
+							</li>
+						@endif
 						<li>
 							<a class = "dropdown-item" href = "{{ config('app.root_url') }}/usuarios/crud/{{ Auth::user()->id }}">Editar</a>
 						</li>

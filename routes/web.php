@@ -20,6 +20,7 @@ use App\Http\Controllers\RetiradasController;
 use App\Http\Controllers\MaquinasController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\RelatoriosController;
+use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,8 +37,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware("auth")->group(function () {
     Route::get("/",             [HomeController::class,     "index"]);
     Route::get("/autocomplete", [HomeController::class,     "autocomplete"]);
-    Route::get("/menu",         [HomeController::class,     "menu"]);
     Route::get("/home",         [EmpresasController::class, "home"]);
+
+    Route::group(["prefix" => "menu"], function() {
+        Route::get("/",            [HomeController::class, "menu"]);
+        Route::get("/form",        [MenuController::class, "menu_form"]);
+        Route::get("/novo-modulo", [MenuController::class, "novo_modulo"]);
+        Route::get("/salvar",      [MenuController::class, "menu_salvar"]);
+    });
 
     $empresas = ["franqueadoras", "franquias", "clientes", "fornecedores"];
     foreach ($empresas as $empresa) {

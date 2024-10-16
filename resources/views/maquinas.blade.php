@@ -27,11 +27,17 @@
                         <th width = "13%" class = "text-right">
                             <span>Código</span>
                         </th>
-                        <th width = "50%">
+                        <th width = "18.5%">
                             <span>Descrição</span> 
                         </th>
-                        <th width = "24%">
+                        <th width = "18.5%">
                             <span>Local</span> 
+                        </th>
+                        <th width = "18.5%">
+                            <span>De</span> 
+                        </th>
+                        <th width = "18.5%">
+                            <span>Para</span> 
                         </th>
                         <th width = "13%" class = "text-center nao-ordena">
                             <span>Ações</span>
@@ -58,7 +64,7 @@
     @include("modals.concessoes_modal")
 
     <script type = "text/javascript" language = "JavaScript">
-        let id_maquina;
+        let _id_maquina;
 
         function ir(id) {
             location.href = URL + "/maquinas/crud/" + id;
@@ -66,7 +72,56 @@
 
         function concessaoModal(id){
             modal("concessoesModal", 0, function () {
-                id_maquina = id;
+                _id_maquina = id;
+            });
+        }
+        
+        async function conceder() {
+            let erro = verificaVazios(["de", "para", "inicio"]).erro;
+            const vazio = erro;
+            let _empresa = document.getElementById("de");
+            const _id_de = document.getElementById("id_de").value;
+            const _id_para = document.getElementById("id_para").value;
+            if (!erro) {
+                erro = await $.get(URL + "/empresas/consultar2", {
+                    id_empresa : _id_de,
+                    empresa : _empresa.value
+                });
+                erro = parseInt(erro);
+            }
+            if (!erro) {
+                _empresa = document.getElementById("para");
+                erro = await $.get(URL + "/empresas/consultar2", {
+                    id_empresa : _id_para,
+                    empresa : _empresa.value
+                });
+                erro = parseInt(erro);
+            }
+            if (!erro) {
+                $.post(URL + "/maquinas/conceder", {
+                    _token : $("meta[name='csrf-token']").attr("content"),
+                    id_de : _id_de,
+                    id_para : _id_para,
+                    id_maquina : _id_maquina,
+                    inicio : document.getElementById("inicio").value,
+                    taxa_inicial : parseInt(document.getElementById("taxa").value.replace(/\D/g, "")) / 100
+                }, function() {
+                    location.reload();
+                })
+            } else {
+                if (!vazio) _empresa.classList.add("invalido");
+                s_alert("Empresa não encontrada");
+            }
+        }
+
+        function encerrar(id) {
+            s_confirm("Deseja encerrar a concessão?", function() {
+                $.post(URL + "/maquinas/encerrar", {
+                    _token : $("meta[name='csrf-token']").attr("content"),
+                    id_maquina : id
+                }, function() {
+                    location.reload();
+                })
             });
         }
 
@@ -81,16 +136,18 @@
                     data.forEach((maquina) => {
                         resultado += "<tr>" +
                             "<td width = '13%' class = 'text-right'>" + maquina.id.toString().padStart(6, "0") + "</td>" +
-                            "<td width = '50%'>" + maquina.descr + "</td>" +
-                            "<td width = '24%'>" + maquina.local + "</td>" +
+                            "<td width = '18.5%'>" + maquina.descr + "</td>" +
+                            "<td width = '18.5%'>" + maquina.local + "</td>" +
+                            "<td width = '18.5%'>" + maquina.de + "</td>" +
+                            "<td width = '18.5%'>" + maquina.para + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
                                 (!maquina.possui_concessoes ?
-                                    "<i class = 'my-icon far fa-handshake'  title = 'Conceder'  onclick = 'concessaoModal(" + maquina.id + ")'></i>" 
+                                    "<i class = 'my-icon far fa-handshake' title = 'Conceder' onclick = 'concessaoModal(" + maquina.id + ")'></i>" 
                                     :
-                                    "<i class = 'my-icon fa-duotone fa-handshake-slash'  title = 'Encerrar concessão'  onclick = 'encerrar(" + maquina.id + ")'></i>" 
+                                    "<i class = 'my-icon fa-duotone fa-handshake-slash' title = 'Encerrar concessão' onclick = 'encerrar(" + maquina.id + ")'></i>" 
                                 )
                                 +
-                                "<i class = 'my-icon far fa-edit ml-2'  title = 'Editar' onclick = 'ir(" + maquina.id + ")'></i>" +
+                                "<i class = 'my-icon far fa-edit ml-2' title = 'Editar' onclick = 'ir(" + maquina.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt ml-2' title = 'Excluir' onclick = 'excluir(" + maquina.id + ", " + '"/maquinas"' + ", event)'></i>" +
                             "</td>" +
                         "</tr>";
@@ -99,10 +156,6 @@
                     ordenar(0);
                 } else mostrarImagemErro(manterPesquisa);
             });
-        }
-
-        function conceder() {
-            
         }
     </script>
 @endsection

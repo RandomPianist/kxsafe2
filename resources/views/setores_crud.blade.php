@@ -38,7 +38,7 @@
                         type = "hidden"
                         value = "@if ($setor !== null) {{ $setor->id_empresa }} @endif"
                     />
-                    <a href = "{{ config('app.root_url') }}/empresas" title = "Cadastro de empresas" target = "_blank">
+                    <a href = "{{ config('app.root_url') }}/{{ strtolower($legenda2(App\Models\Empresas::find($empresa_logada)->tipo)) }}/grupo/0" title = "Cadastro de empresas" target = "_blank">
                         <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
                     </a>
                 </div>
@@ -76,6 +76,7 @@
                 if (!erro && !alterou) erro = "Altere pelo menos um campo para salvar";
                 if (!erro) {
                     $.post(URL + "/setores/salvar", {
+                        _token : $("meta[name='csrf-token']").attr("content"),
                         id : _id,
                         id_empresa : _id_empresa,
                         descr : document.getElementById("descr").value,
@@ -84,7 +85,7 @@
                             $campos = ["id", "valor", "qtd", "obrigatorio", "validade", "operacao"];
                             $propriedades = array();
                             foreach ($tipos as $tipo) {
-                                foreach ($campos as $campo) array_push($propriedades, "atb_".$tipo."_".$campo." : atb".ucfirst($tipo).ucfirst($campo)."join('|')");
+                                foreach ($campos as $campo) array_push($propriedades, "atb_".$tipo."_".$campo." : atb".ucfirst($tipo).ucfirst($campo).".join('|')");
                             }
                             echo implode(",", $propriedades);
                         @endphp

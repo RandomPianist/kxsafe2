@@ -36,7 +36,7 @@
                     <div class = "d-flex flex-column align-items-center mb-4 shadow-sm p-3" style = "background-color:var(--cards);border-radius:15px">
                         <div class = "mb-3 user-photo">
                             <img
-                                class = "w-100 user-photo" src = "{{ $resultado->usuario->foto }}" 
+                                class = "w-100" src = "{{ $resultado->usuario->foto }}" 
                                 onerror = "this.style.display='none';this.nextElementSibling.style.display='block'"
                             />
                             <i class = "fallback-icon fas fa-user" aria-hidden = "true"></i>
