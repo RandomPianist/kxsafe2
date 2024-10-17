@@ -129,6 +129,7 @@
                         id = "id_matriz"
                         type = "hidden"
                         value = "@if ($empresa !== null) {{ $empresa->id_matriz }} @elseif ($criando->matriz !== null) {{ $criando->matriz->id }} @endif"
+                        onchange="travarGrupo()"
                     />
                     <a href = "{{ config('app.root_url') }}/{{ strtolower($titulo) }}/grupo/0" title = "Cadastro de {{ strtolower($titulo) }}" target = "_blank">
                         <i class = "fa-sharp fa-regular fa-arrow-up-right-from-square"></i>
@@ -560,6 +561,29 @@
                     });
                 } else s_alert(erro);
             });
+        }
+
+        function travarGrupo(){
+            let campoGrupo = document.getElementById("grupo");
+            let campoIdMatriz = document.getElementById("id_matriz");
+            if(campoIdMatriz.value.trim()){
+                campoGrupo.classList.add("readonly");
+                $.get(URL + "/empresas/mostrar/" + campoIdMatriz.value, function(data) {
+                        data = $.parseJSON(data);
+                        if(data.id){
+                            document.getElementById("id_grupo").value = data.id;
+                            document.getElementById("grupo").value = data.descr;
+                        } else {
+                            document.getElementById("grupo").value = "---";
+                        }
+                        
+                    } 
+                );
+            } else {
+                document.getElementById("id_grupo").value = "";
+                document.getElementById("grupo").value = "";
+                campoGrupo.classList.remove("readonly")
+            }
         }
 	</script>
 @endsection

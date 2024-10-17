@@ -9,6 +9,7 @@ use App\Models\Log;
 use App\Models\Empresas;
 use App\Models\Atribuicoes;
 use App\Models\Itens;
+use App\Models\Retiradas;
 
 class ControllerKX extends Controller {
     public function retorna_empresa_logada() {
@@ -326,9 +327,12 @@ class ControllerKX extends Controller {
     }
 
     protected function concessoes_excluir($where) {
-        DB::statement("UPDATE concessoes SET fim = CURDATE() WHERE ".$where." AND CURDATE() >= inicio");
-        DB::statement("UPDATE concessoes SET lixeira = 1     WHERE ".$where." AND CURDATE() <  inicio");
-        // log
+        $where_completo = $where." AND CURDATE() >= inicio";
+        DB::statement("UPDATE concessoes SET fim = CURDATE() WHERE ".$where_completo);
+        $this->log_inserir2("E", "concessoes", $where_completo, "NULL");
+        $where_completo = $where." AND CURDATE() < inicio";
+        DB::statement("UPDATE concessoes SET lixeira = 1 WHERE ".$where_completo);
+        $this->log_inserir2("D", "concessoes", $where_completo, "NULL");
     }
 
     protected function retirada_consultar($id_atribuicao, $qtd) {

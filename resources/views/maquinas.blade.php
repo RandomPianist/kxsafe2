@@ -62,6 +62,7 @@
     </button>
 
     @include("modals.concessoes_modal")
+    @include("modals.encerrar_concessao_modal")
 
     <script type = "text/javascript" language = "JavaScript">
         let _id_maquina;
@@ -75,11 +76,18 @@
                 _id_maquina = id;
             });
         }
+
+        function encerrarConcessaoModal(id){
+            modal("encerrarConcessaoModal", 0, function () {
+                _id_maquina = id;
+            });
+        }
         
         async function conceder() {
             let erro = verificaVazios(["de", "para", "inicio"]).erro;
             const vazio = erro;
             let _empresa = document.getElementById("de");
+            let _inicio = document.getElementById("inicio");
             const _id_de = document.getElementById("id_de").value;
             const _id_para = document.getElementById("id_para").value;
             if (!erro) {
@@ -98,15 +106,18 @@
                 erro = parseInt(erro);
             }
             if (!erro) {
-                $.post(URL + "/maquinas/conceder", {
+                $.post(URL + "/concessoes/conceder", {
                     _token : $("meta[name='csrf-token']").attr("content"),
                     id_de : _id_de,
                     id_para : _id_para,
                     id_maquina : _id_maquina,
-                    inicio : document.getElementById("inicio").value,
+                    inicio : _inicio.value,
                     taxa_inicial : parseInt(document.getElementById("taxa").value.replace(/\D/g, "")) / 100
-                }, function() {
-                    location.reload();
+                }, function(resp) {
+                    if (resp != "ok") {
+                        s_alert(resp);
+                        _inicio.classList.add("invalido");
+                    } else location.reload();
                 })
             } else {
                 if (!vazio) _empresa.classList.add("invalido");
@@ -114,15 +125,14 @@
             }
         }
 
-        function encerrar(id) {
-            s_confirm("Deseja encerrar a concessão?", function() {
-                $.post(URL + "/maquinas/encerrar", {
-                    _token : $("meta[name='csrf-token']").attr("content"),
-                    id_maquina : id
-                }, function() {
-                    location.reload();
-                })
-            });
+        function encerrar() {
+            $.post(URL + "/concessoes/encerrar", {
+                _token : $("meta[name='csrf-token']").attr("content"),
+                id_maquina : _id_maquina,
+                fim : document.getElementById("fim").value
+            }, function() {
+                location.reload();
+            })
         }
 
         function listar(manterPesquisa) {
@@ -141,12 +151,11 @@
                             "<td width = '18.5%'>" + maquina.de + "</td>" +
                             "<td width = '18.5%'>" + maquina.para + "</td>" +
                             "<td class = 'text-center' width = '13%'>" +
-                                (!maquina.possui_concessoes ?
+                                (maquina.botao == "conceder" ?
                                     "<i class = 'my-icon far fa-handshake' title = 'Conceder' onclick = 'concessaoModal(" + maquina.id + ")'></i>" 
                                     :
-                                    "<i class = 'my-icon fa-duotone fa-handshake-slash' title = 'Encerrar concessão' onclick = 'encerrar(" + maquina.id + ")'></i>" 
-                                )
-                                +
+                                    "<i class = 'my-icon fa-duotone fa-handshake-slash' title = 'Encerrar concessão' onclick = 'encerrarConcessaoModal(" + maquina.id + ")'></i>" 
+                                ) +
                                 "<i class = 'my-icon far fa-edit ml-2' title = 'Editar' onclick = 'ir(" + maquina.id + ")'></i>" +
                                 "<i class = 'my-icon far fa-trash-alt ml-2' title = 'Excluir' onclick = 'excluir(" + maquina.id + ", " + '"/maquinas"' + ", event)'></i>" +
                             "</td>" +

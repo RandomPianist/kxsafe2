@@ -321,4 +321,16 @@ class EmpresasController extends ControllerKX {
         DB::statement("DELETE FROM enderecos WHERE id_empresa = ".$linha->id);
         $this->concessoes_excluir($linha->id." IN (id_de, id_para)"); // ControllerKX.php
     }
+
+    public function mostrar($id){
+        $resultado = DB::table("empresas")
+                            ->select(
+                                "grupos.id",
+                                "grupos.descr"
+                            )
+                            ->leftjoin("grupos", "grupos.id", "empresas.id_grupo")
+                            ->where("empresas.id", $id)
+                            ->first();
+        return json_encode($resultado);
+    }
 }

@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use DB;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Empresas;
 use App\Models\Maquinas;
-use App\Models\Concessoes;
 
 class MaquinasController extends ControllerKX {
     private function busca($param = "1") {
@@ -16,12 +14,6 @@ class MaquinasController extends ControllerKX {
                         "maquinas.id",
                         "maquinas.descr",
                         "locais.descr AS local",
-                        DB::raw("
-                            CASE
-                                WHEN conc.id_maquina IS NOT NULL THEN 1
-                                ELSE 0
-                            END AS possui_concessoes
-                        "),
                         DB::raw("
                             CASE
                                 WHEN conc.de IS NOT NULL THEN conc.de
@@ -33,6 +25,12 @@ class MaquinasController extends ControllerKX {
                                 WHEN conc.para IS NOT NULL THEN conc.para
                                 ELSE '---'
                             END AS para
+                        "),
+                        DB::raw("
+                            CASE
+                                WHEN conc2.fim < CURDATE() OR conc2.id_maquina IS NULL THEN 'conceder'
+                                ELSE 'encerrar'
+                            END AS botao
                         ")
                     )
                     ->leftjoinsub(
@@ -45,9 +43,19 @@ class MaquinasController extends ControllerKX {
                             ->leftjoin("empresas AS de", "de.id", "concessoes.id_de")
                             ->leftjoin("empresas AS para", "para.id", "concessoes.id_para")
                             ->whereRaw("CURDATE() >= inicio")
-                            ->whereNull("fim")
+                            ->whereRaw("fim IS NULL OR fim >= CURDATE()")
                             ->where("concessoes.lixeira", 0),
                     "conc", "conc.id_maquina", "maquinas.id")
+                    ->leftjoinsub(
+                        DB::table("concessoes")
+                            ->select(
+                                "id_maquina",
+                                "fim"
+                            )
+                            ->whereRaw("CURDATE() >= inicio")
+                            ->whereRaw("fim IS NULL OR fim < CURDATE()")
+                            ->where("concessoes.lixeira", 0),
+                    "conc2", "conc2.id_maquina", "maquinas.id")
                     ->join("locais", "locais.id", "id_local")
                     ->whereRaw($param)
                     ->where("maquinas.lixeira", 0)
@@ -149,22 +157,5 @@ class MaquinasController extends ControllerKX {
         $linha->save();
         $this->log_inserir("D", "maquinas", $linha->id); // ControllerKX.php
         $this->concessoes_excluir("id_maquina = ".$linha->id); // ControllerKX.php
-    }
-
-    public function conceder(Request $request) {
-        $linha = new Concessoes;
-        $linha->taxa_inicial = $request->taxa_inicial;
-        $linha->inicio = Carbon::createFromFormat('d/m/Y', $request->inicio)->format('Y-m-d');
-        $linha->id_de = $request->id_de;
-        $linha->id_para = $request->id_para;
-        $linha->id_maquina = $request->id_maquina;
-        $linha->save();
-        $this->log_inserir("C", "concessoes", $linha->id);
-    }
-
-    public function encerrar(Request $request) {
-        $where = "id_maquina = ".$request->id_maquina;
-        DB::statement("UPDATE concessoes SET fim = CURDATE() WHERE ".$where);
-        $this->log_inserir2("E", "concessoes", $where, "NULL");
     }
 }

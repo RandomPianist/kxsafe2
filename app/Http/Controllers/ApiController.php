@@ -64,7 +64,7 @@ class ApiController extends ControllerKX {
                 return json_encode($resultado);
             }
             $salvar = array(
-                "id_pessoa" => $retirada["id_pessoa"],
+                "id_funcionario" => $retirada["id_pessoa"],
                 "id_produto" => $retirada["id_produto"],
                 "id_atribuicao" => $retirada["id_atribuicao"],
                 "id_maquina" => $retirada["id_maquina"],
@@ -97,7 +97,7 @@ class ApiController extends ControllerKX {
 
     public function validar_app(Request $request) {
         return sizeof(
-            DB::table("pessoas")
+            DB::table("funcionarios")
                 ->where("cpf", $request->cpf)
                 ->where("senha", $request->senha)
                 ->where("lixeira", 0)
@@ -107,7 +107,7 @@ class ApiController extends ControllerKX {
 
     public function ver_pessoa(Request $request) {
         return json_encode(
-            DB::table("pessoas")
+            DB::table("funcionarios")
                 ->where("cpf", $request->cpf)
                 ->first()
         );
@@ -173,7 +173,7 @@ class ApiController extends ControllerKX {
         }
         return json_encode(collect($resultado)->groupBy("referencia")->map(function($itens) use($request) {
             return [
-                "id_pessoa" => DB::table("pessoas")->where("cpf", $request->cpf)->value("id"),
+                "id_pessoa" => DB::table("funcionarios")->where("cpf", $request->cpf)->value("id"),
                 "nome" => $itens[0]->nome,
                 "foto" => $itens[0]->foto,
                 "referencia" => $itens[0]->referencia,
@@ -185,7 +185,7 @@ class ApiController extends ControllerKX {
                 "tamanhos" => $itens->map(function($tamanho) use($request) {
                     return [
                         "id" => $tamanho->id,
-                        "id_pessoa" => DB::table("pessoas")->where("cpf", $request->cpf)->value("id"),
+                        "id_pessoa" => DB::table("funcionarios")->where("cpf", $request->cpf)->value("id"),
                         "id_atribuicao" => $tamanho->id_atribuicao,
                         "selecionado" => false,
                         "codbar" => $tamanho->codbar,

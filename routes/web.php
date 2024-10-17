@@ -22,6 +22,7 @@ use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\AtribuicoesController;
 use App\Http\Controllers\RetiradasController;
 use App\Http\Controllers\EstoqueController;
+use App\Http\Controllers\ConcessoesController;
 use App\Http\Controllers\RelatoriosController;
 
 use Illuminate\Support\Facades\Route;
@@ -93,13 +94,14 @@ Route::middleware("auth")->group(function () {
     });
     
     Route::group(["prefix" => "empresas"], function() {
-        Route::get ("/selecionar",  [EmpresasController::class, "minhas"]);
-        Route::get ("/consultar",   [EmpresasController::class, "consultar"]);
-        Route::get ("/consultar2",  [EmpresasController::class, "consultar2"]);
-        Route::get ("/aviso/{id}",  [EmpresasController::class, "aviso"]);
-        Route::post("/salvar",      [EmpresasController::class, "salvar"]);
-        Route::post("/excluir",     [EmpresasController::class, "excluir"]);
-        Route::post("/selecionar",  [EmpresasController::class, "selecionar"]);
+        Route::get ("/selecionar",   [EmpresasController::class, "minhas"]);
+        Route::get ("/consultar",    [EmpresasController::class, "consultar"]);
+        Route::get ("/consultar2",   [EmpresasController::class, "consultar2"]);
+        Route::get ("/aviso/{id}",   [EmpresasController::class, "aviso"]);
+        Route::post("/salvar",       [EmpresasController::class, "salvar"]);
+        Route::post("/excluir",      [EmpresasController::class, "excluir"]);
+        Route::post("/selecionar",   [EmpresasController::class, "selecionar"]);
+        Route::get ("/mostrar/{id}", [EmpresasController::class, "mostrar"]);
     });
     
     Route::group(["prefix" => "funcionarios"], function() {
@@ -154,8 +156,6 @@ Route::middleware("auth")->group(function () {
         Route::get ("/aviso/{id}", [MaquinasController::class, "aviso"]);
         Route::post("/salvar",     [MaquinasController::class, "salvar"]);
         Route::post("/excluir",    [MaquinasController::class, "excluir"]);
-        Route::post("/conceder",   [MaquinasController::class, "conceder"]);
-        Route::post("/encerrar",   [MaquinasController::class, "encerrar"]);
     });
     
     Route::group(["prefix" => "naturezas"], function() {
@@ -221,6 +221,11 @@ Route::middleware("auth")->group(function () {
     Route::group(["prefix" => "estoque"], function() {
         Route::get ("/consultar", [EstoqueController::class, "consultar"]);
         Route::post("/salvar",    [EstoqueController::class, "salvar"]);
+    });
+
+    Route::group(["prefix" => "concessoes"], function() {
+        Route::post("/conceder", [ConcessoesController::class, "conceder"]);
+        Route::post("/encerrar", [ConcessoesController::class, "encerrar"]);
     });
 
     Route::group(["prefix" => "relatorios"], function() {

@@ -321,6 +321,8 @@ function autocomplete(_this) {
     }, function (data) {
         if (typeof data == "string") data = $.parseJSON(data);
         div_result.empty();
+        $(input_id).val("");
+        $(input_id).trigger("change");
         data.forEach((item) => {
             div_result.append("<div class = 'autocomplete-line' data-id = '" + item.id + "'>" + item[_column.trim()] + "</div>");
         });
@@ -366,7 +368,10 @@ function carregaAutocomplete() {
             $(this).removeClass("invalido");
             if (e.keyCode == 13) validacaoBloqueada = true;
             if ([9, 13, 17, 38, 40].indexOf(e.keyCode) == -1 && $(this).val().trim()) autocomplete($(this));
-            if (!$(this).val().trim()) $($(this).data().input).val("");
+            if (!$(this).val().trim()) {
+                $($(this).data().input).val("");
+                $($(this).data().input).trigger("change");
+            }
             setTimeout(function() {
                 validacaoBloqueada = false;
             }, 50);
